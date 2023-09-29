@@ -14,8 +14,8 @@ UngriddedData contains 4 main attributes:
 
 * *_data*: an unstructured point cloud with all the data (time, position, values, etc.)
 * *metadata*: metadata for each station
-* *meta_idx*: mapping from station to variable and indecies of rows in _data where measurements for said station and variable are found
-* *var_idx*: mapping of variable names to indecies of rows in _data where measurements of said variable are found
+* *meta_idx*: mapping from station to variable and indices of rows in _data where measurements for said station and variable are found
+* *var_idx*: mapping of variable names to index of variable used in *_data*
 
 _data
 -----
@@ -54,3 +54,14 @@ Other metadata can be added for later filtering!
 
 More on *var_info*: This is a dictionary where the key is the name of the value is another dictionary containing atleast the following data:
 * unit **string** : the unit of the variable
+
+
+meta_idx
+--------
+A dictionary mapping a station id (float) and variable name  (string) (i.e. ``self.meta_idx[station_id][var_name]``) to a list of indices for rows the *_data* array where said measurements are found.
+
+meta_idx is mostly used to make conversion from station data faster.
+
+var_idx
+-------
+In *_data* the variable is stored as a **float** index instead of a **string**. This dictionary maps the variable name (string) to this index (float)
