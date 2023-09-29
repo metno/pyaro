@@ -2,8 +2,12 @@
 UngriddedData
 ===================
 
-UngriddedData is the main class for holding ungridded data -- mostly used for obervational data -- in pyaerocom. 
+UngriddedData is the main class for holding ungridded data -- mostly used for obervational data -- in pyaerocom.
 The class can either be instanciated and filled manually (see below for structure), or be created from a dictionary of StationData objects :ref:`_stationsdata_overview`.
+
+..  image:: ./pics/UngriddedData.png
+    :alt: some image
+    :class: with-shadow
 
 **Note**: There does not seem to be any function to create an UngriddedData given the attributes described below. Instead ``__init__`` creates empty versions of said attributes, and it is up to the user to access the attributes and filling them in by hand
 
@@ -19,11 +23,11 @@ UngriddedData contains 4 main attributes:
 
 _data
 -----
-_data is the main data structure of UngriddedData, and in is an unstructured table (2D numpy array) where each row is a single measurement. 
+_data is the main data structure of UngriddedData, and in is an unstructured table (2D numpy array) where each row is a single measurement.
 Each row consists of 12 columns holding all the relevant information about the measurement. The 12 columns are ordered as follows
 
 0. metadata index **float** : index pointing to a key in the *metadata* dictionary. Each index corresponds to one station
-1. time **float** : timestamp of the measurement 
+1. time **float** : timestamp of the measurement
 2. latitude **float** : latitude of the measurement device
 3. longitude **float** : longitude of the measurement device
 4. altitude **float** : altitude of the measurement device

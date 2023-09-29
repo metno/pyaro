@@ -1,0 +1,77 @@
+@startuml
+' hide the spot
+' hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "_data" {
+  *row_idx: integer <<generated>>
+  --
+  *metadata_index : float
+  *time: float
+  *latitude: float
+  *longitude: float
+  *altitude: float
+  *var_index: float
+  *value: float
+  *data_height: float
+  *data_error: float
+  *flags: dictionary
+  stop_time: float
+  trash: float
+}
+note bottom of _data
+2D numpy float-array
+
+Daniel: what is mandatory and what optional?
+Is metadata_index == data_id in metadata?
+end note
+
+entity "metadata" {
+  *data_id : string
+  --
+  *var_info|varibales : list|dictionary
+  *instrument_name
+  *latitude: float
+  *longitude: float
+  *altitude: float
+  *station_name: string
+  *country: string
+}
+note bottom of metadata
+Dictionary of stations? (Or more?)
+
+Daniel: is "variables" a list of var_name or of var_idx?
+Daniel: what is mandatory and what optional?
+end note
+
+entity "meta_idx" {
+  *station_id : float
+  *var_name : string
+  --
+  *row_idxs : list(row_idx)
+}
+note right of meta_idx
+Dictionary
+
+Daniel: What is station_id? Connected to data_id?
+Or to station_name in metadata?
+end note
+
+entity "var_idx" {
+  *var_index: float
+  --
+  *var_name: string
+}
+note right of var_idx
+Dictionary
+end note
+
+_data }o..|| metadata
+_data }o..|| var_idx
+meta_idx ||..o{ _data
+metadata }o..o{ var_idx
+meta_idx ||..|| metadata
+'_data |o..o{
+@enduml
