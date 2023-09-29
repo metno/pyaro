@@ -1,0 +1,78 @@
+@startuml
+
+skinparam class {
+  backgroundColor whitesmoke
+  arrowColor dimgrey
+  borderColor dimgrey
+}
+
+' Abstract Factory Patter
+' Factory -> MeasurementNetwork
+
+class Client
+note right of Client
+This is i.e. pyaerocom
+initiated by a config
+end note
+
+interface MeasurementsReaderNetwork {
+  createTimeSeriesReader(): TimeSeriesReader
+  createProfileReader(): ProfileReader
+}
+
+class EBASNetwork <XOR> {
+  + createTimeSeriesReader(): TimeSeriesReader
+  + createProfileReader(): ProfileReader
+}
+
+class EEANetwork <XOR> {
+  + createTimeSeriesReader(): TimeSeriesReader
+  + createProfileReader(): ProfileReader
+}
+
+interface TimeSeriesReader {
+  getData(): Data
+}
+
+class EBASTimeSeriesReader {
+  + getData(): Data
+}
+
+class EEATimeSeriesReader {
+  + public getData(): Data
+}
+
+interface ProfileReader {
+  getData(): Data
+}
+
+class EBASProfileReader {
+  +   getData(): Data
+}
+
+class EEAProfileReader {
+  +   getData(): Data
+}
+
+MeasurementsReaderNetwork <|.. EBASNetwork
+MeasurementsReaderNetwork <|.. EEANetwork
+
+TimeSeriesReader <|.. EBASTimeSeriesReader
+TimeSeriesReader <|.. EEATimeSeriesReader
+
+ProfileReader <|.. EBASProfileReader
+ProfileReader <|.. EEAProfileReader
+
+
+EEANetwork ..> EEAProfileReader
+EEANetwork ..> EEATimeSeriesReader
+
+EBASNetwork ..> EBASProfileReader
+EBASNetwork ..> EBASTimeSeriesReader
+
+Client ..> MeasurementsReaderNetwork: imports
+Client ..> TimeSeriesReader : imports
+Client ..> ProfileReader : imports
+
+
+@enduml
