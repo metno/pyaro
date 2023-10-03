@@ -6,7 +6,7 @@ How to add a new reader
 Adding a new reader for read support to pyaerocom does not require
 to integrate any code in PyAerocom; all you need to do is:
 
-- Create a class that inherits from PyAerocom :py:class:`~pyaerocom_readers.TimeSeriesReader` or ProfileReader
+- Create a class that inherits from PyAerocom :py:class:`~pyaerocom_readers.TimeseriesReader` or ProfileReader
   and implements the method ``open_dataset`` see :ref:`RST backend_entrypoint`
 
 - Declare this class as an external plugin in your ``setup.py``, see :ref:`RST reader_registration`
@@ -19,10 +19,10 @@ with :py:class:`~pyaerocom_readers.list_timeseries_readers()`.
 
 .. _RST backend_entrypoint:
 
-TimeSeriesReader subclassing
+TimeseriesReader subclassing
 +++++++++++++++++++++++++++++
 
-Your ``TimeSeriesReader`` sub-class is the primary interface with PyAerocom, and
+Your ``TimeseriesReader`` sub-class is the primary interface with PyAerocom, and
 it should implement the following attributes and methods:
 
 - the ``open_reader`` method (mandatory)
@@ -31,14 +31,14 @@ it should implement the following attributes and methods:
 - the ```get_data`` method (mandatory)
 - the ``url`` attribute (optional).
 
-This is what a ``TimeSeriesReader`` subclass should look like:
+This is what a ``TimeseriesReader`` subclass should look like:
 
 .. code-block:: python
 
-    from pyaerocom_readers import TimeSeriesReader
+    from pyaerocom_readers import TimeseriesReader
 
 
-    class MyTimeSeriesReader(TimeSeriesReader):
+    class MyTimeseriesReader(TimeseriesReader):
         def open_reader(
             self,
             filename_or_obj_or_url,
@@ -57,7 +57,7 @@ This is what a ``TimeSeriesReader`` subclass should look like:
 
         url = "https://link_to/your_backend/documentation"
 
-``TimeSeriesReader`` subclass methods and attributes are detailed in the following.
+``TimeseriesReader`` subclass methods and attributes are detailed in the following.
 
 .. _RST open_dataset:
 
@@ -65,7 +65,7 @@ open_network
 ^^^^^^^^^^^^
 
 The backend ``open_reader`` shall implement reading from location, the variables
-decoding and it shall instantiate the output PyAerocom class :py:class:`~pyaerocom.TimeSeriesData` (TBD).
+decoding and it shall instantiate the output PyAerocom class :py:class:`~pyaerocom.TimeseriesData` (TBD).
 
 The following is an example of the high level processing steps:
 
@@ -136,7 +136,7 @@ You can declare the entrypoint in ``setup.py`` using the following syntax:
 
     setuptools.setup(
         entry_points={
-            "pyaerocom_readers.timeseries_readers": ["my_timeseries_reader=my_package.my_module:MyTimeSeriesReaderClass"],
+            "pyaerocom_readers.timeseries_readers": ["my_timeseries_reader=my_package.my_module:MyTimeseriesReaderClass"],
         },
     )
 
@@ -146,7 +146,7 @@ in ``setup.cfg``:
 
     [options.entry_points]
     pyaercom-readers.timeseries_readers =
-        my_timeseriesreader = my_package.my_module:MyTimeSeriesReaderClass
+        my_timeseriesreader = my_package.my_module:MyTimeseriesReaderClass
 
 
 See https://packaging.python.org/specifications/entry-points/#data-model
@@ -157,7 +157,7 @@ If you are using `Poetry <https://python-poetry.org/>`_ for your build system, y
 .. code-block:: toml
 
     [tool.poetry.plugins."pyaerocom_readers.timeseries_readers"]
-    "my_timesereiesreader" = "my_package.my_module:MyTimeSeriesReaderClass"
+    "my_timesereiesreader" = "my_package.my_module:MyTimeseriesReaderClass"
 
 See https://python-poetry.org/docs/pyproject/#plugins for more information on Poetry plugins.
 
@@ -166,6 +166,6 @@ See https://python-poetry.org/docs/pyproject/#plugins for more information on Po
 How to support lazy loading
 +++++++++++++++++++++++++++
 
-TimeSeriesReaders are by design lazy loading, i.e. data is loaded when the ``get_data`` method is called.
+TimeseriesReaders are by design lazy loading, i.e. data is loaded when the ``get_data`` method is called.
 
 
