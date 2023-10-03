@@ -24,26 +24,23 @@ entity "_data" {
 note bottom of _data
 2D numpy float-array
 
-Daniel: what is mandatory and what optional?
-Is metadata_index == data_id in metadata?
+Daniel: Is metadata_index == station_id in metadata?
 end note
 
 entity "metadata" {
-  *data_id : string
+  *station_id: float
   --
-  *var_info|varibales : list|dictionary
+  *var_info|varibales : list_of_varnames|dictionary
   *instrument_name
   *latitude: float
   *longitude: float
   *altitude: float
   *station_name: string
   *country: string
+  *data_id : string_for_documentation
 }
 note bottom of metadata
-Dictionary of stations? (Or more?)
-
-Daniel: is "variables" a list of var_name or of var_idx?
-Daniel: what is mandatory and what optional?
+Dictionary of stations
 end note
 
 entity "meta_idx" {
@@ -54,9 +51,6 @@ entity "meta_idx" {
 }
 note right of meta_idx
 Dictionary
-
-Daniel: What is station_id? Connected to data_id?
-Or to station_name in metadata?
 end note
 
 entity "var_idx" {
