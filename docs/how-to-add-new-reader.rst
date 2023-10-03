@@ -6,7 +6,7 @@ How to add a new reader
 Adding a new reader for read support to pyaerocom does not require
 to integrate any code in PyAerocom; all you need to do is:
 
-- Create a class that inherits from PyAerocom :py:class:`~pyaerocom-readers.TimeSeriesReader` or ProfileReader
+- Create a class that inherits from PyAerocom :py:class:`~pyaerocom_readers.TimeSeriesReader` or ProfileReader
   and implements the method ``open_dataset`` see :ref:`RST backend_entrypoint`
 
 - Declare this class as an external plugin in your ``setup.py``, see :ref:`RST reader_registration`
@@ -15,7 +15,7 @@ If you also want to support lazy loading and dask see :ref:`RST lazy_loading`.
 
 
 You can see what backends are currently available in your working environment
-with :py:class:`~pyaerocom-readers.list_timeseries_readers()`.
+with :py:class:`~pyaerocom_readers.list_timeseries_readers()`.
 
 .. _RST backend_entrypoint:
 
@@ -35,7 +35,7 @@ This is what a ``TimeSeriesReader`` subclass should look like:
 
 .. code-block:: python
 
-    from pyaerocom-readers import TimeSeriesReader
+    from pyaerocom_readers import TimeSeriesReader
 
 
     class MyTimeSeriesReader(TimeSeriesReader):
@@ -71,7 +71,7 @@ The following is an example of the high level processing steps:
 
 .. code-block:: python
 
-    def open_network(
+    def open_reader(
         self,
         filename_or_obj_or_url,
         *,
@@ -81,7 +81,7 @@ The following is an example of the high level processing steps:
 
 
 
-The input of ``open_network`` method are one argument
+The input of ``open_reader`` method are one argument
 (``filename_or_obj_or_url``) and one keyword argument (``drop_variables``):
 
 - ``filename_or_obj_or_url``: can be any object but usually it is a string containing a path or an instance of
@@ -102,7 +102,7 @@ open_parameters
 
 ``open_parameters`` is the list of backend ``open_reader`` parameters.
 It is not a mandatory parameter, and if the backend does not provide it
-explicitly, pyaerocom-readers creates a list of them automatically by inspecting the
+explicitly, pyaerocom_readers creates a list of them automatically by inspecting the
 backend signature.
 
 
@@ -115,7 +115,7 @@ description and url
 ``description`` is used to provide a short text description of the backend.
 ``url`` is used to include a link to the backend's documentation or code.
 
-These attributes are surfaced when a user prints :py:class:`~xarray.backends.BackendEntrypoint`.
+These attributes are surfaced when a user prints :py:class:`~pyaercom-readers.timeseries-backends`.
 If ``description`` or ``url`` are not defined, an empty string is returned.
 
 
@@ -126,8 +126,8 @@ How to register a reader (backend)
 
 Define a new entrypoint in your ``setup.py`` (or ``setup.cfg``) with:
 
-- group: ``pyaerocom-readers.timeseries-backends``
-- name: the name to be passed to :py:meth:`~pyaerocom-readers.open_reader`  as ``engine``
+- group: ``pyaerocom_readers.timeseries_readers``
+- name: the name to be passed to :py:meth:`~pyaerocom_readers.open_reader`  as ``engine``
 - object reference: the reference of the class that you have implemented.
 
 You can declare the entrypoint in ``setup.py`` using the following syntax:
@@ -136,7 +136,7 @@ You can declare the entrypoint in ``setup.py`` using the following syntax:
 
     setuptools.setup(
         entry_points={
-            "pyaerocom-readers.timeseriesreaders": ["my_timeseriesreader=my_package.my_module:MyTimeSeriesReaderClass"],
+            "pyaerocom_readers.timeseries_readers": ["my_timeseries_reader=my_package.my_module:MyTimeSeriesReaderClass"],
         },
     )
 
@@ -145,7 +145,7 @@ in ``setup.cfg``:
 .. code-block:: cfg
 
     [options.entry_points]
-    pyaercom-readers.timeseriesreaders =
+    pyaercom-readers.timeseries_readers =
         my_timeseriesreader = my_package.my_module:MyTimeSeriesReaderClass
 
 
@@ -156,7 +156,7 @@ If you are using `Poetry <https://python-poetry.org/>`_ for your build system, y
 
 .. code-block:: toml
 
-    [tool.poetry.plugins."pyaerocom-readers.timeseriesreaders"]
+    [tool.poetry.plugins."pyaerocom_readers.timeseries_readers"]
     "my_timesereiesreader" = "my_package.my_module:MyTimeSeriesReaderClass"
 
 See https://python-poetry.org/docs/pyproject/#plugins for more information on Poetry plugins.
