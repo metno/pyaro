@@ -44,7 +44,8 @@ metadata
 
 This is a dictionary containing metadata for all the stations used in *_data*. The keys are unique ids for each station, with the value being another dictionary. The content of this dictionary is not well documented, but this is the necessary keys I found:
 
-* data_id **string** : the name/id of the dataset used to produce the measurements
+* station_id **float** : the **key** of the dictionary. Unique float/int pointing to a station.
+* data_id **string** : the name/id of the dataset(e.g. EEA, EBAS, etc) used to produce the measurements
 * var_info/variables **dict/list** : in it's basic form just a list of measured variables, or in the case of *var_info* a dictionary where the variables as keys and info (e.g. units) are the values. The name of the variable must be in the aerocom convention!
 * instrument_name **string** (optional) : name of the instrument
 * latitude **float** : latitude of the measurement device
