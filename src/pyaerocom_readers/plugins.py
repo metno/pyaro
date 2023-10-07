@@ -1,3 +1,4 @@
+from copy import deepcopy
 import functools
 import sys
 import warnings
@@ -44,3 +45,16 @@ def list_timeseries_readers() -> dict[str, TimeseriesReader]:
     return build_timeseries_readers(entrypoints)
 
 
+def get_timeseries_reader(name):
+    return deepcopy(list_timeseries_readers()[name])
+
+def open_timeseries_reader(name, *args, **kwargs) -> TimeseriesReader:
+    """open a timeseries reader directly, sending args and kwargs
+    directly to the TimeseriesReader.open_reader() function
+
+    :param name: the name of the entrypoint as key in list_timeseries_readers
+    :return: an implementation-object of a TimeseriesReader openend to a location
+    """
+    obj = get_timeseries_reader(name)
+    obj.open_reader(args, kwargs)
+    return obj

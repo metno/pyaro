@@ -16,30 +16,46 @@ initiated by a config
 end note
 
 interface MeasurementsReaderNetwork {
-  createTimeSeriesReader(): TimeSeriesReader
-  createProfileReader(): ProfileReader
+  + list_timeseries_readers() : dict[name, TimerseriesReader]
+  + open_timeseries_reader(name, args): TimeseriesReader
+  --
+  + createProfileReader(): ProfileReader
 }
 
 class EBASNetwork <XOR> {
-  + createTimeSeriesReader(): TimeSeriesReader
+  + open_timeseries_reader(args): TimeseriesReader
+  --
   + createProfileReader(): ProfileReader
 }
 
 class EEANetwork <XOR> {
-  + createTimeSeriesReader(): TimeSeriesReader
+  + open_timeseries_reader(args): TimeseriesReader
+  --
   + createProfileReader(): ProfileReader
 }
 
-interface TimeSeriesReader {
-  getData(): Data
+interface TimeseriesReader {
+  + open_reader(args)
+  --
+  + open_parameters(): ...
+  + get_data(): TimeseriesData
+  + stations(): dict[str, TimseriesStation]
+  + description(): str,
+  + url(): str_to_docs
 }
 
-class EBASTimeSeriesReader {
-  + getData(): Data
+class EBASTimeseriesReader {
+  + open_reader(args)
+  --
+  + get_data(): TimeseriesData
+  ...
 }
 
-class EEATimeSeriesReader {
-  + public getData(): Data
+class EEATimeseriesReader {
+  + open_reader(args)
+  --
+  + public get_data(): TimeseriesData
+  ...
 }
 
 interface ProfileReader {
@@ -57,21 +73,21 @@ class EEAProfileReader {
 MeasurementsReaderNetwork <|.. EBASNetwork
 MeasurementsReaderNetwork <|.. EEANetwork
 
-TimeSeriesReader <|.. EBASTimeSeriesReader
-TimeSeriesReader <|.. EEATimeSeriesReader
+TimeseriesReader <|.. EBASTimeseriesReader
+TimeseriesReader <|.. EEATimeseriesReader
 
 ProfileReader <|.. EBASProfileReader
 ProfileReader <|.. EEAProfileReader
 
 
 EEANetwork ..> EEAProfileReader
-EEANetwork ..> EEATimeSeriesReader
+EEANetwork ..> EEATimeseriesReader
 
 EBASNetwork ..> EBASProfileReader
-EBASNetwork ..> EBASTimeSeriesReader
+EBASNetwork ..> EBASTimeseriesReader
 
 Client ..> MeasurementsReaderNetwork: imports
-Client ..> TimeSeriesReader : imports
+Client ..> TimeseriesReader : imports
 Client ..> ProfileReader : imports
 
 

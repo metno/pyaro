@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="600px" preserveAspectRatio="none" style="width:1254px;height:600px;background:#FFFFFF;" version="1.1" viewBox="0 0 1254 600" width="1254px" zoomAndPan="magnify"><defs/><g><!--MD5=[ed6624c6556d5e7b1bd23032162d20b7]
+class Client--><g id="elem_Client"><rect codeLine="11" fill="#F5F5F5" height="48" id="Client" rx="2.5" ry="2.5" style="stroke:#696969;stroke-width:0.5;" width="71" x="500" y="7"/><ellipse cx="515" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M517.9688,28.6406 Q517.3906,28.9375 516.75,29.0781 Q516.1094,29.2344 515.4063,29.2344 Q512.9063,29.2344 511.5781,27.5938 Q510.2656,25.9375 510.2656,22.8125 Q510.2656,19.6875 511.5781,18.0313 Q512.9063,16.375 515.4063,16.375 Q516.1094,16.375 516.75,16.5313 Q517.4063,16.6875 517.9688,16.9844 L517.9688,19.7031 Q517.3438,19.125 516.75,18.8594 Q516.1563,18.5781 515.5313,18.5781 Q514.1875,18.5781 513.5,19.6563 Q512.8125,20.7188 512.8125,22.8125 Q512.8125,24.9063 513.5,25.9844 Q514.1875,27.0469 515.5313,27.0469 Q516.1563,27.0469 516.75,26.7813 Q517.3438,26.5 517.9688,25.9219 L517.9688,28.6406 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="39" x="529" y="27.8467">Client</text><line style="stroke:#696969;stroke-width:0.5;" x1="501" x2="570" y1="39" y2="39"/><line style="stroke:#696969;stroke-width:0.5;" x1="501" x2="570" y1="47" y2="47"/></g><g id="elem_GMN3"><path d="M606,11 L606,27 L571.24,31 L606,35 L606,51.2656 A0,0 0 0 0 606,51.2656 L765,51.2656 A0,0 0 0 0 765,51.2656 L765,21 L755,11 L606,11 A0,0 0 0 0 606,11 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><path d="M755,11 L755,21 L765,21 L755,11 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="138" x="612" y="28.0669">This is i.e. pyaerocom</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="124" x="612" y="43.1997">initiated by a config</text></g><!--MD5=[8fde64c5adcd3958972c5a13652cd9ce]
+class MeasurementsReaderNetwork--><g id="elem_MeasurementsReaderNetwork"><rect codeLine="17" fill="#F5F5F5" height="96.8906" id="MeasurementsReaderNetwork" rx="2.5" ry="2.5" style="stroke:#696969;stroke-width:0.5;" width="420" x="325.5" y="132"/><ellipse cx="426.25" cy="148" fill="#B4A7E5" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M422.1719,143.7656 L422.1719,141.6094 L429.5625,141.6094 L429.5625,143.7656 L427.0938,143.7656 L427.0938,151.8438 L429.5625,151.8438 L429.5625,154 L422.1719,154 L422.1719,151.8438 L424.6406,151.8438 L424.6406,143.7656 L422.1719,143.7656 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="210" x="446.75" y="152.8467">MeasurementsReaderNetwork</text><line style="stroke:#696969;stroke-width:0.5;" x1="326.5" x2="744.5" y1="164" y2="164"/><ellipse cx="336.5" cy="177.6484" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="394" x="345.5" y="180.9951">list_timeseries_readers() : dict[name, TimerseriesReader]</text><ellipse cx="336.5" cy="193.9453" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="389" x="345.5" y="197.292">open_timeseries_reader(name, args): TimeseriesReader</text><line style="stroke:#696969;stroke-width:1.0;" x1="326.5" x2="744.5" y1="204.5938" y2="204.5938"/><ellipse cx="336.5" cy="218.2422" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="247" x="345.5" y="221.5889">createProfileReader(): ProfileReader</text></g><!--MD5=[527c13affca6e0a67d9ae94c1e8e33f6]
+class EBASNetwork--><g id="elem_EBASNetwork"><rect codeLine="24" fill="#F5F5F5" height="80.5938" id="EBASNetwork" rx="2.5" ry="2.5" style="stroke:#696969;stroke-width:0.5;" width="368" x="568.5" y="322.5"/><ellipse cx="687.25" cy="338.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M690.2188,344.1406 Q689.6406,344.4375 689,344.5781 Q688.3594,344.7344 687.6563,344.7344 Q685.1563,344.7344 683.8281,343.0938 Q682.5156,341.4375 682.5156,338.3125 Q682.5156,335.1875 683.8281,333.5313 Q685.1563,331.875 687.6563,331.875 Q688.3594,331.875 689,332.0313 Q689.6563,332.1875 690.2188,332.4844 L690.2188,335.2031 Q689.5938,334.625 689,334.3594 Q688.4063,334.0781 687.7813,334.0781 Q686.4375,334.0781 685.75,335.1563 Q685.0625,336.2188 685.0625,338.3125 Q685.0625,340.4063 685.75,341.4844 Q686.4375,342.5469 687.7813,342.5469 Q688.4063,342.5469 689,342.2813 Q689.5938,342 690.2188,341.4219 L690.2188,344.1406 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="94" x="707.75" y="343.3467">EBASNetwork</text><rect fill="#FFFFFF" height="15.9688" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:2.0,2.0;" width="26" x="913.5" y="319.5"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="24" x="914.5" y="331.6387">XOR</text><line style="stroke:#696969;stroke-width:0.5;" x1="569.5" x2="935.5" y1="354.5" y2="354.5"/><ellipse cx="579.5" cy="368.1484" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="342" x="588.5" y="371.4951">open_timeseries_reader(args): TimeseriesReader</text><line style="stroke:#696969;stroke-width:1.0;" x1="569.5" x2="935.5" y1="378.7969" y2="378.7969"/><ellipse cx="579.5" cy="392.4453" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="247" x="588.5" y="395.792">createProfileReader(): ProfileReader</text></g><!--MD5=[d8b59fbf530e36c2db51a35d8b590250]
+class EEANetwork--><g id="elem_EEANetwork"><rect codeLine="30" fill="#F5F5F5" height="80.5938" id="EEANetwork" rx="2.5" ry="2.5" style="stroke:#696969;stroke-width:0.5;" width="368" x="165.5" y="322.5"/><ellipse cx="289.25" cy="338.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M292.2188,344.1406 Q291.6406,344.4375 291,344.5781 Q290.3594,344.7344 289.6563,344.7344 Q287.1563,344.7344 285.8281,343.0938 Q284.5156,341.4375 284.5156,338.3125 Q284.5156,335.1875 285.8281,333.5313 Q287.1563,331.875 289.6563,331.875 Q290.3594,331.875 291,332.0313 Q291.6563,332.1875 292.2188,332.4844 L292.2188,335.2031 Q291.5938,334.625 291,334.3594 Q290.4063,334.0781 289.7813,334.0781 Q288.4375,334.0781 287.75,335.1563 Q287.0625,336.2188 287.0625,338.3125 Q287.0625,340.4063 287.75,341.4844 Q288.4375,342.5469 289.7813,342.5469 Q290.4063,342.5469 291,342.2813 Q291.5938,342 292.2188,341.4219 L292.2188,344.1406 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="84" x="309.75" y="343.3467">EEANetwork</text><rect fill="#FFFFFF" height="15.9688" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:2.0,2.0;" width="26" x="510.5" y="319.5"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="24" x="511.5" y="331.6387">XOR</text><line style="stroke:#696969;stroke-width:0.5;" x1="166.5" x2="532.5" y1="354.5" y2="354.5"/><ellipse cx="176.5" cy="368.1484" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="342" x="185.5" y="371.4951">open_timeseries_reader(args): TimeseriesReader</text><line style="stroke:#696969;stroke-width:1.0;" x1="166.5" x2="532.5" y1="378.7969" y2="378.7969"/><ellipse cx="176.5" cy="392.4453" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="247" x="185.5" y="395.792">createProfileReader(): ProfileReader</text></g><!--MD5=[d56a9adb938f8ca58d076ec7959c0d28]
+class TimeseriesReader--><g id="elem_TimeseriesReader"><rect codeLine="36" fill="#F5F5F5" height="145.7813" id="TimeseriesReader" rx="2.5" ry="2.5" style="stroke:#696969;stroke-width:0.5;" width="276" x="971.5" y="290"/><ellipse cx="1043.25" cy="306" fill="#B4A7E5" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M1039.1719,301.7656 L1039.1719,299.6094 L1046.5625,299.6094 L1046.5625,301.7656 L1044.0938,301.7656 L1044.0938,309.8438 L1046.5625,309.8438 L1046.5625,312 L1039.1719,312 L1039.1719,309.8438 L1041.6406,309.8438 L1041.6406,301.7656 L1039.1719,301.7656 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="124" x="1063.75" y="310.8467">TimeseriesReader</text><line style="stroke:#696969;stroke-width:0.5;" x1="972.5" x2="1246.5" y1="322" y2="322"/><ellipse cx="982.5" cy="335.6484" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="128" x="991.5" y="338.9951">open_reader(args)</text><line style="stroke:#696969;stroke-width:1.0;" x1="972.5" x2="1246.5" y1="346.2969" y2="346.2969"/><ellipse cx="982.5" cy="359.9453" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="153" x="991.5" y="363.292">open_parameters(): ...</text><ellipse cx="982.5" cy="376.2422" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="187" x="991.5" y="379.5889">get_data(): TimeseriesData</text><ellipse cx="982.5" cy="392.5391" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="250" x="991.5" y="395.8857">stations(): dict[str, TimseriesStation]</text><ellipse cx="982.5" cy="408.8359" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="118" x="991.5" y="412.1826">description(): str,</text><ellipse cx="982.5" cy="425.1328" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="116" x="991.5" y="428.4795">url(): str_to_docs</text></g><!--MD5=[6fd1afd0c21118565504e5161b82fad3]
+class EBASTimeseriesReader--><g id="elem_EBASTimeseriesReader"><rect codeLine="46" fill="#F5F5F5" height="96.8906" id="EBASTimeseriesReader" rx="2.5" ry="2.5" style="stroke:#696969;stroke-width:0.5;" width="213" x="834" y="497"/><ellipse cx="857.1" cy="513" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M860.0688,518.6406 Q859.4906,518.9375 858.85,519.0781 Q858.2094,519.2344 857.5063,519.2344 Q855.0063,519.2344 853.6781,517.5938 Q852.3656,515.9375 852.3656,512.8125 Q852.3656,509.6875 853.6781,508.0313 Q855.0063,506.375 857.5063,506.375 Q858.2094,506.375 858.85,506.5313 Q859.5063,506.6875 860.0688,506.9844 L860.0688,509.7031 Q859.4438,509.125 858.85,508.8594 Q858.2563,508.5781 857.6313,508.5781 Q856.2875,508.5781 855.6,509.6563 Q854.9125,510.7188 854.9125,512.8125 Q854.9125,514.9063 855.6,515.9844 Q856.2875,517.0469 857.6313,517.0469 Q858.2563,517.0469 858.85,516.7813 Q859.4438,516.5 860.0688,515.9219 L860.0688,518.6406 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="163" x="872.9" y="517.8467">EBASTimeseriesReader</text><line style="stroke:#696969;stroke-width:0.5;" x1="835" x2="1046" y1="529" y2="529"/><ellipse cx="845" cy="542.6484" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="128" x="854" y="545.9951">open_reader(args)</text><line style="stroke:#696969;stroke-width:1.0;" x1="835" x2="1046" y1="553.2969" y2="553.2969"/><ellipse cx="845" cy="566.9453" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="187" x="854" y="570.292">get_data(): TimeseriesData</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="12" x="854" y="586.5889">...</text></g><!--MD5=[a3f87a443877ee1f8f7e145de0da7ea2]
+class EEATimeseriesReader--><g id="elem_EEATimeseriesReader"><rect codeLine="53" fill="#F5F5F5" height="96.8906" id="EEATimeseriesReader" rx="2.5" ry="2.5" style="stroke:#696969;stroke-width:0.5;" width="258" x="513.5" y="497"/><ellipse cx="561.75" cy="513" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M564.7188,518.6406 Q564.1406,518.9375 563.5,519.0781 Q562.8594,519.2344 562.1563,519.2344 Q559.6563,519.2344 558.3281,517.5938 Q557.0156,515.9375 557.0156,512.8125 Q557.0156,509.6875 558.3281,508.0313 Q559.6563,506.375 562.1563,506.375 Q562.8594,506.375 563.5,506.5313 Q564.1563,506.6875 564.7188,506.9844 L564.7188,509.7031 Q564.0938,509.125 563.5,508.8594 Q562.9063,508.5781 562.2813,508.5781 Q560.9375,508.5781 560.25,509.6563 Q559.5625,510.7188 559.5625,512.8125 Q559.5625,514.9063 560.25,515.9844 Q560.9375,517.0469 562.2813,517.0469 Q562.9063,517.0469 563.5,516.7813 Q564.0938,516.5 564.7188,515.9219 L564.7188,518.6406 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="153" x="582.25" y="517.8467">EEATimeseriesReader</text><line style="stroke:#696969;stroke-width:0.5;" x1="514.5" x2="770.5" y1="529" y2="529"/><ellipse cx="524.5" cy="542.6484" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="128" x="533.5" y="545.9951">open_reader(args)</text><line style="stroke:#696969;stroke-width:1.0;" x1="514.5" x2="770.5" y1="553.2969" y2="553.2969"/><ellipse cx="524.5" cy="566.9453" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="232" x="533.5" y="570.292">public get_data(): TimeseriesData</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="12" x="533.5" y="586.5889">...</text></g><!--MD5=[6fc3e66d0f3762785b4351bc46997814]
+class ProfileReader--><g id="elem_ProfileReader"><rect codeLine="60" fill="#F5F5F5" height="64.2969" id="ProfileReader" rx="2.5" ry="2.5" style="stroke:#696969;stroke-width:0.5;" width="123" x="7" y="331"/><ellipse cx="22" cy="347" fill="#B4A7E5" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M17.9219,342.7656 L17.9219,340.6094 L25.3125,340.6094 L25.3125,342.7656 L22.8438,342.7656 L22.8438,350.8438 L25.3125,350.8438 L25.3125,353 L17.9219,353 L17.9219,350.8438 L20.3906,350.8438 L20.3906,342.7656 L17.9219,342.7656 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91" x="36" y="351.8467">ProfileReader</text><line style="stroke:#696969;stroke-width:0.5;" x1="8" x2="129" y1="363" y2="363"/><line style="stroke:#696969;stroke-width:0.5;" x1="8" x2="129" y1="371" y2="371"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="106" x="13" y="387.9951">getData(): Data</text></g><!--MD5=[5fb7c18f38d3b926f943296e45a10f1d]
+class EBASProfileReader--><g id="elem_EBASProfileReader"><rect codeLine="64" fill="#F5F5F5" height="64.2969" id="EBASProfileReader" rx="2.5" ry="2.5" style="stroke:#696969;stroke-width:0.5;" width="161" x="260" y="513.5"/><ellipse cx="275" cy="529.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M277.9688,535.1406 Q277.3906,535.4375 276.75,535.5781 Q276.1094,535.7344 275.4063,535.7344 Q272.9063,535.7344 271.5781,534.0938 Q270.2656,532.4375 270.2656,529.3125 Q270.2656,526.1875 271.5781,524.5313 Q272.9063,522.875 275.4063,522.875 Q276.1094,522.875 276.75,523.0313 Q277.4063,523.1875 277.9688,523.4844 L277.9688,526.2031 Q277.3438,525.625 276.75,525.3594 Q276.1563,525.0781 275.5313,525.0781 Q274.1875,525.0781 273.5,526.1563 Q272.8125,527.2188 272.8125,529.3125 Q272.8125,531.4063 273.5,532.4844 Q274.1875,533.5469 275.5313,533.5469 Q276.1563,533.5469 276.75,533.2813 Q277.3438,533 277.9688,532.4219 L277.9688,535.1406 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129" x="289" y="534.3467">EBASProfileReader</text><line style="stroke:#696969;stroke-width:0.5;" x1="261" x2="420" y1="545.5" y2="545.5"/><line style="stroke:#696969;stroke-width:0.5;" x1="261" x2="420" y1="553.5" y2="553.5"/><ellipse cx="271" cy="567.1484" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="106" x="280" y="570.4951">getData(): Data</text></g><!--MD5=[deb9ed57b40066f7a8342a2b5bd47e0b]
+class EEAProfileReader--><g id="elem_EEAProfileReader"><rect codeLine="68" fill="#F5F5F5" height="64.2969" id="EEAProfileReader" rx="2.5" ry="2.5" style="stroke:#696969;stroke-width:0.5;" width="151" x="73" y="513.5"/><ellipse cx="88" cy="529.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M90.9688,535.1406 Q90.3906,535.4375 89.75,535.5781 Q89.1094,535.7344 88.4063,535.7344 Q85.9063,535.7344 84.5781,534.0938 Q83.2656,532.4375 83.2656,529.3125 Q83.2656,526.1875 84.5781,524.5313 Q85.9063,522.875 88.4063,522.875 Q89.1094,522.875 89.75,523.0313 Q90.4063,523.1875 90.9688,523.4844 L90.9688,526.2031 Q90.3438,525.625 89.75,525.3594 Q89.1563,525.0781 88.5313,525.0781 Q87.1875,525.0781 86.5,526.1563 Q85.8125,527.2188 85.8125,529.3125 Q85.8125,531.4063 86.5,532.4844 Q87.1875,533.5469 88.5313,533.5469 Q89.1563,533.5469 89.75,533.2813 Q90.3438,533 90.9688,532.4219 L90.9688,535.1406 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="119" x="102" y="534.3467">EEAProfileReader</text><line style="stroke:#696969;stroke-width:0.5;" x1="74" x2="223" y1="545.5" y2="545.5"/><line style="stroke:#696969;stroke-width:0.5;" x1="74" x2="223" y1="553.5" y2="553.5"/><ellipse cx="84" cy="567.1484" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="106" x="93" y="570.4951">getData(): Data</text></g><!--MD5=[5eea365602fe4f251f23c76c28b06897]
+reverse link MeasurementsReaderNetwork to EBASNetwork--><g id="link_MeasurementsReaderNetwork_EBASNetwork"><path codeLine="72" d="M608.45,242.18 C640.22,268.6 676.56,298.83 704.79,322.32 " fill="none" id="MeasurementsReaderNetwork-backto-EBASNetwork" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="603.7,247.33,592.8,229.16,612.65,236.57,603.7,247.33" style="stroke:#696969;stroke-width:1.0;"/></g><!--MD5=[1c22983b87b7d334fcfcf7ee00bca4ad]
+reverse link MeasurementsReaderNetwork to EEANetwork--><g id="link_MeasurementsReaderNetwork_EEANetwork"><path codeLine="73" d="M471.61,243.5 C444.67,269.64 414.1,299.31 390.29,322.42 " fill="none" id="MeasurementsReaderNetwork-backto-EEANetwork" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="466.92,238.3,486.14,229.4,476.67,248.35,466.92,238.3" style="stroke:#696969;stroke-width:1.0;"/></g><!--MD5=[decc8d262c4472607ce9d2e859ef67fb]
+reverse link TimeseriesReader to EBASTimeseriesReader--><g id="link_TimeseriesReader_EBASTimeseriesReader"><path codeLine="75" d="M1027.93,451.12 C1013.18,466.88 998.31,482.76 985.12,496.85 " fill="none" id="TimeseriesReader-backto-EBASTimeseriesReader" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="1023.2,445.93,1041.98,436.12,1033.42,455.5,1023.2,445.93" style="stroke:#696969;stroke-width:1.0;"/></g><!--MD5=[b0ea0a9b7a28a0934c803f49f8d6050f]
+reverse link TimeseriesReader to EEATimeseriesReader--><g id="link_TimeseriesReader_EEATimeseriesReader"><path codeLine="76" d="M952.26,436.71 C884.08,463.95 823.65,485.28 771.85,502.76 " fill="none" id="TimeseriesReader-backto-EEATimeseriesReader" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="950.05,430.06,971.21,429.07,955.28,443.04,950.05,430.06" style="stroke:#696969;stroke-width:1.0;"/></g><!--MD5=[1a5f736764fdd653a894f8489b296c60]
+reverse link ProfileReader to EBASProfileReader--><g id="link_ProfileReader_EBASProfileReader"><path codeLine="78" d="M114.11,408.76 C124.69,418.23 136.18,427.82 147.5,436 C188.47,465.6 238.28,493.42 277.03,513.48 " fill="none" id="ProfileReader-backto-EBASProfileReader" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="109.32,413.87,99.38,395.16,118.82,403.59,109.32,413.87" style="stroke:#696969;stroke-width:1.0;"/></g><!--MD5=[86d6072a3a7a7c3b332bee9e68561775]
+reverse link ProfileReader to EEAProfileReader--><g id="link_ProfileReader_EEAProfileReader"><path codeLine="79" d="M90.47,413.57 C104.59,445.42 122.5,485.83 134.66,513.27 " fill="none" id="ProfileReader-backto-EEAProfileReader" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="83.96,416.15,82.25,395.03,96.76,410.48,83.96,416.15" style="stroke:#696969;stroke-width:1.0;"/></g><!--MD5=[197589c9ed35b73a2b9bd317ec930484]
+link EEANetwork to EEAProfileReader--><g id="link_EEANetwork_EEAProfileReader"><path codeLine="82" d="M305.39,403.61 C270.08,435.32 221.03,479.37 187.22,509.73 " fill="none" id="EEANetwork-to-EEAProfileReader" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#696969" points="183.18,513.36,192.5455,510.3125,186.8965,510.0152,187.1938,504.3661,183.18,513.36" style="stroke:#696969;stroke-width:1.0;"/></g><!--MD5=[cc6b0d77022d3ae46ed6781f3a88d29d]
+link EEANetwork to EEATimeseriesReader--><g id="link_EEANetwork_EEATimeseriesReader"><path codeLine="83" d="M413.8,403.61 C457.05,430.25 514.42,465.6 560.88,494.22 " fill="none" id="EEANetwork-to-EEATimeseriesReader" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#696969" points="565.35,496.97,559.7936,488.8382,561.0956,494.3431,555.5907,495.6452,565.35,496.97" style="stroke:#696969;stroke-width:1.0;"/></g><!--MD5=[3e0fd79da69f4dcf58e6d14495c25e1f]
+link EBASNetwork to EBASProfileReader--><g id="link_EBASNetwork_EBASProfileReader"><path codeLine="85" d="M662.08,403.61 C588.52,435.84 485.89,480.8 416.51,511.2 " fill="none" id="EBASNetwork-to-EBASProfileReader" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#696969" points="411.58,513.36,421.4286,513.4285,416.1631,511.3612,418.2305,506.0956,411.58,513.36" style="stroke:#696969;stroke-width:1.0;"/></g><!--MD5=[e5b97f0034cebe4152261bdf2fc9ec82]
+link EBASNetwork to EBASTimeseriesReader--><g id="link_EBASNetwork_EBASTimeseriesReader"><path codeLine="86" d="M793.76,403.61 C821.17,429.93 857.43,464.74 887.05,493.18 " fill="none" id="EBASNetwork-to-EBASTimeseriesReader" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#696969" points="890.99,496.97,887.2511,487.8584,887.3768,493.5139,881.7213,493.6396,890.99,496.97" style="stroke:#696969;stroke-width:1.0;"/></g><!--MD5=[4d237b58c6d53df4f6b25cbf3128927c]
+link Client to MeasurementsReaderNetwork--><g id="link_Client_MeasurementsReaderNetwork"><path codeLine="88" d="M535.5,55.05 C535.5,74.18 535.5,102.15 535.5,126.73 " fill="none" id="Client-to-MeasurementsReaderNetwork" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#696969" points="535.5,131.92,539.5,122.92,535.5,126.92,531.5,122.92,535.5,131.92" style="stroke:#696969;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="536.5" y="98.0669">imports</text></g><!--MD5=[1fe0fbc8ff685241ee5bf81afd2b8fec]
+link Client to TimeseriesReader--><g id="link_Client_TimeseriesReader"><path codeLine="89" d="M571.19,47.53 C632.83,74.39 753.52,127.1 762.5,132 C847.52,178.46 938.65,239.34 1006.18,286.78 " fill="none" id="Client-to-TimeseriesReader" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#696969" points="1010.59,289.89,1005.5266,281.4424,1006.4992,287.015,1000.9266,287.9876,1010.59,289.89" style="stroke:#696969;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="919.5" y="185.0669">imports</text></g><!--MD5=[4c9a436762b1e68d7d268496354a16de]
+link Client to ProfileReader--><g id="link_Client_ProfileReader"><path codeLine="90" d="M499.6,38.41 C443.54,49.77 333.63,77.54 256.5,132 C181.26,185.13 119.49,276.08 89.03,326.22 " fill="none" id="Client-to-ProfileReader" style="stroke:#696969;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#696969" points="86.35,330.64,94.4243,325.0003,88.933,326.3588,87.5744,320.8675,86.35,330.64" style="stroke:#696969;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="257.5" y="185.0669">imports</text></g><!--MD5=[150c31db30434d773609e7875c6603f6]
+@startuml
+
+skinparam class {
+  backgroundColor whitesmoke
+  arrowColor dimgrey
+  borderColor dimgrey
+}
+
+' Abstract Factory Patter
+' Factory -> MeasurementNetwork
+
+class Client
+note right of Client
+This is i.e. pyaerocom
+initiated by a config
+end note
+
+interface MeasurementsReaderNetwork {
+  + list_timeseries_readers() : dict[name, TimerseriesReader]
+  + open_timeseries_reader(name, args): TimeseriesReader
+  - -
+  + createProfileReader(): ProfileReader
+}
+
+class EBASNetwork <XOR> {
+  + open_timeseries_reader(args): TimeseriesReader
+  - -
+  + createProfileReader(): ProfileReader
+}
+
+class EEANetwork <XOR> {
+  + open_timeseries_reader(args): TimeseriesReader
+  - -
+  + createProfileReader(): ProfileReader
+}
+
+interface TimeseriesReader {
+  + open_reader(args)
+  - -
+  + open_parameters(): ...
+  + get_data(): TimeseriesData
+  + stations(): dict[str, TimseriesStation]
+  + description(): str,
+  + url(): str_to_docs
+}
+
+class EBASTimeseriesReader {
+  + open_reader(args)
+  - -
+  + get_data(): TimeseriesData
+  ...
+}
+
+class EEATimeseriesReader {
+  + open_reader(args)
+  - -
+  + public get_data(): TimeseriesData
+  ...
+}
+
+interface ProfileReader {
+  getData(): Data
+}
+
+class EBASProfileReader {
+  +   getData(): Data
+}
+
+class EEAProfileReader {
+  +   getData(): Data
+}
+
+MeasurementsReaderNetwork <|.. EBASNetwork
+MeasurementsReaderNetwork <|.. EEANetwork
+
+TimeseriesReader <|.. EBASTimeseriesReader
+TimeseriesReader <|.. EEATimeseriesReader
+
+ProfileReader <|.. EBASProfileReader
+ProfileReader <|.. EEAProfileReader
+
+
+EEANetwork ..> EEAProfileReader
+EEANetwork ..> EEATimeseriesReader
+
+EBASNetwork ..> EBASProfileReader
+EBASNetwork ..> EBASTimeseriesReader
+
+Client ..> MeasurementsReaderNetwork: imports
+Client ..> TimeseriesReader : imports
+Client ..> ProfileReader : imports
+
+
+@enduml
+
+@startuml
+
+skinparam class {
+  backgroundColor whitesmoke
+  arrowColor dimgrey
+  borderColor dimgrey
+}
+
+
+class Client
+note right of Client
+This is i.e. pyaerocom
+initiated by a config
+end note
+
+interface MeasurementsReaderNetwork {
+  + list_timeseries_readers() : dict[name, TimerseriesReader]
+  + open_timeseries_reader(name, args): TimeseriesReader
+  - -
+  + createProfileReader(): ProfileReader
+}
+
+class EBASNetwork <XOR> {
+  + open_timeseries_reader(args): TimeseriesReader
+  - -
+  + createProfileReader(): ProfileReader
+}
+
+class EEANetwork <XOR> {
+  + open_timeseries_reader(args): TimeseriesReader
+  - -
+  + createProfileReader(): ProfileReader
+}
+
+interface TimeseriesReader {
+  + open_reader(args)
+  - -
+  + open_parameters(): ...
+  + get_data(): TimeseriesData
+  + stations(): dict[str, TimseriesStation]
+  + description(): str,
+  + url(): str_to_docs
+}
+
+class EBASTimeseriesReader {
+  + open_reader(args)
+  - -
+  + get_data(): TimeseriesData
+  ...
+}
+
+class EEATimeseriesReader {
+  + open_reader(args)
+  - -
+  + public get_data(): TimeseriesData
+  ...
+}
+
+interface ProfileReader {
+  getData(): Data
+}
+
+class EBASProfileReader {
+  +   getData(): Data
+}
+
+class EEAProfileReader {
+  +   getData(): Data
+}
+
+MeasurementsReaderNetwork <|.. EBASNetwork
+MeasurementsReaderNetwork <|.. EEANetwork
+
+TimeseriesReader <|.. EBASTimeseriesReader
+TimeseriesReader <|.. EEATimeseriesReader
+
+ProfileReader <|.. EBASProfileReader
+ProfileReader <|.. EEAProfileReader
+
+
+EEANetwork ..> EEAProfileReader
+EEANetwork ..> EEATimeseriesReader
+
+EBASNetwork ..> EBASProfileReader
+EBASNetwork ..> EBASTimeseriesReader
+
+Client ..> MeasurementsReaderNetwork: imports
+Client ..> TimeseriesReader : imports
+Client ..> ProfileReader : imports
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
