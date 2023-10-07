@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="689px" preserveAspectRatio="none" style="width:489px;height:689px;background:#FFFFFF;" version="1.1" viewBox="0 0 489 689" width="489px" zoomAndPan="magnify"><defs/><g><!--MD5=[7fab0732f10c77b70cb1dd49328fb821]
+class TimeseriesReaderData--><g id="elem_TimeseriesReaderData"><rect codeLine="7" fill="#F1F1F1" height="96.8906" id="TimeseriesReaderData" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="269" x="106" y="7"/><ellipse cx="157.25" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M161.3594,29 L153.6406,29 L153.6406,16.6094 L161.3594,16.6094 L161.3594,18.7656 L156.0938,18.7656 L156.0938,21.4375 L160.8594,21.4375 L160.8594,23.5938 L156.0938,23.5938 L156.0938,26.8438 L161.3594,26.8438 L161.3594,29 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="158" x="177.75" y="27.8467">TimeseriesReaderData</text><line style="stroke:#181818;stroke-width:0.5;" x1="107" x2="374" y1="39" y2="39"/><ellipse cx="117" cy="52.6484" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="100" x="126" y="55.9951">variable: string</text><ellipse cx="117" cy="68.9453" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="82" x="126" y="72.292">units: string</text><ellipse cx="117" cy="85.2422" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="243" x="126" y="88.5889">_data: TimeseriesReaderData_Data</text><line style="stroke:#181818;stroke-width:0.5;" x1="107" x2="374" y1="95.8906" y2="95.8906"/></g><!--MD5=[5c95c89081e99b54c97f71a58e5a585a]
+class TimeseriesReaderData_Data--><g id="elem_TimeseriesReaderData_Data"><rect codeLine="13" fill="#F1F1F1" height="210.9688" id="TimeseriesReaderData_Data" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="275" x="103" y="164"/><ellipse cx="138.7" cy="180" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M142.8094,186 L135.0906,186 L135.0906,173.6094 L142.8094,173.6094 L142.8094,175.7656 L137.5438,175.7656 L137.5438,178.4375 L142.3094,178.4375 L142.3094,180.5938 L137.5438,180.5938 L137.5438,183.8438 L142.8094,183.8438 L142.8094,186 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="197" x="157.3" y="184.8467">TimeseriesReaderData_Data</text><line style="stroke:#181818;stroke-width:0.5;" x1="104" x2="377" y1="196" y2="196"/><ellipse cx="114" cy="209.6484" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177" x="123" y="212.9951">row: integer «generated»</text><line style="stroke:#181818;stroke-width:1.0;" x1="104" x2="377" y1="220.2969" y2="220.2969"/><ellipse cx="114" cy="233.9453" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="154" x="123" y="237.292">values : np.ndarray("f")</text><ellipse cx="114" cy="250.2422" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="179" x="123" y="253.5889">stations : np.ndarray("str")</text><ellipse cx="114" cy="266.5391" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="165" x="123" y="269.8857">latitudes: np.ndarray("f")</text><ellipse cx="114" cy="282.8359" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="179" x="123" y="286.1826">longitudes: np.ndarray("f")</text><ellipse cx="114" cy="299.1328" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="165" x="123" y="302.4795">altitudes: np.ndarray("f")</text><ellipse cx="114" cy="315.4297" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="249" x="123" y="318.7764">start_time: np.ndarray("datetime64")</text><ellipse cx="114" cy="331.7266" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="249" x="123" y="335.0732">stop_time: np.ndarray("datetime64")</text><ellipse cx="114" cy="348.0234" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="146" x="123" y="351.3701">flags: np.ndarray("i4")</text><ellipse cx="114" cy="364.3203" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="244" x="123" y="367.667">standard_deviations: np.ndarray("f")</text></g><g id="elem_GMN4"><path d="M6,503.5 L6,528.6328 A0,0 0 0 0 6,528.6328 L219,528.6328 A0,0 0 0 0 219,528.6328 L219,513.5 L209,503.5 L165,503.5 L161,375.11 L157,503.5 L6,503.5 A0,0 0 0 0 6,503.5 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><path d="M209,503.5 L209,513.5 L219,513.5 L209,503.5 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="192" x="12" y="520.5669">dictionary of 1D numpy arrays</text></g><!--MD5=[32f8e77670dc7b12ba11221465fb86a4]
+class Station--><g id="elem_Station"><rect codeLine="30" fill="#F1F1F1" height="162.0781" id="Station" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="228" x="254.5" y="435"/><ellipse cx="340.25" cy="451" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M344.3594,457 L336.6406,457 L336.6406,444.6094 L344.3594,444.6094 L344.3594,446.7656 L339.0938,446.7656 L339.0938,449.4375 L343.8594,449.4375 L343.8594,451.5938 L339.0938,451.5938 L339.0938,454.8438 L344.3594,454.8438 L344.3594,457 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="48" x="360.75" y="455.8467">Station</text><line style="stroke:#181818;stroke-width:0.5;" x1="255.5" x2="481.5" y1="467" y2="467"/><ellipse cx="265.5" cy="480.6484" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="74" x="274.5" y="483.9951">station: str</text><line style="stroke:#181818;stroke-width:1.0;" x1="255.5" x2="481.5" y1="491.2969" y2="491.2969"/><ellipse cx="265.5" cy="504.9453" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="89" x="274.5" y="508.292">latitude: float</text><ellipse cx="265.5" cy="521.2422" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="103" x="274.5" y="524.5889">longitude: float</text><ellipse cx="265.5" cy="537.5391" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="89" x="274.5" y="540.8857">altitude: float</text><ellipse cx="265.5" cy="553.8359" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="124" x="274.5" y="557.1826">long_name: string</text><ellipse cx="265.5" cy="570.1328" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="100" x="274.5" y="573.4795">country: string</text><ellipse cx="265.5" cy="586.4297" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="202" x="274.5" y="589.7764">url : string_to_documentation</text></g><g id="elem_GMN8"><path d="M290.5,657 L290.5,682.1328 A0,0 0 0 0 290.5,682.1328 L446.5,682.1328 A0,0 0 0 0 446.5,682.1328 L446.5,667 L436.5,657 L372.5,657 L368.5,597.24 L364.5,657 L290.5,657 A0,0 0 0 0 290.5,657 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><path d="M436.5,657 L436.5,667 L446.5,667 L436.5,657 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="135" x="296.5" y="674.0669">Dictionary of stations</text></g><!--MD5=[d3f456af2ca890ef1db19d1cc0319030]
+link TimeseriesReaderData to TimeseriesReaderData_Data--><g id="link_TimeseriesReaderData_TimeseriesReaderData_Data"><path codeLine="52" d="M240.5,111.06 C240.5,111.06 240.5,156.91 240.5,156.91 " fill="none" id="TimeseriesReaderData-TimeseriesReaderData_Data" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="244.5" x2="236.5" y1="159.91" y2="159.91"/><line style="stroke:#181818;stroke-width:1.0;" x1="244.5" x2="236.5" y1="156.91" y2="156.91"/><line style="stroke:#181818;stroke-width:1.0;" x1="240.5" x2="240.5" y1="155.91" y2="163.91"/><line style="stroke:#181818;stroke-width:1.0;" x1="236.5" x2="244.5" y1="108.06" y2="108.06"/><line style="stroke:#181818;stroke-width:1.0;" x1="236.5" x2="244.5" y1="111.06" y2="111.06"/><line style="stroke:#181818;stroke-width:1.0;" x1="240.5" x2="240.5" y1="112.06" y2="104.06"/></g><!--MD5=[7a5bc6e49c7f28358ee6b375ed3476d7]
+link TimeseriesReaderData_Data to Station--><g id="link_TimeseriesReaderData_Data_Station"><path codeLine="53" d="M316.25,383.11 C316.25,383.11 316.25,426.82 316.25,426.82 " fill="none" id="TimeseriesReaderData_Data-Station" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="320.25" x2="312.25" y1="430.82" y2="430.82"/><line style="stroke:#181818;stroke-width:1.0;" x1="320.25" x2="312.25" y1="427.82" y2="427.82"/><line style="stroke:#181818;stroke-width:1.0;" x1="316.25" x2="316.25" y1="426.82" y2="434.82"/><line style="stroke:#181818;stroke-width:1.0;" x1="316.25" x2="310.25" y1="383.11" y2="375.11"/><line style="stroke:#181818;stroke-width:1.0;" x1="316.25" x2="322.25" y1="383.11" y2="375.11"/><line style="stroke:#181818;stroke-width:1.0;" x1="316.25" x2="316.25" y1="383.11" y2="375.11"/><ellipse cx="316.25" cy="389.11" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[8ef3281b0432b542a180342609641e80]
+@startuml
+' hide the spot
+' hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "TimeseriesReaderData" {
+  *variable: string
+  *units: string
+  *_data: TimeseriesReaderData_Data
+}
+
+entity "TimeseriesReaderData_Data" {
+  *row: integer <<generated>>
+  - -
+  *values : np.ndarray("f")
+  *stations : np.ndarray("str")
+  *latitudes: np.ndarray("f")
+  *longitudes: np.ndarray("f")
+  *altitudes: np.ndarray("f")
+  *start_time: np.ndarray("datetime64")
+  *stop_time: np.ndarray("datetime64")
+  *flags: np.ndarray("i4")
+  *standard_deviations: np.ndarray("f")
+}
+note bottom of TimeseriesReaderData_Data
+dictionary of 1D numpy arrays
+end note
+
+entity "Station" {
+  *station: str
+  - -
+  *latitude: float
+  *longitude: float
+  *altitude: float
+  *long_name: string
+  *country: string
+  *url : string_to_documentation
+}
+note bottom of Station
+Dictionary of stations
+end note
+
+' entity "Variable" {
+'   *variable: string
+'   *units: string
+' }
+' note right of Variable
+' Dictionary
+' end note
+
+TimeseriesReaderData ||..|| TimeseriesReaderData_Data
+TimeseriesReaderData_Data }o..|| Station
+' TimeseriesReaderData }o..|| Variable
+
+@enduml
+
+@startuml
+
+skinparam linetype ortho
+
+entity "TimeseriesReaderData" {
+  *variable: string
+  *units: string
+  *_data: TimeseriesReaderData_Data
+}
+
+entity "TimeseriesReaderData_Data" {
+  *row: integer <<generated>>
+  - -
+  *values : np.ndarray("f")
+  *stations : np.ndarray("str")
+  *latitudes: np.ndarray("f")
+  *longitudes: np.ndarray("f")
+  *altitudes: np.ndarray("f")
+  *start_time: np.ndarray("datetime64")
+  *stop_time: np.ndarray("datetime64")
+  *flags: np.ndarray("i4")
+  *standard_deviations: np.ndarray("f")
+}
+note bottom of TimeseriesReaderData_Data
+dictionary of 1D numpy arrays
+end note
+
+entity "Station" {
+  *station: str
+  - -
+  *latitude: float
+  *longitude: float
+  *altitude: float
+  *long_name: string
+  *country: string
+  *url : string_to_documentation
+}
+note bottom of Station
+Dictionary of stations
+end note
+
+
+TimeseriesReaderData ||..|| TimeseriesReaderData_Data
+TimeseriesReaderData_Data }o..|| Station
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>

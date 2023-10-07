@@ -5,7 +5,7 @@ UngriddedData
 UngriddedData is the main class for holding ungridded data -- mostly used for obervational data -- in pyaerocom.
 The class can either be instanciated and filled manually (see below for structure), or be created from a dictionary of StationData objects :ref:`_stationsdata_overview`.
 
-..  image:: ./pics/UngriddedData.png
+..  image:: ./pics/UngriddedData.svg
     :alt: some image
     :class: with-shadow
 

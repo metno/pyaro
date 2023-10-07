@@ -1,0 +1,57 @@
+@startuml
+' hide the spot
+' hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "TimeseriesReaderData" {
+  *variable: string
+  *units: string
+  *_data: TimeseriesReaderData_Data
+}
+
+entity "TimeseriesReaderData_Data" {
+  *row: integer <<generated>>
+  --
+  *values : np.ndarray("f")
+  *stations : np.ndarray("str")
+  *latitudes: np.ndarray("f")
+  *longitudes: np.ndarray("f")
+  *altitudes: np.ndarray("f")
+  *start_time: np.ndarray("datetime64")
+  *stop_time: np.ndarray("datetime64")
+  *flags: np.ndarray("i4")
+  *standard_deviations: np.ndarray("f")
+}
+note bottom of TimeseriesReaderData_Data
+dictionary of 1D numpy arrays
+end note
+
+entity "Station" {
+  *station: str
+  --
+  *latitude: float
+  *longitude: float
+  *altitude: float
+  *long_name: string
+  *country: string
+  *url : string_to_documentation
+}
+note bottom of Station
+Dictionary of stations
+end note
+
+' entity "Variable" {
+'   *variable: string
+'   *units: string
+' }
+' note right of Variable
+' Dictionary
+' end note
+
+TimeseriesReaderData ||..|| TimeseriesReaderData_Data
+TimeseriesReaderData_Data }o..|| Station
+' TimeseriesReaderData }o..|| Variable
+
+@enduml
