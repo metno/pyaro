@@ -1,1 +1,1 @@
-from .CSVTimeseriesReader import CSVTimeseriesReader
+from .CSVTimeseriesReader import CSVTimeseriesEngine, CSVTimeseriesReader

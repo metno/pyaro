@@ -4,10 +4,11 @@ import sys
 import warnings
 
 from importlib_metadata import EntryPoints, entry_points
-from .TimeseriesReader import TimeseriesReader
+from .timeseries.Engine import Engine as TimeseriesEngine
+from .timeseries.Reader import Reader as TimeseriesReader
 
-def build_timeseries_readers(entrypoints: EntryPoints) -> dict[str, TimeseriesReader]:
-    backend_entrypoints: dict[str, type[TimeseriesReader]] = {}
+def build_timeseries_engines(entrypoints: EntryPoints) -> dict[str, TimeseriesEngine]:
+    backend_entrypoints: dict[str, type[TimeseriesEngine]] = {}
     backend_entrypoints = {}
     for entrypoint in entrypoints:
         name = entrypoint.name
@@ -22,7 +23,7 @@ def build_timeseries_readers(entrypoints: EntryPoints) -> dict[str, TimeseriesRe
 
 
 @functools.lru_cache(maxsize=1)
-def list_timeseries_readers() -> dict[str, TimeseriesReader]:
+def list_timeseries_engines() -> dict[str, TimeseriesEngine]:
     """
     Return a dictionary of available timeseries_readers and their objects.
 
@@ -32,29 +33,26 @@ def list_timeseries_readers() -> dict[str, TimeseriesReader]:
 
     Notes
     -----
-    This function lives in the backends namespace (``engs=pyar.list_timeseries_readers()``).
-    More information about each reader is available via the TimeseriesReader obj.url() and
+    This function lives in the backends namespace (``engs=pyaro.list_timeseries_enginess()``).
+    More information about each reader is available via the TimeserieEngine obj.url() and
     obj.description()
 
     # New selection mechanism introduced with Python 3.10. See GH6514.
     """
     if sys.version_info >= (3, 10):
-        entrypoints = entry_points(group="pyaerocom_readers.timeseries_readers")
+        entrypoints = entry_points(group="pyaro.timeseries")
     else:
-        entrypoints = entry_points().get("pyaerocom_readers.timeseries_readers", [])
-    return build_timeseries_readers(entrypoints)
+        entrypoints = entry_points().get("pyaro.timeseries", [])
+    return build_timeseries_engines(entrypoints)
 
 
-def get_timeseries_reader(name):
-    return deepcopy(list_timeseries_readers()[name])
-
-def open_timeseries_reader(name, *args, **kwargs) -> TimeseriesReader:
+def open_timeseries(name, *args, **kwargs) -> TimeseriesReader:
     """open a timeseries reader directly, sending args and kwargs
     directly to the TimeseriesReader.open_reader() function
 
     :param name: the name of the entrypoint as key in list_timeseries_readers
     :return: an implementation-object of a TimeseriesReader openend to a location
     """
-    obj = get_timeseries_reader(name)
-    obj.open_reader(args, kwargs)
-    return obj
+    engine = list_timeseries_engines[name]
+
+    return engine.open_timeseries(args, kwargs)
