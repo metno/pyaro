@@ -3,16 +3,16 @@
 import numpy as np
 
 
-class TimeseriesData():
-    """Baseclass for data returned from a TimeseriesReader.
+class Data():
+    """Baseclass for data returned from a pyaro.timeseries.Reader.
 
     This is the minimum set of columns required for a reader to return.
     A reader is welcome to return a self-implemented subclass of
-    TimeseriesData.
+    Data.
 
-    All TimeseriesData arrays are accessible as a dict or as property, e.g.
+    All Data arrays are accessible as a dict or as property, e.g.
     ```
-    td = TimeseriesData()
+    td = Data()
     print(td.values)
     print(td["values"])
     ```

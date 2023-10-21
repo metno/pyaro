@@ -1,8 +1,8 @@
 import csv
 import numpy as np
-import pyaerocom_readers as pyaro
+from pyaro.timeseries import Data, Reader, Station
 
-class CSVTimeseriesReader(pyaro.TimeseriesReader):
+class CSVTimeseriesReader(Reader):
     def open_reader(self,
                     filename,
                     columns={

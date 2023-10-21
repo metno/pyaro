@@ -1,9 +1,9 @@
 
 import abc
-from .TimeseriesData import TimeseriesData
-from .TimeseriesStation import TimeseriesStation
+from ._Data import Data
+from ._Station import Station
 
-class TimeseriesReader(abc.ABC):
+class Reader(abc.ABC):
 
     @abc.abstractmethod
     def open_reader(self, filename_or_obj_or_url, *, filters=None):
@@ -18,18 +18,22 @@ class TimeseriesReader(abc.ABC):
         return ['filename_or_obj_or_url']
 
     @abc.abstractmethod
-    def get_data(self, varname, *, filters=None) -> TimeseriesData:
+    def data(self, varname) -> Data:
         pass
 
     @abc.abstractmethod
-    def get_stations(self, varname, *, filters=None) -> dict[str, TimeseriesStation]:
+    def stations(self) -> dict[str, Station]:
+        pass
+
+    @abc.abstractmethod
+    def get_variables(self, station=None) -> list[str]:
         pass
 
 
     @property
     @abc.abstractmethod
     def description(self):
-        """Get a descriptive string about this timeseries-reader.
+        """Get a descriptive string about this pyaro.timeseries-reader.
         """
         pass
 

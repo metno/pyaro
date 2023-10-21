@@ -1,14 +1,14 @@
 
-class TimeseriesStation():
-    """Baseclass for a station returned from a TimeseriesReader.
+class Station():
+    """Baseclass for a station returned from a pyaro.timeseries.Reader.
 
     This is the minimum set of columns required for a reader to return.
     A reader is welcome to return a self-implemented subclass of
-    TimeseriesStation.
+    Station.
 
-    All TimeseriesStation fields are accessible as a dict or as property, e.g.
+    All Station fields are accessible as a dict or as property, e.g.
     ```
-    td = TimeseriesStation()
+    td = Station()
     print(td.station)
     print(td["station"])
     ```
