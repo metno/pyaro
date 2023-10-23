@@ -55,4 +55,4 @@ def open_timeseries(name, *args, **kwargs) -> TimeseriesReader:
     """
     engine = list_timeseries_engines[name]
 
-    return engine.open_timeseries(args, kwargs)
+    return engine.open(args, kwargs)

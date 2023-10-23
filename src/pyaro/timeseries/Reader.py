@@ -7,18 +7,42 @@ class Reader(abc.ABC):
 
     @abc.abstractmethod
     def __init__(self, filename_or_obj_or_url, *, filters=None):
+        """Initialize the reader.
+
+        This function is usually called from the Engine's open function.
+        All parameters should also be listed in the Engine's args function.
+
+        :param filename_or_obj_or_url: location of database instance
+        :param filters: list of filters
+        """
         pass
 
     @abc.abstractmethod
     def data(self, varname) -> Data:
+        """Return all data for a variable
+
+        :param varname: variable name as returned from variables
+        :return: a data object
+        """
         pass
 
     @abc.abstractmethod
     def stations(self) -> dict[str, Station]:
+        """Dictionary of all stations available for this reader.
+
+        :return: dictionary with station-id as returned from data to Station metadata.
+        """
         pass
 
     @abc.abstractmethod
-    def variables(self, station=None) -> list[str]:
+    def variables(self) -> list[str]:
+        """List all variables available in this reader.
+
+        The variable-names returned here should already be change if a
+        VariableNameChanger is used.
+
+        :return: List of variables names.
+        """
         pass
 
     @abc.abstractmethod
@@ -31,7 +55,16 @@ class Reader(abc.ABC):
         pass
 
     def __enter__(self):
+        """Context managaer function
+
+        :return: context-object
+        """
         return self
 
     def __exit__(self, type, value, traceback):
+        """Context manager function.
+
+        The default implementation calls the close function.
+        """
         self.close()
+        return
