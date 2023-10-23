@@ -16,9 +16,9 @@ or a user with a jupyter notebook
 end note
 
 interface pyaro {
-  + list_timeseries_readers() : dict[name, timerseries.Engine]
+  + list_timeseries_engines() : dict[name, timerseries.Engine]
   + open_timeseries_reader(name, args): timeseries.Reader
-  + list_profiles_readers() : dict[name, profiles.Engine]
+  + list_profiles_engines() : dict[name, profiles.Engine]
   + open_profiles_reader(name, args): profiles.Reader
 }
 
