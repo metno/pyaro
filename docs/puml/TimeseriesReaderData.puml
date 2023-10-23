@@ -15,18 +15,18 @@ entity "Data_Data" {
   *row: integer <<generated>>
   --
   *values : np.ndarray("f")
-  *stations : np.ndarray("str")
+  *stations : np.ndarray("U64")
   *latitudes: np.ndarray("f")
   *longitudes: np.ndarray("f")
   *altitudes: np.ndarray("f")
-  *start_time: np.ndarray("datetime64")
-  *stop_time: np.ndarray("datetime64")
+  *start_time: np.ndarray("datetime64[s]" UTC)
+  *stop_time: np.ndarray("datetime64[s]" UTC)
   *flags: np.ndarray("i4")
   *standard_deviations: np.ndarray("f")
 }
 note bottom of Data_Data
 pyaro.timeseries.Data
-dictionary of 1D numpy arrays
+numpy Structured Array
 duplicate lat/lon/alt from Station
   for performance reasons
 end note
