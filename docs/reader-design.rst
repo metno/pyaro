@@ -1,5 +1,5 @@
 .. image:: pics/ReaderFactory.svg
   :alt: ReaderFactory UML diagram
 
-.. image:: pics/TimeseriesReader.svg
+.. image:: pics/TimeseriesReaderData.svg
   :alt: TimeseriesReaderData UML diagram
