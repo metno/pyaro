@@ -13,82 +13,102 @@ class Client
 note right of Client
 This is i.e. pyaerocom
 initiated by a config
+
+imports only pyaro
 end note
 
-interface MeasurementsReaderNetwork {
-  + list_timeseries_readers() : dict[name, TimerseriesReader]
-  + open_timeseries_reader(name, args): TimeseriesReader
-  --
-  + createProfileReader(): ProfileReader
+interface pyaro {
+  + list_timeseries_readers() : dict[name, timerseries.Engine]
+  + open_timeseries_reader(name, args): timeseries.Reader
+  + list_profiles_readers() : dict[name, profiles.Engine]
+  + open_profiles_reader(name, args): profiles.Reader
 }
 
-class EBASNetwork <XOR> {
-  + open_timeseries_reader(args): TimeseriesReader
-  --
-  + createProfileReader(): ProfileReader
-}
-
-class EEANetwork <XOR> {
-  + open_timeseries_reader(args): TimeseriesReader
-  --
-  + createProfileReader(): ProfileReader
-}
-
-interface TimeseriesReader {
-  + open_reader(args)
-  --
-  + open_parameters(): ...
-  + get_data(): TimeseriesData
-  + stations(): dict[str, TimseriesStation]
-  + description(): str,
+interface timeseries.Engine {
+  + open(args): Reader
+  + args(): [str]
+  + description(): str
   + url(): str_to_docs
 }
 
-class EBASTimeseriesReader {
-  + open_reader(args)
+class EBASTimeseriesEngine {
+  + open(args): EbasTimeseriesReader
+  ...
+}
+
+class EEATimeseriesEngine {
+  + open(args): EbasTimeseriesReader
+  ...
+}
+
+interface timeseries.Reader {
+  + __init__(args)
   --
-  + get_data(): TimeseriesData
+  + data(): Data
+  + stations(): dict[str, Station]
+  + variables(): [str]
+  + close()
+}
+
+class EBASTimeseriesReader {
+  + __init__(args)
+  --
+  + data(): TimeseriesData
   ...
 }
 
 class EEATimeseriesReader {
-  + open_reader(args)
+  + __init__(args)
   --
-  + public get_data(): TimeseriesData
+  + data(): TimeseriesData
   ...
 }
 
-interface ProfileReader {
-  getData(): Data
+interface profiles.Engine {
+  + open(args): Reader
+  + args(): [str]
+  + description(): str
+  + url(): str_to_docs
 }
 
-class EBASProfileReader {
-  +   getData(): Data
+interface profiles.Reader {
+  + __init__(args)
+  --
+  TBD
 }
 
-class EEAProfileReader {
-  +   getData(): Data
+class EBASProfilesReader {
 }
 
-MeasurementsReaderNetwork <|.. EBASNetwork
-MeasurementsReaderNetwork <|.. EEANetwork
+class EEAProfilesReader {
+}
 
-TimeseriesReader <|.. EBASTimeseriesReader
-TimeseriesReader <|.. EEATimeseriesReader
+timeseries.Engine <|.. EBASTimeseriesEngine
+timeseries.Engine <|.. EEATimeseriesEngine
 
-ProfileReader <|.. EBASProfileReader
-ProfileReader <|.. EEAProfileReader
+timeseries.Reader <|.. EBASTimeseriesReader
+timeseries.Reader <|.. EEATimeseriesReader
+
+profiles.Engine <|.. EBASProfilesEngine
+profiles.Engine <|.. EEAProfilesEngine
+
+profiles.Reader <|.. EBASProfilesReader
+profiles.Reader <|.. EEAProfilesReader
 
 
-EEANetwork ..> EEAProfileReader
-EEANetwork ..> EEATimeseriesReader
+EEAProfilesEngine ..> EEAProfilesReader
+EEATimeseriesEngine ..> EEATimeseriesReader
 
-EBASNetwork ..> EBASProfileReader
-EBASNetwork ..> EBASTimeseriesReader
+EBASProfilesEngine ..> EBASProfilesReader
+EBASTimeseriesEngine ..> EBASTimeseriesReader
 
-Client ..> MeasurementsReaderNetwork: imports
-Client ..> TimeseriesReader : imports
-Client ..> ProfileReader : imports
+Client ..> pyaro: import
+pyaro ..> timeseries.Engine
+pyaro ..> profiles.Engine
+Client ..> timeseries.Engine: interacts
+Client ..> timeseries.Reader : interacts
+Client ..> profiles.Engine : interacts
+Client ..> profiles.Reader : interacts
 
 
 @enduml

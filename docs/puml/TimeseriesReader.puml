@@ -5,13 +5,13 @@
 ' avoid problems with angled crows feet
 skinparam linetype ortho
 
-entity "TimeseriesReaderData" {
+entity "Data" {
   *variable: string
   *units: string
-  *_data: TimeseriesReaderData_Data
+  *_data: Data_Data
 }
 
-entity "TimeseriesReaderData_Data" {
+entity "Data_Data" {
   *row: integer <<generated>>
   --
   *values : np.ndarray("f")
@@ -24,8 +24,11 @@ entity "TimeseriesReaderData_Data" {
   *flags: np.ndarray("i4")
   *standard_deviations: np.ndarray("f")
 }
-note bottom of TimeseriesReaderData_Data
+note bottom of Data_Data
+pyaro.timeseries.Data
 dictionary of 1D numpy arrays
+duplicate lat/lon/alt from Station
+  for performance reasons
 end note
 
 entity "Station" {
@@ -39,6 +42,7 @@ entity "Station" {
   *url : string_to_documentation
 }
 note bottom of Station
+pyaro.timeseries.Station
 Dictionary of stations
 end note
 
@@ -50,8 +54,8 @@ end note
 ' Dictionary
 ' end note
 
-TimeseriesReaderData ||..|| TimeseriesReaderData_Data
-TimeseriesReaderData_Data }o..|| Station
+Data ||..|| Data_Data
+Data_Data }o..|| Station
 ' TimeseriesReaderData }o..|| Variable
 
 @enduml

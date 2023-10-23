@@ -79,6 +79,7 @@ if __name__ == "__main__":
     import os
     engine = CSVTimeseriesEngine()
     engine.url()
+    engine.url
     engine.description()
     engine.args()
     file = os.path.join(os.path.dirname(os.path.realpath(__file__)),
