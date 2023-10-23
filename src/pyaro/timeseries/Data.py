@@ -1,6 +1,17 @@
 
-
+from enum import IntEnum, unique
 import numpy as np
+
+@unique
+class Flag(IntEnum):
+    """Flag of measurement data.
+
+    :param IntEnum: all flags are simple integers
+    """
+    VALID = 0
+    INVALID = 1
+    BELOW_THRESHOLD = 2
+
 
 
 class Data():
@@ -18,22 +29,25 @@ class Data():
     ```
 
     """
+    _dtype = [
+            ('values', 'f'),
+            ('stations', 'U64'),
+            ('latitudes', 'f'),
+            ('longitudes', 'f'),
+            ('altitudes', 'f'),
+            ('start_times', 'datetime64[s]'),
+            ('stop_times', 'datetime64[s]'),
+            ('flags', 'i2'),
+            ('standard_deviations', 'f'),
+        ]
 
-    def __init__(self) -> None:
-        self._variable = ""
-        self._units = ""
-        self._data = {
-            'values': np.zeros((0), 'f'),
-            'stations': np.zeros((0), 'U'), # Unicode string
-            'latitudes':  np.zeros((0), 'f'),
-            'longitudes':np.zeros((0), 'f'),
-            'altitudes':  np.zeros((0), 'f'),
-            'start_times': np.zeros((0), 'M'), # M=datetime64
-            'stop_times': np.zeros((0), 'M'),
-            'flags': np.zeros((0), 'i4'),
-            'standard_deviations': np.zeros((0), 'f')
-        }
-        pass
+
+
+    def __init__(self, variable, units) -> None:
+        self._variable = variable
+        self._units = units
+        self._data = np.zeros([], dtype=self._dtype)
+
 
     def __len__(self) -> int:
         """Number of data-points"""
@@ -48,15 +62,35 @@ class Data():
         considered metadata"""
         return self._data.keys()
 
+    def append(self, value, station, latitude, longitude, altitude, start_time, stop_time, flag=Flag.VALID, standard_deviation=np.nan):
+        """append with a new data-row
 
-    def set_data(self, variable: str, units: str, data: dict[str, np.ndarray]):
+        :param value
+        :param station
+        :param latitude
+        :param longitude
+        :param altitude
+        :param start_time
+        :param stop_time
+        :param flag: defaults to Flag.VALID
+        :param standard_deviation: defaults to np.nan
+        """
+        if len(station) > 64:
+            raise Exception(f"station name too long, max 64char: {station}")
+        x = np.array([(value, station, latitude, longitude, altitude, start_time, stop_time, flag, standard_deviation)],
+                    dtype=self._dtype)
+        self._data = np.append(self._data, x)
+        return
+
+
+    def set_data(self, variable: str, units: str, data: np.array):
         """Initialization code for the data.
         Only known data-fields will be read from data, i.e. it is not
         possible to extend TimeseriesData without subclassing.
 
         :param variable: variable name
         :param units: variable units
-        :param data: dict with all numpy.ndarrays required for TimeseriesData
+        :param data: a numpy structured array with all fields (see append)
         :raises KeyError: on missing field
         :raises Exception: if not all data-ndarrays have same size
         :raises Exception: if not all data-fields are ndarrays
@@ -70,8 +104,7 @@ class Data():
                 raise Exception(f"values and {key} not of same size")
         self._variable = variable
         self._units = units
-        for key in self.keys():
-            self._data[key] = data[key]
+        self._data = data
         return
 
     @property
@@ -83,11 +116,12 @@ class Data():
         return self._variable
 
     @property
-    def unit(self) -> str:
-        """Unit in CF-notation, the same unit applies to all values
+    def units(self) -> str:
+        """Units in CF-notation, the same unit applies to all values
 
-        :return: Unit in CF-notation
+        :return: Units in CF-notation
         """
+        return self._units
 
     @property
     def values(self) -> np.ndarray:
@@ -101,7 +135,7 @@ class Data():
     def stations(self) -> np.ndarray:
         """A 1-dimensional array of station identifiers (strings, usually name)
 
-        :return: 1dim array of strings
+        :return: 1dim array of strings, max-length 64-chars
         """
         return self._data["stations"]
 
@@ -163,3 +197,9 @@ class Data():
         :return: 1dim array of floats
         """
         return self._data["standard_deviations"]
+
+
+    def __str__(self):
+        return f"{self.variable}, {self.units}, {self._data}"
+
+

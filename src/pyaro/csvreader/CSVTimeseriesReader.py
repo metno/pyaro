@@ -1,6 +1,7 @@
 import csv
 import numpy as np
-from pyaro.timeseries import Data, Reader, Station, Engine
+from pyaro.timeseries import Data, Flag, Reader, Station, Engine
+
 
 class CSVTimeseriesReader(Reader):
     def __init__(
@@ -16,8 +17,9 @@ class CSVTimeseriesReader(Reader):
                     'start_time': 6,
                     'end_time': 7
                     },
+                variable_units={'SOx': 'Gg',
+                                'NOx': 'Mg'},
                 csvreader_kwargs={'delimiter': ","},
-                variable_units={'SOx': 'Gg'},
                 filters=[]
                 ):
         """open a new csv timeseries-reader
@@ -26,11 +28,12 @@ class CSVTimeseriesReader(Reader):
         """
         self._filename = filename
         self._stations = {}
-        self._data = {} # var -> station -> {}
+        self._data = {} # var -> {data-array}
         with open(self._filename, newline='') as csvfile:
             crd = csv.reader(csvfile, **csvreader_kwargs)
             for row in crd:
                 variable = row[columns['variable']]
+                value = float(row[columns['value']])
                 station = row[columns['station']]
                 lon = float(row[columns['longitude']])
                 lat = float(row[columns['latitude']])
@@ -41,20 +44,27 @@ class CSVTimeseriesReader(Reader):
                 else:
                     alt = 0
                 if 'units' in columns:
-                    unit = row[columns['units']]
+                    units = row[columns['units']]
                 else:
-                    units = ""
+                    units = variable_units[variable]
 
-
+                if variable in self._data:
+                    da = self._data[variable]
+                    if da.units != units:
+                        raise Exception(f"unit change from '{da.units}' to 'units'")
+                else:
+                    da = Data(variable, units)
+                    self._data[variable] = da
+                da.append(value, station, lat, lon, alt, start, end, Flag.VALID, np.nan)
 
     def data(self, varname) -> Data:
-        return Data()
+        return self._data[varname]
 
     def stations(self) -> dict[str, Station]:
         return self.stations
 
     def variables(self) -> list[str]:
-        return []
+        return self._data.keys()
 
     def close(self):
         pass
@@ -85,5 +95,6 @@ if __name__ == "__main__":
     file = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                         'testdata', 'csvReader_testdata.csv')
     with engine.open(file, filters=[]) as ts:
-        ts.data("x")
+        for var in ts.variables():
+            print(var, ts.data(var))
     pass
