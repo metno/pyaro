@@ -54,8 +54,8 @@ class Station():
                 raise KeyError(f"{key} not in fields")
         if abs(fields['latitude']) > 90:
             raise Exception(f"latitude out of bounds: {fields['latitude']}")
-        if abs(fields['longitude']) > 90:
-            raise Exception(f"longitude out of bounds: {fields['latitude']}")
+        if abs(fields['longitude']) > 180:
+            raise Exception(f"longitude out of bounds: {fields['longitude']}")
         for key in self.keys():
             self._fields[key] = fields[key]
         return
@@ -115,3 +115,7 @@ class Station():
         :return: url
         """
         return self._fields["url"]
+
+    def __str__(self):
+        return self._fields.__str__()
+

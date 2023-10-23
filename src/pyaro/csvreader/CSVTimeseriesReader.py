@@ -56,12 +56,22 @@ class CSVTimeseriesReader(Reader):
                     da = Data(variable, units)
                     self._data[variable] = da
                 da.append(value, station, lat, lon, alt, start, end, Flag.VALID, np.nan)
+                if not station in self._stations:
+                    self._stations[station] = Station({
+                        'station': station,
+                        'longitude': lon,
+                        'latitude': lat,
+                        'altitude': 0,
+                        'country': "NO",
+                        'url': "",
+                        'long_name': station
+                    })
 
     def data(self, varname) -> Data:
         return self._data[varname]
 
     def stations(self) -> dict[str, Station]:
-        return self.stations
+        return self._stations
 
     def variables(self) -> list[str]:
         return self._data.keys()
@@ -96,5 +106,7 @@ if __name__ == "__main__":
                         'testdata', 'csvReader_testdata.csv')
     with engine.open(file, filters=[]) as ts:
         for var in ts.variables():
-            print(var, ts.data(var))
+            print(ts.data(var))
+        for st in ts.stations().values():
+            print(st)
     pass
