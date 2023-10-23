@@ -11,10 +11,8 @@ skinparam class {
 
 class Client
 note right of Client
-This is i.e. pyaerocom
-initiated by a config
-
-imports only pyaro
+This is i.e. pyaerocom initiated by a config
+or a user with a jupyter notebook
 end note
 
 interface pyaro {
