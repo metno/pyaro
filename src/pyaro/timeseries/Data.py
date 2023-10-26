@@ -51,7 +51,7 @@ class Data():
 
     def __len__(self) -> int:
         """Number of data-points"""
-        return self._data["values"].size()
+        return self._data["values"].size
 
     def __getitem__(self, key):
         """access the data as a dict"""
