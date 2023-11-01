@@ -36,6 +36,7 @@ The entry-point to your ``Reader`` is a ``Engine``, which also needs implementat
 
 - the ``open`` method, instantiating the ``Reader`` (mandatory)
 - the ``args`` readonly attribute (mandatory, a list of arguments which can be given to open)
+- the ``supported_filters`` readonly attribute (mandatory, a list of filters)
 - the ``description`` readonly attribute (optional)
 - the ``url`` readonly attribute (optional) (reference to repository)
 

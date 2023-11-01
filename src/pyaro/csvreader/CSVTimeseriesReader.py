@@ -86,6 +86,9 @@ class CSVTimeseriesEngine(Engine):
     def args(self):
         return ("filename", "columns", "csvreader_kwargs", "variable_units", "filters")
 
+    def supported_filters(self):
+        return ("")
+
     def description(self):
         return "Simple reader of csv-files using python csv-reader"
 

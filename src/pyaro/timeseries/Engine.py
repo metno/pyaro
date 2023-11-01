@@ -6,9 +6,10 @@ class Engine(abc.ABC):
     @abc.abstractmethod
     def open(self, filename_or_obj_or_url, *, filters=None):
         """open-function of the timeseries, initializing the reader-object, i.e.
-        equivalent to Reader(filename_or_object_or_url, *, filter)
+        equivalent to Reader(filename_or_object_or_url, *, filters)
 
-        @return pyaro.timeseries.Reader
+        :return pyaro.timeseries.Reader
+        :raises UnknownFilterException
         """
         pass
 
@@ -19,6 +20,18 @@ class Engine(abc.ABC):
         the mandatory filename_or_obj_or_url parameter.
         """
         return ['filename_or_obj_or_url']
+
+    @property
+    @abc.abstractmethod
+    def supported_filters(self) -> [str]:
+        """The class-names of the supported filters by this reader.
+
+        If the reader is called with a filter which is not a instance of this class
+        or subclass, it is supposed to raise a UnknownFilterException.
+
+        :return: list of classnames
+        """
+        return ['filterclass1', 'filterclass2']
 
     @property
     @abc.abstractmethod
