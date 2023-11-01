@@ -1,6 +1,6 @@
 import csv
 import numpy as np
-from pyaro.timeseries import Data, Flag, Reader, Station, Engine
+from pyaro.timeseries import Data, NpStructuredData, Flag, Reader, Station, Engine
 
 
 class CSVTimeseriesReader(Reader):
@@ -53,7 +53,7 @@ class CSVTimeseriesReader(Reader):
                     if da.units != units:
                         raise Exception(f"unit change from '{da.units}' to 'units'")
                 else:
-                    da = Data(variable, units)
+                    da = NpStructuredData(variable, units)
                     self._data[variable] = da
                 da.append(value, station, lat, lon, alt, start, end, Flag.VALID, np.nan)
                 if not station in self._stations:
@@ -109,4 +109,12 @@ if __name__ == "__main__":
             print(ts.data(var))
         for st in ts.stations().values():
             print(st)
+
+    # wrapper-test
+    from pyaro.timeseries.Wrappers import VariableNameChangingReader
+    with VariableNameChangingReader(engine.open(file, filters=[]),
+                                    {'SOx': 'oxidised_sulphur'}) as ts:
+        for var in ts.variables():
+            print(var, ts.data(var))
+
     pass

@@ -1,4 +1,5 @@
 
+import abc
 from enum import IntEnum, unique
 import numpy as np
 
@@ -13,8 +14,7 @@ class Flag(IntEnum):
     BELOW_THRESHOLD = 2
 
 
-
-class Data():
+class Data(abc.ABC):
     """Baseclass for data returned from a pyaro.timeseries.Reader.
 
     This is the minimum set of columns required for a reader to return.
@@ -27,6 +27,155 @@ class Data():
     print(td.values)
     print(td["values"])
     ```
+
+    """
+    _dtype = [
+            ('values', 'f'),
+            ('stations', 'U64'),
+            ('latitudes', 'f'),
+            ('longitudes', 'f'),
+            ('altitudes', 'f'),
+            ('start_times', 'datetime64[s]'),
+            ('stop_times', 'datetime64[s]'),
+            ('flags', 'i2'),
+            ('standard_deviations', 'f'),
+        ]
+
+
+
+    def __init__(self, variable, units) -> None:
+        self._variable = variable
+        self._units = units
+
+    def _set_variable(self, variable: str) -> None:
+        """Friend method to set the variable name
+
+        This is the setter function for variable. It should only be called by
+        friend-classes like VariableNameChanger.
+
+        :param variable: variable-name
+        """
+        self._variable = variable
+
+    @abc.abstractmethod
+    def keys(self):
+        """all available data-fields, excluding variable and units which are
+        considered metadata"""
+        return {}.keys()
+
+    @property
+    @abc.abstractmethod
+    def variable(self) -> str:
+        """Variable name for all the data
+
+        :return: variable name
+        """
+        return self._variable
+
+    @property
+    @abc.abstractmethod
+    def units(self) -> str:
+        """Units in CF-notation, the same unit applies to all values
+
+        :return: Units in CF-notation
+        """
+        return self._units
+
+    @property
+    @abc.abstractmethod
+    def values(self) -> np.ndarray:
+        """A 1-dimensional float array of values.
+
+        :return: 1dim array of floats
+        """
+        return
+
+    @property
+    @abc.abstractmethod
+    def stations(self) -> np.ndarray:
+        """A 1-dimensional array of station identifiers (strings, usually name)
+
+        :return: 1dim array of strings, max-length 64-chars
+        """
+        return
+
+    @property
+    @abc.abstractmethod
+    def latitudes(self) -> np.ndarray:
+        """A 1-dimensional array of latitudes (float)
+
+        :return: 1dim array of floats
+        """
+        return
+
+    @property
+    @abc.abstractmethod
+    def longitudes(self) -> np.ndarray:
+        """A 1-dimensional array of longitudes (float)
+
+        :return: 1dim array of floats
+        """
+        return
+
+    @property
+    @abc.abstractmethod
+    def altitude(self) -> np.ndarray:
+        """A 1-dimensional array of altitudes (float)
+
+        :return: 1dim array of floats
+        """
+        return
+
+    @property
+    @abc.abstractmethod
+    def start_times(self) -> np.ndarray:
+        """A 1-dimensional array of int64 datetimes indicating the start
+        of the measurement
+
+        :return: 1dim array of datetime64
+        """
+        return
+
+    @property
+    @abc.abstractmethod
+    def end_times(self) -> np.ndarray:
+        """A 1-dimensional array of int64 datetimes indicating the end
+        of the measurement
+
+        :return: 1dim array of datetime64
+        """
+        return
+
+    @property
+    @abc.abstractmethod
+    def flags(self) -> np.ndarray:
+        """A 1-dimensional array of flags as defined in pyaro
+
+        :return: 1dim array of ints
+        """
+        return
+
+    @property
+    @abc.abstractmethod
+    def standard_deviations(self) -> np.ndarray:
+        """A 1-dimensional array of stdevs. NaNs describe
+        not available stdev per measurement
+
+        :return: 1dim array of floats
+        """
+        return
+
+
+
+class NpStructuredData(Data):
+    """An implementation of Data using numpy Structured Arrays.
+
+    This is the minimum set of columns required for a reader to return.
+    A reader is welcome to return a self-implemented subclass of
+    Data.
+
+    Data can be added by rows with the append method, or a completed numpy.StructuredArray
+    can be submitted using set_data.
 
     """
     _dtype = [

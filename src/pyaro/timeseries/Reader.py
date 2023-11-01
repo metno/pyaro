@@ -46,7 +46,7 @@ class Reader(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def close() -> None:
+    def close(self) -> None:
         """Cleanup code for the reader.
 
         This method will automatically be called when going out of context.
