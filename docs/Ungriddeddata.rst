@@ -2,7 +2,7 @@
 UngriddedData
 ===================
 
-UngriddedData is the main class for holding ungridded data -- mostly used for obervational data -- in pyaerocom.
+UngriddedData is the main class for holding ungridded data -- mostly used for observational data -- in pyaerocom.
 The class can either be instanciated and filled manually (see below for structure), or be created from a dictionary of StationData objects :ref:`_stationsdata_overview`.
 
 ..  image:: ./pics/UngriddedData.svg
@@ -23,7 +23,7 @@ UngriddedData contains 4 main attributes:
 
 _data
 -----
-_data is the main data structure of UngriddedData, and in is an unstructured table (2D numpy array) where each row is a single measurement.
+_data is the main data structure of UngriddedData, and it is an unstructured table (2D numpy array) where each row is a single measurement.
 Each row consists of 12 columns holding all the relevant information about the measurement. The 12 columns are ordered as follows
 
 0. metadata index **float** : index pointing to a key in the *metadata* dictionary. Each index corresponds to one station
@@ -42,7 +42,7 @@ Each row consists of 12 columns holding all the relevant information about the m
 metadata
 --------
 
-This is a dictionary containing metadata for all the stations used in *_data*. The keys are unique ids for each station, with the value being another dictionary. The content of this dictionary is not well documented, but this is the necessary keys I found:
+This is a dictionary containing metadata for all the stations used in *_data*. The keys are unique ids for each station, with the value being another dictionary. The content of this dictionary is not well documented, but these are initially necessary keys:
 
 * station_id **float** : the **key** of the dictionary. Unique float/int pointing to a station.
 * data_id **string** : the name/id of the dataset(e.g. EEA, EBAS, etc) used to produce the measurements
@@ -57,7 +57,7 @@ This is a dictionary containing metadata for all the stations used in *_data*. T
 Other metadata can be added for later filtering!
 
 
-More on *var_info*: This is a dictionary where the key is the name of the value is another dictionary containing atleast the following data:
+More on *var_info*: This is a dictionary where the key is the name of the value of another dictionary containing at least the following data:
 * unit **string** : the unit of the variable
 
 
