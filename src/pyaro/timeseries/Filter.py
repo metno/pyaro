@@ -4,7 +4,7 @@ import abc
 
 import numpy as np
 
-from .Data import Data
+from .Data import Data, Flag
 from .Station import Station
 
 
@@ -201,7 +201,27 @@ class CountryFilter(StationReductionFilter):
         return {s: v for s, v in stations.items() if self.has_country(v.country)}
 
 
+class FlagFilter(DataIndexFilter):
 
+    def __init__(self, include: [Flag]=[], exclude: [Flag]=[]):
+        """Filter data by Flags
+
+        :param include: flags to include, defaults to [], meaning all flags
+        :param exclude: flags to exclude, defaults to [], meaning none
+        """
+        if len(include) == 0:
+            self._include = set([f for f in Flag])
+        else:
+            self._include = set(include)
+        self._exclude = set(exclude)
+        self._valid = self._include.difference(self._exclude)
+        return
+
+
+    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str) -> Data:
+        validflags = np.fromiter(self._valid, dtype=data.flags.dtype)
+        index = np.in1d(data.flags.dtype, validflags)
+        return index
 
 
 
