@@ -26,8 +26,9 @@ class Engine(abc.ABC):
     def supported_filters(self) -> [str]:
         """The class-names of the supported filters by this reader.
 
-        If the reader is called with a filter which is not a instance of this class
-        or subclass, it is supposed to raise a UnknownFilterException.
+        If the reader is called with a filter which is not a instance of this class,
+        it is supposed to raise a UnknownFilterException. Using a subclass of a filter is
+        not allowed unless explicitly listed here.
 
         :return: list of classnames
         """

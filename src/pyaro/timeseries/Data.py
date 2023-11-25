@@ -63,8 +63,16 @@ class Data(abc.ABC):
         considered metadata"""
         return {}.keys()
 
-    @property
     @abc.abstractmethod
+    def slice(self, index): # -> Self: for 3.11
+        """Get a copy of this dataset as a slice.
+
+        :param index: A boolean index of the size of data or integer. array
+        :return: a new Data object
+        """
+        pass
+
+    @property
     def variable(self) -> str:
         """Variable name for all the data
 
@@ -73,7 +81,6 @@ class Data(abc.ABC):
         return self._variable
 
     @property
-    @abc.abstractmethod
     def units(self) -> str:
         """Units in CF-notation, the same unit applies to all values
 
@@ -192,11 +199,10 @@ class NpStructuredData(Data):
 
 
 
-    def __init__(self, variable, units) -> None:
+    def __init__(self, variable="", units="") -> None:
         self._variable = variable
         self._units = units
-        self._data = np.zeros([], dtype=self._dtype)
-
+        self._data = np.zeros((), dtype=self._dtype)
 
     def __len__(self) -> int:
         """Number of data-points"""
@@ -209,7 +215,7 @@ class NpStructuredData(Data):
     def keys(self):
         """all available data-fields, excluding variable and units which are
         considered metadata"""
-        return self._data.keys()
+        return self._data.dtype.names
 
     def append(self, value, station, latitude, longitude, altitude, start_time, stop_time, flag=Flag.VALID, standard_deviation=np.nan):
         """append with a new data-row
@@ -231,7 +237,6 @@ class NpStructuredData(Data):
         self._data = np.append(self._data, x)
         return
 
-
     def set_data(self, variable: str, units: str, data: np.array):
         """Initialization code for the data.
         Only known data-fields will be read from data, i.e. it is not
@@ -245,16 +250,21 @@ class NpStructuredData(Data):
         :raises Exception: if not all data-fields are ndarrays
         """
         for key in self.keys():
-            if not key in data:
-                raise KeyError(f"{key} not in data")
+            if not key in data.dtype.names:
+                raise KeyError(f"{key} not in data: {data.dtype}")
             if not isinstance(data[key], (np.ndarray, np.generic)):
                 raise Exception(f"data[{key}] is not a numpy.ndarray")
-            if data[key].size() != data["values"].size():
+            if len(data[key]) != len(data["values"]):
                 raise Exception(f"values and {key} not of same size")
         self._variable = variable
         self._units = units
         self._data = data
         return
+
+    def slice(self, index):
+        newData = NpStructuredData()
+        newData.set_data(self. variable, self.units, self._data[index])
+        return newData
 
     @property
     def variable(self) -> str:

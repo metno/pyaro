@@ -1,0 +1,59 @@
+class timeseries.FilterCollection {
+    +list(classname=None): [filter]
+    +add(filter)
+    +remove(filter)
+}
+
+interface timeseries.Filter {
+  + __init__() # unrestricted
+  --
+  + new(kwargs): Filter
+  - args: dict
+  + filter_data(data, stations, variables): Data
+  + filter_stations(stations): dict[str, Station]
+  + filter_variables(variables): [str]
+
+}
+
+class timeseries.VariableNameChangingFilter {
+    + new(new_to_old): VariableNameChangingFilter
+    ...
+}
+
+abstract class timeseries.DataIndexFilter {
+    + filter_data(data, stations, variables): Data
+    - filter_data_idx(data, stations, variables): idx
+}
+
+
+abstract class timeseries.StationReductionFilter {
+    - new
+    + filter_data_idx(data, stations, variables): Data
+    - filter_stations(stations): dict[str, Station]
+}
+
+class timeseries.StationFilter {
+    + new(include=[station], exclude=[station]): StationFilter
+    + filter_stations(stations): dict[str, Station]
+    ...
+}
+
+class timeseries.CountryFilter {
+    + new(include=[country], exclude=[country]): CountryFilter
+    + filter_stations(stations): dict[str, Station]
+    ...
+}
+
+class timeseries.FlagFilter {
+    + new(include=[flag], exclude=[flag]): FlagFilter
+    ...
+}
+
+
+timeseries.Filter <|.. timeseries.VariableNameChangingFilter
+timeseries.Filter <|.. timeseries.DataIndexFilter
+timeseries.DataIndexFilter <|.. timeseries.StationReductionFilter
+timeseries.StationReductionFilter <|.. timeseries.StationFilter
+timeseries.StationReductionFilter <|.. timeseries.CountryFilter
+timeseries.Filter <|.. timeseries.FlagFilter
+

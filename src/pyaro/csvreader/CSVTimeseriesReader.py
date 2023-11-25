@@ -29,6 +29,7 @@ class CSVTimeseriesReader(Reader):
         self._filename = filename
         self._stations = {}
         self._data = {} # var -> {data-array}
+        self._filters = filters
         with open(self._filename, newline='') as csvfile:
             crd = csv.reader(csvfile, **csvreader_kwargs)
             for row in crd:
@@ -67,14 +68,35 @@ class CSVTimeseriesReader(Reader):
                         'long_name': station
                     })
 
-    def data(self, varname) -> Data:
+    def _unfiltered_data(self, varname) -> Data:
         return self._data[varname]
 
-    def stations(self) -> dict[str, Station]:
+    def _unfiltered_stations(self) -> dict[str, Station]:
         return self._stations
 
-    def variables(self) -> list[str]:
+    def _unfiltered_variables(self) -> list[str]:
         return self._data.keys()
+
+    def variables(self) -> list[str]:
+        vars = self._unfiltered_variables()
+        for fi in self._filters:
+            vars = fi.filter_variables(vars)
+        return vars
+
+    def stations(self) -> dict[str, Station]:
+        stats = self._unfiltered_stations()
+        for fi in self._filters:
+            stats = fi.filter_stations(stats)
+        return stats
+
+    def data(self, varname) -> Data:
+        dat = self._unfiltered_data(varname)
+        stats = self._unfiltered_stations()
+        vars = self._unfiltered_variables()
+        for fi in self._filters:
+            dat = fi.filter_data(dat, stats, vars)
+        return dat
+
 
     def close(self):
         pass
@@ -100,6 +122,8 @@ class CSVTimeseriesEngine(Engine):
 
 if __name__ == "__main__":
     import os
+    from pyaro.timeseries.Filter import StationFilter, CountryFilter
+
     engine = CSVTimeseriesEngine()
     engine.url()
     engine.url
@@ -109,15 +133,22 @@ if __name__ == "__main__":
                         'testdata', 'csvReader_testdata.csv')
     with engine.open(file, filters=[]) as ts:
         for var in ts.variables():
-            print(ts.data(var))
+            print(ts.data(var).slice(np.array([0,1,2])))
         for st in ts.stations().values():
             print(st)
+
+    with engine.open(file, filters=[StationFilter(exclude=['station1'])]) as ts:
+        for var in ts.variables():
+            print(ts.data(var).slice(np.array([0,1,2])))
+        for st in ts.stations().values():
+            print(st)
+
 
     # wrapper-test
     from pyaro.timeseries.Wrappers import VariableNameChangingReader
     with VariableNameChangingReader(engine.open(file, filters=[]),
                                     {'SOx': 'oxidised_sulphur'}) as ts:
         for var in ts.variables():
-            print(var, ts.data(var))
+            print(var, ts.data(var).slice(np.array([0,1,2])))
 
     pass

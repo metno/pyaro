@@ -74,6 +74,10 @@ This is what a ``TimeseriesReader`` subclass should look like:
 
         def args(self):
             open_parameters = ["filename_or_obj", "filters"]
+            return open_parameters
+
+        def supported_filters(self):
+            return ["CountryFilter", "FlagFilter"]
 
         def description(self):
             return "Engine fro MyTimeseries files."

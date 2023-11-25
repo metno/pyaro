@@ -8,8 +8,8 @@ The class can either be instanciated and filled manually (see below for structur
 ..  image:: ./pics/UngriddedData.svg
     :alt: some image
     :class: with-shadow
-
 **Note**: There does not seem to be any function to create an UngriddedData given the attributes described below. Instead ``__init__`` creates empty versions of said attributes, and it is up to the user to access the attributes and filling them in by hand
+
 
 Structure
 =========
