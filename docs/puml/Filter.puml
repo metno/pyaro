@@ -1,56 +1,72 @@
-class timeseries.FilterCollection {
-    +list(classname=None): [filter]
-    +add(filter)
-    +remove(filter)
+class timeseries.FilterFactory {
+    +get(name): Filter
+    +register(filter)
+    +list(): [str]
 }
+note right of timeseries.FilterFactory
+    Singelton
+end note
 
 interface timeseries.Filter {
-  + __init__() # unrestricted
+  - __init__() # unrestricted and kwargs
   --
-  + new(kwargs): Filter
-  - args: dict
-  + filter_data(data, stations, variables): Data
-  + filter_stations(stations): dict[str, Station]
-  + filter_variables(variables): [str]
+  - name(): str
+  - init_args(): dict
+  + args(): dict
+  + __rep__(): str
+   filter_data(data, stations, variables): Data
+   filter_stations(stations): dict[str, Station]
+   filter_variables(variables): [str]
 
 }
 
-class timeseries.VariableNameChangingFilter {
-    + new(new_to_old): VariableNameChangingFilter
-    ...
+class timeseries.VariableNameFilter {
+  + __init__(reader_to_new, include, exclude): VariableNameChangingFilter
+  + name: "variables"
+  + init_args(): dict
+  + filter_variables(variables): [str]
+  + filter_data(data, stations, variables): Data
+  ...
 }
 
 abstract class timeseries.DataIndexFilter {
-    + filter_data(data, stations, variables): Data
-    - filter_data_idx(data, stations, variables): idx
+  + filter_data(data, stations, variables): Data
+  - filter_data_idx(data, stations, variables): idx
 }
 
 
 abstract class timeseries.StationReductionFilter {
-    - new
-    + filter_data_idx(data, stations, variables): Data
-    - filter_stations(stations): dict[str, Station]
+  - __init__
+  + filter_data_idx(data, stations, variables): Data
+  - filter_stations(stations): dict[str, Station]
 }
 
 class timeseries.StationFilter {
-    + new(include=[station], exclude=[station]): StationFilter
-    + filter_stations(stations): dict[str, Station]
-    ...
+  + __init__(include=[station], exclude=[station]): StationFilter
+  + name: "stations"
+  + init_args(): dict
+  + filter_stations(stations): dict[str, Station]
+  ...
 }
 
 class timeseries.CountryFilter {
-    + new(include=[country], exclude=[country]): CountryFilter
-    + filter_stations(stations): dict[str, Station]
-    ...
+  + __init__(include=[country], exclude=[country]): CountryFilter
+  + name: "countries"
+  + init_args(): dict
+  + filter_stations(stations): dict[str, Station]
+  ...
 }
 
 class timeseries.FlagFilter {
-    + new(include=[flag], exclude=[flag]): FlagFilter
-    ...
+  + __init__(include=[flag], exclude=[flag]): FlagFilter
+  + name: "flags"
+  + init_args(): dict
+  + filter_data(data, stations, variables): Data
+  ...
 }
 
 
-timeseries.Filter <|.. timeseries.VariableNameChangingFilter
+timeseries.Filter <|.. timeseries.VariableNameFilter
 timeseries.Filter <|.. timeseries.DataIndexFilter
 timeseries.DataIndexFilter <|.. timeseries.StationReductionFilter
 timeseries.StationReductionFilter <|.. timeseries.StationFilter

@@ -2,8 +2,8 @@ import unittest
 import os
 
 import numpy as np
+import pyaro
 from pyaro.timeseries.Filter import StationFilter, CountryFilter
-from pyaro.csvreader.CSVTimeseriesReader import CSVTimeseriesEngine
 from pyaro.timeseries.Wrappers import VariableNameChangingReader
 
 
@@ -11,7 +11,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     file = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                         'testdata', 'csvReader_testdata.csv')
     def test_init(self):
-        engine = CSVTimeseriesEngine()
+        engine = pyaro.list_timeseries_engines()['csv_timeseries']
         self.assertEqual(engine.url(), "https://github.com/metno/pyaro")
         # just see that it doesn't fails
         engine.description()
@@ -23,15 +23,17 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.assertEqual(count, 208)
             self.assertEqual(len(ts.stations()), 2)
 
+    def test_stationfilter(self):
+        engine = pyaro.list_timeseries_engines()['csv_timeseries']
         with engine.open(self.file, filters=[StationFilter(exclude=['station1'])]) as ts:
+            count = 0
             for var in ts.variables():
-                self.assertEqual(len(ts.data(var).slice(np.array([0,1,2]))), 3)
+                count += len(ts.data(var))
+            self.assertEqual(count, 104)
             self.assertEqual(len(ts.stations()), 1)
 
-
-    # wrapper-test
     def test_wrappers(self):
-        engine = CSVTimeseriesEngine()
+        engine = pyaro.list_timeseries_engines()['csv_timeseries']
         newsox = 'oxidised_sulphur'
         with VariableNameChangingReader(engine.open(self.file, filters=[]),
                                         {'SOx': newsox}) as ts:

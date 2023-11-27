@@ -1,6 +1,7 @@
 
 
 import abc
+import inspect
 
 import numpy as np
 
@@ -8,29 +9,40 @@ from .Data import Data, Flag
 from .Station import Station
 
 
+
+
+
 class Filter(abc.ABC):
     """Base-class for all filters used from pyaro-Readers
     """
 
     def __init__(self, **kwargs):
-        """empty initializer required for initializing a filter without restrictions"""
+        """constructor of Filters. All filters must have a default constructor without kwargs
+        for an empty filter object"""
         return
 
-    @abc.abstractmethod
-    def args(self) -> dict:
+    def args(self) -> list:
         """retrieve the kwargs possible to retrieve a new object of this filter with filter restrictions
 
         :return: a dictionary possible to use as kwargs for the new method
         """
-        return
+        ba = inspect.signature(self.__class__.__init__).bind(0)
+        ba.apply_defaults()
+        args = ba.arguments
+        args.pop('self')
+        return args
 
-    def new(self, **kwargs): # -> Self: requires python >= 3.11
-        """retrieve a new Filter with restrictions set in kwargs
+    @abc.abstractmethod
+    def init_kwargs(self) -> dict:
+        """return the init kwargs"""
 
-        :return: a Filter object with restrictions
+
+    @abc.abstractmethod
+    def name(self) -> str:
+        """Return a unique name for this filter
+
+        :return: a string to be used by FilterFactory
         """
-        return self.__class__(**kwargs)
-
 
     def filter_data(self, data: Data, stations: [Station], variables: [str]) -> Data:
         """Filtering of data
@@ -58,6 +70,47 @@ class Filter(abc.ABC):
         """
         return variables
 
+    def __repr__(self):
+        return f"{type(self).__name__}(**{self.init_kwargs()})"
+
+class FilterFactoryException(Exception):
+    pass
+
+class FilterFactory():
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(FilterFactory, cls).__new__(cls)
+        return cls.instance
+
+    def __init__(self):
+        self._filters = {}
+
+    def register(self, filter: Filter):
+        """Register a new filter to the factory
+        with a filter object (might be empty)
+
+        :param filter: a filter implementation
+        """
+        if filter.name() in self._filters:
+            raise FilterFactoryException(
+                f"Cannot use {filter}: {filter.name()} already in use by {self.get(filter.name())}"
+            )
+        self._filters[filter.name()] = filter
+
+    def get(self, name, **kwargs):
+        """Get a filter by name. If kwargs are given, they will be send to the
+        filters new method
+
+        :param name: a filter-name
+        :return: a filter, optionally initialized
+        """
+        filter = self._filters[name]
+        return filter.__class__(**kwargs)
+
+    def list(self):
+        return self._filters.keys()
+
+filters = FilterFactory()
 
 class VariableNameFilter(Filter):
     """Filter to change variable-names and/or include/exclude variables"""
@@ -73,12 +126,17 @@ class VariableNameFilter(Filter):
         """
         self._reader_to_new = reader_to_new
         self._new_to_reader = {v: k for k, v in reader_to_new.items()}
-        self._include = include
-        self._exclude = exclude
+        self._include = set(include)
+        self._exclude = set(exclude)
         return
 
-    def args(self):
-        return {'reader_to_new': {}, 'include': [], 'exclude': []}
+    def init_kwargs(self):
+        return {"reader_to_new": self._reader_to_new,
+                "include": list(self._include),
+                "exclude": list(self._exclude)}
+
+    def name(self):
+        return "variables"
 
     def filter_data(self, data, stations, variables):
         """Translate data's variable"""
@@ -120,6 +178,9 @@ class VariableNameFilter(Filter):
         new_var = self._reader_to_new.get(variable, variable)
         return self.has_variable(new_var)
 
+filters.register(VariableNameFilter())
+
+
 class DataIndexFilter(Filter):
     """A abstract baseclass implementing filter_data by an abstract method
     filter_data_idx"""
@@ -134,6 +195,7 @@ class DataIndexFilter(Filter):
     def filter_data(self, data: Data, stations: dict[str, Station], variables: str):
         idx = self.filter_data_idx(data, stations, variables)
         return data.slice(idx)
+
 
 class StationReductionFilter(DataIndexFilter):
     """Abstract method for all filters, which work on reducing the number of stations only.
@@ -160,8 +222,12 @@ class StationFilter(StationReductionFilter):
         self._exclude = set(exclude)
         return
 
-    def args(self):
-        return {'include': [], 'exclude': []}
+    def init_kwargs(self):
+        return {"include": list(self._include),
+                "exclude": list(self._exclude)}
+
+    def name(self):
+        return "stations"
 
     def has_station(self, station) -> bool:
         if len(self._include) > 0:
@@ -173,6 +239,10 @@ class StationFilter(StationReductionFilter):
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         return {s: v for s, v in stations.items() if self.has_station(s)}
+
+filters.register(StationFilter())
+
+
 
 class CountryFilter(StationReductionFilter):
 
@@ -186,8 +256,12 @@ class CountryFilter(StationReductionFilter):
         self._exclude = set(exclude)
         return
 
-    def args(self):
-        return {'include': [], 'exclude': []}
+    def init_kwargs(self):
+        return {"include": list(self._include),
+                "exclude": list(self._exclude)}
+
+    def name(self):
+        return "countries"
 
     def has_country(self, country) -> bool:
         if len(self._include) > 0:
@@ -200,6 +274,8 @@ class CountryFilter(StationReductionFilter):
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         return {s: v for s, v in stations.items() if self.has_country(v.country)}
 
+filters.register(CountryFilter())
+
 
 class FlagFilter(DataIndexFilter):
 
@@ -209,13 +285,21 @@ class FlagFilter(DataIndexFilter):
         :param include: flags to include, defaults to [], meaning all flags
         :param exclude: flags to exclude, defaults to [], meaning none
         """
+        self._include = set(include)
         if len(include) == 0:
-            self._include = set([f for f in Flag])
+            all_include = set([f for f in Flag])
         else:
-            self._include = set(include)
+            all_include = self._include
         self._exclude = set(exclude)
-        self._valid = self._include.difference(self._exclude)
+        self._valid = all_include.difference(self._exclude)
         return
+
+    def name(self):
+        return "flags"
+
+    def init_kwargs(self):
+        return {"include": list(self._include),
+                "exclude": list(self._exclude)}
 
 
     def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str) -> Data:
@@ -223,5 +307,11 @@ class FlagFilter(DataIndexFilter):
         index = np.in1d(data.flags.dtype, validflags)
         return index
 
+filters.register(FlagFilter())
 
 
+if __name__ == "__main__":
+    for name, fil in filters._filters.items():
+        assert(name == fil.name())
+        print(name, fil.args())
+        print(fil)
