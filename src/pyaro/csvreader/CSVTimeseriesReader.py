@@ -120,35 +120,3 @@ class CSVTimeseriesEngine(Engine):
 
 
 
-if __name__ == "__main__":
-    import os
-    from pyaro.timeseries.Filter import StationFilter, CountryFilter
-
-    engine = CSVTimeseriesEngine()
-    engine.url()
-    engine.url
-    engine.description()
-    engine.args()
-    file = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                        'testdata', 'csvReader_testdata.csv')
-    with engine.open(file, filters=[]) as ts:
-        for var in ts.variables():
-            print(ts.data(var).slice(np.array([0,1,2])))
-        for st in ts.stations().values():
-            print(st)
-
-    with engine.open(file, filters=[StationFilter(exclude=['station1'])]) as ts:
-        for var in ts.variables():
-            print(ts.data(var).slice(np.array([0,1,2])))
-        for st in ts.stations().values():
-            print(st)
-
-
-    # wrapper-test
-    from pyaro.timeseries.Wrappers import VariableNameChangingReader
-    with VariableNameChangingReader(engine.open(file, filters=[]),
-                                    {'SOx': 'oxidised_sulphur'}) as ts:
-        for var in ts.variables():
-            print(var, ts.data(var).slice(np.array([0,1,2])))
-
-    pass

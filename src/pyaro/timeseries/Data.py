@@ -202,7 +202,7 @@ class NpStructuredData(Data):
     def __init__(self, variable="", units="") -> None:
         self._variable = variable
         self._units = units
-        self._data = np.zeros((), dtype=self._dtype)
+        self._data = np.empty(0, dtype=self._dtype)
 
     def __len__(self) -> int:
         """Number of data-points"""

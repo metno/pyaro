@@ -3,7 +3,7 @@ import functools
 import sys
 import warnings
 
-from importlib_metadata import EntryPoints, entry_points
+from importlib.metadata import EntryPoints, entry_points
 from .timeseries.Engine import Engine as TimeseriesEngine
 from .timeseries.Reader import Reader as TimeseriesReader
 
