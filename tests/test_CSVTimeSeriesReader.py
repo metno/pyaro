@@ -12,7 +12,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                         'testdata', 'csvReader_testdata.csv')
     def test_init(self):
         engine = CSVTimeseriesEngine()
-        self.assertEquals(engine.url(), "https://github.com/metno/pyaro")
+        self.assertEqual(engine.url(), "https://github.com/metno/pyaro")
         # just see that it doesn't fails
         engine.description()
         engine.args()

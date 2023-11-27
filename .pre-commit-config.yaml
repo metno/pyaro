@@ -1,0 +1,14 @@
+fail_fast: true
+default_install_hook_types: [pre-commit]
+repos:
+- repo: local
+  hooks:
+  - id: tox-code-checks
+    name: Run tox targets -- tests
+    stages: [commit]
+    language: system
+    types: [python]
+    pass_filenames: false
+    verbose: true
+    entry: tox -v
+
