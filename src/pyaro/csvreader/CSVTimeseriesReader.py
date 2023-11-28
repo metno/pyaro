@@ -30,7 +30,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         self._filename = filename
         self._stations = {}
         self._data = {} # var -> {data-array}
-        self.set_filters(filters)
+        self._set_filters(filters)
         with open(self._filename, newline='') as csvfile:
             crd = csv.reader(csvfile, **csvreader_kwargs)
             for row in crd:

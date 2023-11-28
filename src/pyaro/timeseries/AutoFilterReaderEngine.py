@@ -19,6 +19,8 @@ class AutoFilterReader(Reader):
     possible filters. This is both used for the AutoEngine, and for the
     check_filters method which should be used during initialization when
     filters are given.
+
+    The implementation must also use _set_filters() to add the filters from __init__.
     """
 
     @classmethod
@@ -33,7 +35,7 @@ class AutoFilterReader(Reader):
 
         return filts
 
-    def set_filters(self, filters):
+    def _set_filters(self, filters):
         supported = set()
         for sf in self.supported_filters():
             supported.add(sf.__class__)
@@ -48,7 +50,7 @@ class AutoFilterReader(Reader):
                 raise UnkownFilterException(f"Filter {filt.__class__} not supported in {supported}.")
         self._filters = filters
 
-    def get_filters(self) -> [Filter]:
+    def _get_filters(self) -> [Filter]:
         """Get a list of filters actually set during initialization of this object.
 
         :return: list of filters
@@ -68,24 +70,24 @@ class AutoFilterReader(Reader):
         pass
     def variables(self) -> list[str]:
         vars = self._unfiltered_variables()
-        for fi in self._filters:
+        for fi in self._get_filters():
             vars = fi.filter_variables(vars)
         return vars
 
     def stations(self) -> dict[str, Station]:
         stats = self._unfiltered_stations()
-        for fi in self._filters:
+        for fi in self._get_filters():
             stats = fi.filter_stations(stats)
         return stats
 
     def data(self, varname) -> Data:
-        for fi in self._filters:
+        for fi in self._get_filters():
             if isinstance(fi, VariableNameFilter):
                 varname = fi.reader_varname(varname)
         dat = self._unfiltered_data(varname)
         stats = self._unfiltered_stations()
         vars = self._unfiltered_variables()
-        for fi in self._filters:
+        for fi in self._get_filters():
             dat = fi.filter_data(dat, stats, vars)
         return dat
 

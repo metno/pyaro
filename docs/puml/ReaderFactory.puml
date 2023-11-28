@@ -1,4 +1,4 @@
-@startuml
+@startuml ReaderFactory
 
 skinparam class {
   backgroundColor whitesmoke

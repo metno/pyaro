@@ -1,3 +1,5 @@
+@startuml Filter
+
 class timeseries.FilterFactory {
     +get(name): Filter
     +register(filter)
