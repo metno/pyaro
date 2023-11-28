@@ -13,7 +13,8 @@ def build_timeseries_engines(entrypoints: EntryPoints) -> dict[str, TimeseriesEn
     for entrypoint in entrypoints:
         name = entrypoint.name
         if name in backend_entrypoints:
-            return
+            warnings.warn(f"found multiple versions of {entrypoint.group} entrypoint {name} for {entrypoint.value}")
+            continue
         try:
             backend = entrypoint.load()
             backend_entrypoints[name] = backend()
