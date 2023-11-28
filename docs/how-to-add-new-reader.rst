@@ -148,7 +148,7 @@ How to register a reader (backend)
 
 Define a new entrypoint in your ``setup.py`` (or ``setup.cfg``) with:
 
-- group: ``pyaro.timeseries_readers``
+- group: ``pyaro.timeseries``
 - name: the name to be passed to :py:meth:`~pyaro.timeseries`  as ``engine``
 - object reference: the reference of the Engine-class that you have implemented.
 

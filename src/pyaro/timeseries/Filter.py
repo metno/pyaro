@@ -80,10 +80,8 @@ class FilterFactory():
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(FilterFactory, cls).__new__(cls)
+            cls.instance._filters = {}
         return cls.instance
-
-    def __init__(self):
-        self._filters = {}
 
     def register(self, filter: Filter):
         """Register a new filter to the factory
@@ -138,6 +136,22 @@ class VariableNameFilter(Filter):
     def name(self):
         return "variables"
 
+    def reader_varname(self, new_variable: str) -> str:
+        """convert a new variable name to a reader-variable name
+
+        :param new_variable: variable name after translation
+        :return: variable name in the original reader
+        """
+        return self._new_to_reader.get(new_variable, new_variable)
+
+    def new_varname(self, reader_variable: str) -> str:
+        """convert a reader-variable to a new variable name
+
+        :param reader_variable: variable as used in the reader
+        :return: variable name after translation
+        """
+        return self._reader_to_new.get(reader_variable, reader_variable)
+
     def filter_data(self, data, stations, variables):
         """Translate data's variable"""
         data._set_variable(self._reader_to_new.get(data.variable, data.variable))
@@ -151,10 +165,11 @@ class VariableNameFilter(Filter):
         """
         newlist = []
         for x in variables:
-            newvar = self._reader_to_new.get(x, x)
+            newvar = self.new_varname(x)
             if self.has_variable(newvar):
                 newlist.append(newvar)
         return newlist
+
 
     def has_variable(self, variable) -> bool:
         """check if a variable-name is in the list of variables applying include and exclude
@@ -175,7 +190,7 @@ class VariableNameFilter(Filter):
         :param variable: variable as returned from the reader
         :return: True or False
         """
-        new_var = self._reader_to_new.get(variable, variable)
+        new_var = self.new_varname(variable)
         return self.has_variable(new_var)
 
 filters.register(VariableNameFilter())

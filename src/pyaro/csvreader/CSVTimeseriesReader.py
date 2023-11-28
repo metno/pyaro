@@ -1,9 +1,10 @@
 import csv
 import numpy as np
-from pyaro.timeseries import Data, NpStructuredData, Flag, Reader, Station, Engine
+from pyaro.timeseries import Data, NpStructuredData, Flag, Station
+import pyaro.timeseries.AutoFilterReaderEngine
 
 
-class CSVTimeseriesReader(Reader):
+class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader):
     def __init__(
                 self,
                 filename,
@@ -29,7 +30,7 @@ class CSVTimeseriesReader(Reader):
         self._filename = filename
         self._stations = {}
         self._data = {} # var -> {data-array}
-        self._filters = filters
+        self.set_filters(filters)
         with open(self._filename, newline='') as csvfile:
             crd = csv.reader(csvfile, **csvreader_kwargs)
             for row in crd:
@@ -77,39 +78,15 @@ class CSVTimeseriesReader(Reader):
     def _unfiltered_variables(self) -> list[str]:
         return self._data.keys()
 
-    def variables(self) -> list[str]:
-        vars = self._unfiltered_variables()
-        for fi in self._filters:
-            vars = fi.filter_variables(vars)
-        return vars
-
-    def stations(self) -> dict[str, Station]:
-        stats = self._unfiltered_stations()
-        for fi in self._filters:
-            stats = fi.filter_stations(stats)
-        return stats
-
-    def data(self, varname) -> Data:
-        dat = self._unfiltered_data(varname)
-        stats = self._unfiltered_stations()
-        vars = self._unfiltered_variables()
-        for fi in self._filters:
-            dat = fi.filter_data(dat, stats, vars)
-        return dat
-
-
     def close(self):
         pass
 
-class CSVTimeseriesEngine(Engine):
+class CSVTimeseriesEngine(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine):
+    def reader_class(self):
+        return CSVTimeseriesReader
+
     def open(self, filename, *args, **kwargs) -> CSVTimeseriesReader:
-        return CSVTimeseriesReader(filename, *args, **kwargs)
-
-    def args(self):
-        return ("filename", "columns", "csvreader_kwargs", "variable_units", "filters")
-
-    def supported_filters(self):
-        return ("")
+        return self.reader_class()(filename, *args, **kwargs)
 
     def description(self):
         return "Simple reader of csv-files using python csv-reader"

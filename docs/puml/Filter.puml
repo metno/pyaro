@@ -3,8 +3,10 @@ class timeseries.FilterFactory {
     +register(filter)
     +list(): [str]
 }
-note right of timeseries.FilterFactory
-    Singelton
+note top of timeseries.FilterFactory
+  Singelton
+  instance available as
+  pyaro.timeseries.filters
 end note
 
 interface timeseries.Filter {
@@ -26,6 +28,8 @@ class timeseries.VariableNameFilter {
   + init_args(): dict
   + filter_variables(variables): [str]
   + filter_data(data, stations, variables): Data
+    new_varname(reader_varname): str
+    reader_varname(new_varname): str
   ...
 }
 
@@ -73,3 +77,7 @@ timeseries.StationReductionFilter <|.. timeseries.StationFilter
 timeseries.StationReductionFilter <|.. timeseries.CountryFilter
 timeseries.Filter <|.. timeseries.FlagFilter
 
+timeseries.FilterFactory ..> timeseries.VariableNameFilter
+timeseries.FilterFactory ..> timeseries.StationFilter
+timeseries.FilterFactory ..> timeseries.CountryFilter
+timeseries.FilterFactory ..> timeseries.FlagFilter

@@ -1,6 +1,7 @@
 import abc
 from .Data import Data
 from .Station import Station
+from .Filter import Filter, filters
 
 class Reader(abc.ABC):
     """Baseclass for timeseries. This can be used with a context manager"""
@@ -13,7 +14,7 @@ class Reader(abc.ABC):
         All parameters should also be listed in the Engine's args function.
 
         :param filename_or_obj_or_url: location of database instance
-        :param filters: list of filters
+        :param filters: list of filters, or dict of (name, kwargs) for FilterFactory
         """
         pass
 

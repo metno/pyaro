@@ -3,7 +3,7 @@ import os
 
 import numpy as np
 import pyaro
-from pyaro.timeseries.Filter import StationFilter, CountryFilter
+import pyaro.timeseries
 from pyaro.timeseries.Wrappers import VariableNameChangingReader
 
 
@@ -25,7 +25,8 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
 
     def test_stationfilter(self):
         engine = pyaro.list_timeseries_engines()['csv_timeseries']
-        with engine.open(self.file, filters=[StationFilter(exclude=['station1'])]) as ts:
+        sfilter = pyaro.timeseries.filters.get('stations', exclude=['station1'])
+        with engine.open(self.file, filters=[sfilter]) as ts:
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -37,6 +38,14 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         newsox = 'oxidised_sulphur'
         with VariableNameChangingReader(engine.open(self.file, filters=[]),
                                         {'SOx': newsox}) as ts:
+            self.assertEqual(ts.data(newsox).variable, newsox)
+        pass
+
+    def test_variables_filter(self):
+        engine = pyaro.list_timeseries_engines()['csv_timeseries']
+        newsox = 'oxidised_sulphur'
+        vfilter = pyaro.timeseries.filters.get('variables', reader_to_new={'SOx': newsox})
+        with engine.open(self.file, filters=[vfilter]) as ts:
             self.assertEqual(ts.data(newsox).variable, newsox)
         pass
 
