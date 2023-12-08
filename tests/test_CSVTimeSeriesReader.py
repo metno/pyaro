@@ -58,6 +58,28 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.assertEqual(len(ts.stations()), 1)
             self.assertEqual(count, 104)
 
+    def test_flagfilter(self):
+        engine = pyaro.list_timeseries_engines()['csv_timeseries']
+        ffilter = pyaro.timeseries.filters.get('flags',
+                                               include=[pyaro.timeseries.Flag.VALID, pyaro.timeseries.Flag.BELOW_THRESHOLD])
+        self.assertEqual(ffilter.init_kwargs()['include'][0], pyaro.timeseries.Flag.VALID)
+        with engine.open(self.file, filters=[ffilter]) as ts:
+            count = 0
+            for var in ts.variables():
+                count += len(ts.data(var))
+            self.assertEqual(len(ts.stations()), 2)
+            self.assertEqual(count, 208)
+
+        ffilter = pyaro.timeseries.filters.get('flags',
+                                               include=[pyaro.timeseries.Flag.INVALID])
+        with engine.open(self.file, filters=[ffilter]) as ts:
+            count = 0
+            for var in ts.variables():
+                count += len(ts.data(var))
+            self.assertEqual(len(ts.stations()), 2)
+            self.assertEqual(count, 0)
+
+
 
     def test_wrappers(self):
         engine = pyaro.list_timeseries_engines()['csv_timeseries']

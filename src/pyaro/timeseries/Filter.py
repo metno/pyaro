@@ -408,7 +408,7 @@ class FlagFilter(DataIndexFilter):
 
     def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str) -> Data:
         validflags = np.fromiter(self._valid, dtype=data.flags.dtype)
-        index = np.in1d(data.flags.dtype, validflags)
+        index = np.in1d(data.flags, validflags)
         return index
 
 filters.register(FlagFilter())
