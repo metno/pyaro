@@ -71,7 +71,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                                                end_exclude=[("1997-01-05 00:00:00",
                                                              "1997-01-07 00:00:00"
                                                              )]
-                                                                  )
+                                                )
         self.assertEqual(tfilter.init_kwargs()['startend_include'][0][1], "1997-02-01 00:00:00")
         with engine.open(self.file, filters=[tfilter]) as ts:
             count = 0

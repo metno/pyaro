@@ -32,6 +32,8 @@ class timeseries.VariableNameFilter {
   + filter_data(data, stations, variables): Data
     new_varname(reader_varname): str
     reader_varname(new_varname): str
+    has_variable(new_varname): bool
+    has_reader_variable(reader_varname): bool
 }
 
 abstract class timeseries.DataIndexFilter {
@@ -50,6 +52,7 @@ class timeseries.StationFilter {
   + name(): "stations"
   + init_kwargs(): dict
   + filter_stations(stations): dict[str, Station]
+  has_station(station): bool
 }
 
 class timeseries.CountryFilter {
@@ -57,6 +60,7 @@ class timeseries.CountryFilter {
   + name(): "countries"
   + init_kwargs(): dict
   + filter_stations(stations): dict[str, Station]
+  has_country(iso2_str): bool
 }
 
 class timeseries.BoundingBoxFilter {
@@ -64,6 +68,7 @@ class timeseries.BoundingBoxFilter {
   + name(): "bounding_boxes"
   + init_kwargs(): dict
   + filter_stations(stations): dict[str, Station]
+  has_location(lat, lon): bool
 }
 
 class timeseries.TimeBoundsFilter {
@@ -71,6 +76,9 @@ class timeseries.TimeBoundsFilter {
   + name(): "time_bounds"
   + init_kwargs(): dict
   + filter_data_idx(data, stations, variables): Data
+  has_envelope(): bool
+  envelope(): (start, end)
+  contains(start_dt_array, end_dt_array): bool-array
 }
 
 
@@ -79,6 +87,7 @@ class timeseries.FlagFilter {
   + name(): "flags"
   + init_kwargs(): dict
   + filter_data_idx(data, stations, variables): Data
+  usable_flags(): set(flags)
 }
 
 

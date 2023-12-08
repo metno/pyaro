@@ -348,8 +348,8 @@ class BoundingBoxFilter(StationReductionFilter):
     def name(self):
         return "bounding_boxes"
 
-    def has_coordinates(self, latitude, longitude):
-        """Test if coordinates are part of this filter.
+    def has_location(self, latitude, longitude):
+        """Test if the locations coordinates are part of this filter.
 
         :param latitude: latitude coordinate in degree_north [-90, 90]
         :param longitude: longitude coordinate in degree_east [-180, 180]
@@ -378,7 +378,7 @@ class BoundingBoxFilter(StationReductionFilter):
 
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
-        return {s: v for s, v in stations.items() if self.has_coordinates(v.latitude, v.longitude)}
+        return {s: v for s, v in stations.items() if self.has_location(v.latitude, v.longitude)}
 
 filters.register(BoundingBoxFilter())
 
@@ -407,6 +407,8 @@ class FlagFilter(DataIndexFilter):
         return {"include": list(self._include),
                 "exclude": list(self._exclude)}
 
+    def usable_flags(self):
+        return self._valid
 
     def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str) -> Data:
         validflags = np.fromiter(self._valid, dtype=data.flags.dtype)
