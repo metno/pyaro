@@ -5,7 +5,7 @@ class timeseries.FilterFactory {
     +register(filter)
     +list(): [str]
 }
-note top of timeseries.FilterFactory
+note right of timeseries.FilterFactory
   Singelton
   instance available as
   pyaro.timeseries.filters
@@ -15,7 +15,7 @@ interface timeseries.Filter {
   - __init__() # unrestricted and kwargs
   --
   - name(): str
-  - init_args(): dict
+  - init_kwargs(): dict
   + args(): dict
   + __rep__(): str
    filter_data(data, stations, variables): Data
@@ -63,6 +63,14 @@ class timeseries.CountryFilter {
   ...
 }
 
+class timeseries.BoundingBoxFilter {
+  + __init__(include=[country], exclude=[country]): CountryFilter
+  + name: "bounding_boxes"
+  + init_args(): dict
+  + filter_stations(stations): dict[str, Station]
+  ...
+}
+
 class timeseries.FlagFilter {
   + __init__(include=[flag], exclude=[flag]): FlagFilter
   + name: "flags"
@@ -77,9 +85,11 @@ timeseries.Filter <|.. timeseries.DataIndexFilter
 timeseries.DataIndexFilter <|.. timeseries.StationReductionFilter
 timeseries.StationReductionFilter <|.. timeseries.StationFilter
 timeseries.StationReductionFilter <|.. timeseries.CountryFilter
-timeseries.Filter <|.. timeseries.FlagFilter
+timeseries.StationReductionFilter <|.. timeseries.BoundingBoxFilter
+timeseries.DataIndexFilter <|.. timeseries.FlagFilter
 
 timeseries.FilterFactory ..> timeseries.VariableNameFilter
 timeseries.FilterFactory ..> timeseries.StationFilter
 timeseries.FilterFactory ..> timeseries.CountryFilter
+timeseries.FilterFactory ..> timeseries.BoundingBoxFilter
 timeseries.FilterFactory ..> timeseries.FlagFilter

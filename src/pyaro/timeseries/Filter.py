@@ -292,6 +292,95 @@ class CountryFilter(StationReductionFilter):
 filters.register(CountryFilter())
 
 
+class BoundingBoxException(Exception):
+    pass
+
+class BoundingBoxFilter(StationReductionFilter):
+    """Filter using geographical bounding-boxes
+    """
+
+    def __init__(self, include: [(float, float, float, float)]=[], exclude: [(float, float, float, float)]=[]):
+        """Filter using geographical bounding-boxes. Coordinates should be given in the range
+        [-180,180] (degrees_east) for longitude and [-90,90] (degrees_north) for latitude.
+        Order of coordinates is clockwise starting with north, i.e.: (north, east, south, west) = NESW
+
+        :param include: bounding boxes to include. Each bounding box is a tuple of four float for
+            (NESW),  defaults to [] meaning no restrictions
+        :param exclude: bounding boxes to exclude. Defaults to []
+        """
+        for tup in include:
+            self._test_bounding_box(tup)
+        for tup in exclude:
+            self._test_bounding_box(tup)
+
+        self._include = set(include)
+        self._exclude = set(exclude)
+        return
+
+    def _test_bounding_box(self, tup):
+        """_summary_
+
+        :param tup: A bounding-box tuple of form (north, east, south, west)
+        :raises BoundingBoxException: on any errors of the bounding box
+        """
+        if len(tup) != 4:
+            raise BoundingBoxException(f"({tup}) has not four NESW elements")
+        if not (-90 <= tup[0] <= 90):
+            raise BoundingBoxException(f"north={tup[0]} not within [-90,90] in {tup}")
+        if not (-90 <= tup[2] <= 90):
+            raise BoundingBoxException(f"south={tup[2]} not within [-90,90] in {tup}")
+        if not (-180 <= tup[1] <= 180):
+            raise BoundingBoxException(f"east={tup[1]} not within [-180,180] in {tup}")
+        if not (-180 <= tup[3] <= 180):
+            raise BoundingBoxException(f"west={tup[3]} not within [-180,180] in {tup}")
+        if tup[0] < tup[2]:
+            raise BoundingBoxException(f"north={tup[0]} < south={tup[2]} in {tup}")
+        if tup[1] < tup[3]:
+            raise BoundingBoxException(f"east={tup[1]} < west={tup[3]} in {tup}")
+        return True
+
+    def init_kwargs(self):
+        return {"include": list(self._include),
+                "exclude": list(self._exclude)}
+
+    def name(self):
+        return "bounding_boxes"
+
+    def has_coordinates(self, latitude, longitude):
+        """Test if coordinates are part of this filter.
+
+        :param latitude: latitude coordinate in degree_north [-90, 90]
+        :param longitude: longitude coordinate in degree_east [-180, 180]
+        """
+        if len(self._include) == 0:
+            inside_include = True
+        else:
+            inside_include = False
+            for (n,e,s,w) in self._include:
+                if not inside_include: # one inside test is enough
+                    if (s <= latitude <= n):
+                        if (w <= longitude <= e):
+                            inside_include = True
+
+        if not inside_include:
+            return False # no more tests required
+
+        outside_exclude = True
+        for (n,e,s,w) in self._exclude:
+            if outside_exclude: # if known to be inside of any other exclude BB, no more tests
+                if (s <= latitude <= n):
+                    if (w <= longitude <= e):
+                        outside_exclude = False
+
+        return inside_include & outside_exclude
+
+
+    def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
+        return {s: v for s, v in stations.items() if self.has_coordinates(v.latitude, v.longitude)}
+
+filters.register(BoundingBoxFilter())
+
+
 class FlagFilter(DataIndexFilter):
 
     def __init__(self, include: [Flag]=[], exclude: [Flag]=[]):
