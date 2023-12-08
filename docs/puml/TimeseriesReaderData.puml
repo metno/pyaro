@@ -20,7 +20,7 @@ entity "Data_Data" {
   *longitudes: np.ndarray("f")
   *altitudes: np.ndarray("f")
   *start_time: np.ndarray("datetime64[s]" UTC)
-  *stop_time: np.ndarray("datetime64[s]" UTC)
+  *end_time: np.ndarray("datetime64[s]" UTC)
   *flags: np.ndarray("i4")
   *standard_deviations: np.ndarray("f")
 }

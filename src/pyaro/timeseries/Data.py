@@ -36,7 +36,7 @@ class Data(abc.ABC):
             ('longitudes', 'f'),
             ('altitudes', 'f'),
             ('start_times', 'datetime64[s]'),
-            ('stop_times', 'datetime64[s]'),
+            ('end_times', 'datetime64[s]'),
             ('flags', 'i2'),
             ('standard_deviations', 'f'),
         ]
@@ -192,7 +192,7 @@ class NpStructuredData(Data):
             ('longitudes', 'f'),
             ('altitudes', 'f'),
             ('start_times', 'datetime64[s]'),
-            ('stop_times', 'datetime64[s]'),
+            ('end_times', 'datetime64[s]'),
             ('flags', 'i2'),
             ('standard_deviations', 'f'),
         ]
@@ -217,7 +217,7 @@ class NpStructuredData(Data):
         considered metadata"""
         return self._data.dtype.names
 
-    def append(self, value, station, latitude, longitude, altitude, start_time, stop_time, flag=Flag.VALID, standard_deviation=np.nan):
+    def append(self, value, station, latitude, longitude, altitude, start_time, end_time, flag=Flag.VALID, standard_deviation=np.nan):
         """append with a new data-row
 
         :param value
@@ -226,13 +226,13 @@ class NpStructuredData(Data):
         :param longitude
         :param altitude
         :param start_time
-        :param stop_time
+        :param end_time
         :param flag: defaults to Flag.VALID
         :param standard_deviation: defaults to np.nan
         """
         if len(station) > 64:
             raise Exception(f"station name too long, max 64char: {station}")
-        x = np.array([(value, station, latitude, longitude, altitude, start_time, stop_time, flag, standard_deviation)],
+        x = np.array([(value, station, latitude, longitude, altitude, start_time, end_time, flag, standard_deviation)],
                     dtype=self._dtype)
         self._data = np.append(self._data, x)
         return
