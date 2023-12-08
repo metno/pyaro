@@ -34,7 +34,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.assertEqual(len(ts.stations()), 1)
 
     def test_boundingboxfilter_exception(self):
-        with self.assertRaises(Exception): #pyaro.timeseries.Filter.BoundingBoxException
+        with self.assertRaises(pyaro.timeseries.Filter.BoundingBoxException):
             pyaro.timeseries.filters.get('bounding_boxes', include=[(-90,0,90,180)])
 
     def test_boundingboxfilter(self):
@@ -57,6 +57,29 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 count += len(ts.data(var))
             self.assertEqual(len(ts.stations()), 1)
             self.assertEqual(count, 104)
+
+    def test_timebounds_exception(self):
+        with self.assertRaises(pyaro.timeseries.Filter.TimeBoundsException):
+            pyaro.timeseries.filters.get('time_bounds', start_include=[("1903-01-01 00:00:00","1901-12-31 23:59:59")])
+
+    def test_timebounds(self):
+        engine = pyaro.list_timeseries_engines()['csv_timeseries']
+        tfilter = pyaro.timeseries.filters.get('time_bounds',
+                                               startend_include=[("1997-01-01 00:00:00",
+                                                                  "1997-02-01 00:00:00"
+                                                                  )],
+                                               end_exclude=[("1997-01-05 00:00:00",
+                                                             "1997-01-07 00:00:00"
+                                                             )]
+                                                                  )
+        self.assertEqual(tfilter.init_kwargs()['startend_include'][0][1], "1997-02-01 00:00:00")
+        with engine.open(self.file, filters=[tfilter]) as ts:
+            count = 0
+            for var in ts.variables():
+                count += len(ts.data(var))
+            self.assertEqual(len(ts.stations()), 2)
+            self.assertEqual(count, 112)
+
 
     def test_flagfilter(self):
         engine = pyaro.list_timeseries_engines()['csv_timeseries']

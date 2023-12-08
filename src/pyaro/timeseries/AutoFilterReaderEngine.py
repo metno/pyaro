@@ -30,7 +30,7 @@ class AutoFilterReader(Reader):
         :return: list of filters
         """
         filts = []
-        for f in "variables,stations,countries,bounding_boxes,flags".split(","):
+        for f in "variables,stations,countries,bounding_boxes,time_bounds,flags".split(","):
             filts.append(filters.get(f))
 
         return filts

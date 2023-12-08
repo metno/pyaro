@@ -26,13 +26,12 @@ interface timeseries.Filter {
 
 class timeseries.VariableNameFilter {
   + __init__(reader_to_new, include, exclude): VariableNameChangingFilter
-  + name: "variables"
-  + init_args(): dict
+  + name(): "variables"
+  + init_kwargs(): dict
   + filter_variables(variables): [str]
   + filter_data(data, stations, variables): Data
     new_varname(reader_varname): str
     reader_varname(new_varname): str
-  ...
 }
 
 abstract class timeseries.DataIndexFilter {
@@ -42,41 +41,44 @@ abstract class timeseries.DataIndexFilter {
 
 
 abstract class timeseries.StationReductionFilter {
-  - __init__
   + filter_data_idx(data, stations, variables): Data
   - filter_stations(stations): dict[str, Station]
 }
 
 class timeseries.StationFilter {
   + __init__(include=[station], exclude=[station]): StationFilter
-  + name: "stations"
-  + init_args(): dict
+  + name(): "stations"
+  + init_kwargs(): dict
   + filter_stations(stations): dict[str, Station]
-  ...
 }
 
 class timeseries.CountryFilter {
   + __init__(include=[country], exclude=[country]): CountryFilter
-  + name: "countries"
-  + init_args(): dict
+  + name(): "countries"
+  + init_kwargs(): dict
   + filter_stations(stations): dict[str, Station]
-  ...
 }
 
 class timeseries.BoundingBoxFilter {
   + __init__(include=[country], exclude=[country]): CountryFilter
-  + name: "bounding_boxes"
-  + init_args(): dict
+  + name(): "bounding_boxes"
+  + init_kwargs(): dict
   + filter_stations(stations): dict[str, Station]
-  ...
 }
+
+class timeseries.TimeBoundsFilter {
+  + __init__(start_include=[flag], start_exclude=[flag],\n start_end_include, startend_exclude,\n end_include, end_exclude): FlagFilter
+  + name(): "time_bounds"
+  + init_kwargs(): dict
+  + filter_data_idx(data, stations, variables): Data
+}
+
 
 class timeseries.FlagFilter {
   + __init__(include=[flag], exclude=[flag]): FlagFilter
-  + name: "flags"
-  + init_args(): dict
-  + filter_data(data, stations, variables): Data
-  ...
+  + name(): "flags"
+  + init_kwargs(): dict
+  + filter_data_idx(data, stations, variables): Data
 }
 
 
@@ -86,10 +88,12 @@ timeseries.DataIndexFilter <|.. timeseries.StationReductionFilter
 timeseries.StationReductionFilter <|.. timeseries.StationFilter
 timeseries.StationReductionFilter <|.. timeseries.CountryFilter
 timeseries.StationReductionFilter <|.. timeseries.BoundingBoxFilter
+timeseries.DataIndexFilter <|.. timeseries.TimeBoundsFilter
 timeseries.DataIndexFilter <|.. timeseries.FlagFilter
 
 timeseries.FilterFactory ..> timeseries.VariableNameFilter
 timeseries.FilterFactory ..> timeseries.StationFilter
 timeseries.FilterFactory ..> timeseries.CountryFilter
 timeseries.FilterFactory ..> timeseries.BoundingBoxFilter
+timeseries.FilterFactory ..> timeseries.TimeBoundsFilter
 timeseries.FilterFactory ..> timeseries.FlagFilter

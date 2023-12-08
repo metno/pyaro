@@ -1,6 +1,7 @@
 
 
 import abc
+from datetime import datetime
 import inspect
 
 import numpy as np
@@ -307,6 +308,7 @@ class BoundingBoxFilter(StationReductionFilter):
         :param include: bounding boxes to include. Each bounding box is a tuple of four float for
             (NESW),  defaults to [] meaning no restrictions
         :param exclude: bounding boxes to exclude. Defaults to []
+        :raises BoundingBoxException: on any errors of the bounding boxes
         """
         for tup in include:
             self._test_bounding_box(tup)
@@ -412,6 +414,132 @@ class FlagFilter(DataIndexFilter):
         return index
 
 filters.register(FlagFilter())
+
+class TimeBoundsException(Exception):
+    pass
+class TimeBoundsFilter(DataIndexFilter):
+    time_format = '%Y-%m-%d %H:%M:%S'
+    def __init__(
+            self,
+            start_include: [(str, str)]=[],
+            start_exclude: [(str, str)]=[],
+            startend_include: [(str, str)]=[],
+            startend_exclude: [(str, str)]=[],
+            end_include: [(str, str)]=[],
+            end_exclude: [(str, str)]=[]
+    ):
+        """Filter data by start and/or end-times of the measurements. Each timebound consists
+        of a bound-start and bound-end (both included). Timestamps are given as YYYY-MM-DD HH:MM:SS
+
+        :param start_include: list of tuples of start-times, defaults to [], meaning all
+        :param start_exclude: list of tuples of start-times, defaults to []
+        :param startend_include: list of tuples of start and end-times, defaults to [], meaning all
+        :param startend_exclude: list of tuples of start and end-times, defaults to []
+        :param end_include: list of tuples of end-times, defaults to [], meaning all
+        :param end_exclude: list of tuples of end-times, defaults to []
+        :raises TimeBoundsException: on any errors with the time-bounds
+        """
+        self._start_include = self._str_list_to_datetime_list(start_include)
+        self._start_exclude = self._str_list_to_datetime_list(start_exclude)
+        self._startend_include = self._str_list_to_datetime_list(startend_include)
+        self._startend_exclude = self._str_list_to_datetime_list(startend_exclude)
+        self._end_include = self._str_list_to_datetime_list(end_include)
+        self._end_exclude = self._str_list_to_datetime_list(end_exclude)
+        return
+
+    def name(self):
+        return "time_bounds"
+
+    def _str_list_to_datetime_list(self, tuple_list:[(str,str)]):
+        retlist = []
+        for (start, end) in tuple_list:
+            start_dt = datetime.strptime(start, self.time_format)
+            end_dt = datetime.strptime(end, self.time_format)
+            if (start_dt > end_dt):
+                raise TimeBoundsException(f"(start later than end) for (f{start} > f{end})")
+            retlist.append((start_dt, end_dt))
+        return retlist
+
+    def _datetime_list_to_str_list(self, tuple_list) -> [(str, str)]:
+        retlist = []
+        for (start_dt, end_dt) in tuple_list:
+            retlist.append((start_dt.strftime(self.time_format), end_dt.strftime(self.time_format)))
+        return retlist
+
+
+    def init_kwargs(self):
+        return {"start_include": self._datetime_list_to_str_list(self._start_include),
+                "start_exclude": self._datetime_list_to_str_list(self._start_exclude),
+                "startend_include": self._datetime_list_to_str_list(self._startend_include),
+                "startend_exclude": self._datetime_list_to_str_list(self._startend_exclude),
+                "end_include": self._datetime_list_to_str_list(self._startend_include),
+                "end_exclude": self._datetime_list_to_str_list(self._startend_exclude)}
+
+    def _index_from_include_exclude(self, times1, times2, includes, excludes):
+        idx = times1.astype('bool')
+        if len(includes) == 0:
+            idx[:] = True
+        else:
+            idx[:] = False
+            for (start, end) in includes:
+                idx |= (start <= times1) & (times2 <= end)
+
+        for (start, end) in excludes:
+            idx &= (times1 < start) | (end < times2)
+
+        return idx
+
+    def has_envelope(self):
+        """Check if this filter has an envelope, i.e. a earliest and latest time
+        """
+        return len(self._start_include) or len(self._startend_include) or len(self._end_include)
+
+    def envelope(self) -> (datetime, datetime):
+        """Get the earliest and latest time possible for this filter.
+
+        :return: earliest start and end-time (approximately)
+        :raises TimeBoundsException: if has_envelope() is False, or internal errors
+        """
+        if not self.has_envelope():
+            raise TimeBoundsException("TimeBounds-envelope called but no envelope exists")
+        start = datetime.max()
+        end = datetime.min()
+        for (s, e) in self._start_include + self._startend_include + self._end_include:
+            start = min(start, s)
+            end = max(end, s)
+        if end < start:
+            raise TimeBoundsException(f"TimeBoundsEnvelope end < start: {end} < {start}")
+        return (start, end)
+
+    def contains(self, dt_start, dt_end):
+        """Test if datetimes in dt_start, dt_end belong to this filter
+
+        :param dt_start: numpy array of datetimes
+        :param dt_end: numpy array of datetimes
+        :return: numpy boolean array with True/False values
+        """
+        idx = self._index_from_include_exclude(dt_start,
+                                               dt_start,
+                                               self._start_include,
+                                               self._start_exclude)
+        idx &= self._index_from_include_exclude(dt_start,
+                                                dt_end,
+                                                self._startend_include,
+                                                self._startend_exclude)
+        idx &= self._index_from_include_exclude(dt_end,
+                                                dt_end,
+                                                self._end_include,
+                                                self._end_exclude)
+        return idx
+
+
+    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str) -> Data:
+        return self.contains(data.start_times, data.end_times)
+
+
+filters.register(TimeBoundsFilter())
+
+
 
 
 if __name__ == "__main__":
