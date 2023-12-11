@@ -173,6 +173,38 @@ class Data(abc.ABC):
         return
 
 
+class DynamicRecArray():
+    def __init__(self, dtype):
+        self.dtype = np.dtype(dtype)
+        self.length = 0
+        self.size = 20
+        self._data = np.empty(self.size, dtype=self.dtype)
+
+    def __len__(self):
+        return self.length
+
+    def append(self, rec):
+        if self.size < 20:
+            self.size = 20
+            self._data = np.resize(self._data, self.size)
+        if self.length == self.size:
+            if self.size > 2000:
+                self.size += 1000
+            else:
+                self.size = int(1.5*self.size)
+            self._data = np.resize(self._data, self.size)
+        self._data[self.length] = rec
+        self.length += 1
+
+    def set_data(self, data):
+        self.length = len(data)
+        self.size = len(data)
+        self._data = data
+
+    @property
+    def data(self):
+        return self._data[:self.length]
+
 
 class NpStructuredData(Data):
     """An implementation of Data using numpy Structured Arrays.
@@ -202,20 +234,20 @@ class NpStructuredData(Data):
     def __init__(self, variable="", units="") -> None:
         self._variable = variable
         self._units = units
-        self._data = np.empty(0, dtype=self._dtype)
+        self._data = DynamicRecArray(self._dtype)
 
     def __len__(self) -> int:
         """Number of data-points"""
-        return self._data["values"].size
+        return len(self._data)
 
     def __getitem__(self, key):
         """access the data as a dict"""
-        return self._data[key]
+        return self._data.data[key]
 
     def keys(self):
         """all available data-fields, excluding variable and units which are
         considered metadata"""
-        return self._data.dtype.names
+        return self._data.data.dtype.names
 
     def append(self, value, station, latitude, longitude, altitude, start_time, end_time, flag=Flag.VALID, standard_deviation=np.nan):
         """append with a new data-row
@@ -234,7 +266,7 @@ class NpStructuredData(Data):
             raise Exception(f"station name too long, max 64char: {station}")
         x = np.array([(value, station, latitude, longitude, altitude, start_time, end_time, flag, standard_deviation)],
                     dtype=self._dtype)
-        self._data = np.append(self._data, x)
+        self._data.append(x)
         return
 
     def set_data(self, variable: str, units: str, data: np.array):
@@ -263,7 +295,7 @@ class NpStructuredData(Data):
 
     def slice(self, index):
         newData = NpStructuredData()
-        newData.set_data(self. variable, self.units, self._data[index])
+        newData.set_data(self. variable, self.units, self._data.data[index])
         return newData
 
     @property
@@ -288,7 +320,7 @@ class NpStructuredData(Data):
 
         :return: 1dim array of floats
         """
-        return self._data["values"]
+        return self["values"]
 
     @property
     def stations(self) -> np.ndarray:
@@ -296,7 +328,7 @@ class NpStructuredData(Data):
 
         :return: 1dim array of strings, max-length 64-chars
         """
-        return self._data["stations"]
+        return self["stations"]
 
     @property
     def latitudes(self) -> np.ndarray:
@@ -304,7 +336,7 @@ class NpStructuredData(Data):
 
         :return: 1dim array of floats
         """
-        return self._data["latitudes"]
+        return self["latitudes"]
 
     @property
     def longitudes(self) -> np.ndarray:
@@ -312,7 +344,7 @@ class NpStructuredData(Data):
 
         :return: 1dim array of floats
         """
-        return self._data["longitudes"]
+        return self["longitudes"]
 
     @property
     def altitude(self) -> np.ndarray:
@@ -320,7 +352,7 @@ class NpStructuredData(Data):
 
         :return: 1dim array of floats
         """
-        return self._data["altitudes"]
+        return self["altitudes"]
 
     @property
     def start_times(self) -> np.ndarray:
@@ -329,7 +361,7 @@ class NpStructuredData(Data):
 
         :return: 1dim array of datetime64
         """
-        return self._data["start_times"]
+        return self["start_times"]
 
     @property
     def end_times(self) -> np.ndarray:
@@ -338,7 +370,7 @@ class NpStructuredData(Data):
 
         :return: 1dim array of datetime64
         """
-        return self._data["end_times"]
+        return self["end_times"]
 
     @property
     def flags(self) -> np.ndarray:
@@ -346,7 +378,7 @@ class NpStructuredData(Data):
 
         :return: 1dim array of ints
         """
-        return self._data["flags"]
+        return self["flags"]
 
     @property
     def standard_deviations(self) -> np.ndarray:
@@ -355,10 +387,10 @@ class NpStructuredData(Data):
 
         :return: 1dim array of floats
         """
-        return self._data["standard_deviations"]
+        return self["standard_deviations"]
 
 
     def __str__(self):
-        return f"{self.variable}, {self.units}, {self._data}"
+        return f"{self.variable}, {self.units}, {self._data.data}"
 
 
