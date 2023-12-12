@@ -177,28 +177,22 @@ class DynamicRecArray():
     def __init__(self, dtype):
         self.dtype = np.dtype(dtype)
         self.length = 0
-        self.size = 20
-        self._data = np.empty(self.size, dtype=self.dtype)
+        self.capacity = 10
+        self._data = np.empty(self.capacity, dtype=self.dtype)
 
     def __len__(self):
         return self.length
 
     def append(self, rec):
-        if self.size < 20:
-            self.size = 20
-            self._data = np.resize(self._data, self.size)
-        if self.length == self.size:
-            if self.size > 2000:
-                self.size += 1000
-            else:
-                self.size = int(1.5*self.size)
-            self._data = np.resize(self._data, self.size)
+        if self.length == self.capacity:
+            self.capacity += 10 + (self.capacity >> 3) # 20 + 1.125self.capacity
+            self._data = np.resize(self._data, self.capacity)
         self._data[self.length] = rec
         self.length += 1
 
     def set_data(self, data):
         self.length = len(data)
-        self.size = len(data)
+        self.capacity = len(data)
         self._data = data
 
     @property
@@ -264,9 +258,9 @@ class NpStructuredData(Data):
         """
         if len(station) > 64:
             raise Exception(f"station name too long, max 64char: {station}")
-        x = np.array([(value, station, latitude, longitude, altitude, start_time, end_time, flag, standard_deviation)],
-                    dtype=self._dtype)
-        self._data.append(x)
+#        x = np.array([(value, station, latitude, longitude, altitude, start_time, end_time, flag, standard_deviation)],
+#                    dtype=self._dtype)
+        self._data.append((value, station, latitude, longitude, altitude, start_time, end_time, flag, standard_deviation))
         return
 
     def set_data(self, variable: str, units: str, data: np.array):
@@ -394,3 +388,20 @@ class NpStructuredData(Data):
         return f"{self.variable}, {self.units}, {self._data.data}"
 
 
+if __name__ == "__main__":
+    # code for micro-benchmarking
+    import timeit
+    def append_data():
+        da = NpStructuredData("var", "km")
+        for i in range(100000):
+            value = 0.3
+            station = "123"
+            lat = 3.2
+            lon = 4.3
+            alt = 100
+            start = np.datetime64('1997-01-01 00:00:00')
+            end = np.datetime64('1997-01-01 00:00:00')
+            da.append(value, station, lat, lon, alt, start, end, Flag.VALID, np.nan)
+
+    number=3
+    print(timeit.timeit("append_data()", globals=globals(), number=number)/number)
