@@ -29,7 +29,10 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
 
     def test_data(self):
         engines = pyaro.list_timeseries_engines()
-        with engines["csv_timeseries"].open(filename=self.file) as ts:
+        with engines["csv_timeseries"].open(
+            filename=self.file,
+            filters=[pyaro.timeseries.filters.get("countries", include=["NO"])],
+        ) as ts:
             for var in ts.variables():
                 # stations
                 ts.data(var).stations
@@ -157,6 +160,11 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         with engine.open(self.file, filters=[vfilter]) as ts:
             self.assertEqual(ts.data(newsox).variable, newsox)
         pass
+
+    def test_filterFactory(self):
+        filters = pyaro.timeseries.filters.list()
+        print(filters["variables"])
+        self.assertTrue(True)
 
 
 if __name__ == "__main__":

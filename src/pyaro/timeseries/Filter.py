@@ -1,6 +1,7 @@
 import abc
 from datetime import datetime
 import inspect
+import types
 
 import numpy as np
 
@@ -101,8 +102,9 @@ class FilterFactory:
         filter = self._filters[name]
         return filter.__class__(**kwargs)
 
-    def list(self):
-        return self._filters.keys()
+    def list(self) -> dict[str, Filter]:
+        """List all available filter-names and their initalizations"""
+        return types.MappingProxyType(self._filters)
 
 
 filters = FilterFactory()

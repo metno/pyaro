@@ -20,7 +20,16 @@ engines = pyaro.list_timeseries_engines()
 # {'csv_timeseries': <pyaro.csvreader.CSVTimeseriesReader.CSVTimeseriesEngine object at 0x7fcbe67eab00>}
 print(engines['csv_timeseries'].args)
 # ('filename', 'columns', 'variable_units', 'csvreader_kwargs', 'filters')
-with engines['csv_timeseries'].open(filename=TEST_FILE) as ts:
+print(pyaro.timeseries.filters.list)
+# immutable dict of all filter-names to filter-classes
+print(engines['csv_timeseries'].supported_filters())
+# list of filter-classes supported by this reader
+print(pyaro.timeseries.filters.list)
+
+with engines['csv_timeseries'].open(
+    filename=TEST_FILE,
+    filters=[pyaro.timeseries.filters.get('countries', include=['NO'])]
+    ) as ts:
     for var in ts.variables():
         # stations
         ts.data(var).stations

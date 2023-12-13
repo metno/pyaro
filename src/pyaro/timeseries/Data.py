@@ -197,7 +197,10 @@ class DynamicRecArray:
 
     @property
     def data(self):
-        return self._data[: self.length]
+        if self.capacity != self.length:
+            self._data = self._data[:][: self.length]
+            self.capacity = len(self._data)
+        return self._data
 
 
 class NpStructuredData(Data):
@@ -306,7 +309,7 @@ class NpStructuredData(Data):
                 raise Exception(f"values and {key} not of same size")
         self._variable = variable
         self._units = units
-        self._data = data
+        self._data.set_data(data)
         return
 
     def slice(self, index):
