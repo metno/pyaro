@@ -1,5 +1,6 @@
 import abc
 
+
 class Engine(abc.ABC):
     """The engine is the 'singelton' generator object for databases of the engines type."""
 
@@ -19,7 +20,7 @@ class Engine(abc.ABC):
         """return a tuple of parameters to be passed to open_timeseries, including
         the mandatory filename_or_obj_or_url parameter.
         """
-        return ['filename_or_obj_or_url']
+        return ["filename_or_obj_or_url"]
 
     @property
     @abc.abstractmethod
@@ -32,13 +33,12 @@ class Engine(abc.ABC):
 
         :return: list of classnames
         """
-        return ['filterclass1', 'filterclass2']
+        return ["filterclass1", "filterclass2"]
 
     @property
     @abc.abstractmethod
     def description(self):
-        """Get a descriptive string about this pyaro implementation.
-        """
+        """Get a descriptive string about this pyaro implementation."""
         pass
 
     @property
@@ -49,7 +49,3 @@ class Engine(abc.ABC):
         This should be the github-url or similar of the implementation.
         """
         pass
-
-
-
-

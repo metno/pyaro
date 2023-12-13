@@ -1,7 +1,7 @@
-
 import abc
 from enum import IntEnum, unique
 import numpy as np
+
 
 @unique
 class Flag(IntEnum):
@@ -9,6 +9,7 @@ class Flag(IntEnum):
 
     :param IntEnum: all flags are simple integers
     """
+
     VALID = 0
     INVALID = 1
     BELOW_THRESHOLD = 2
@@ -29,19 +30,18 @@ class Data(abc.ABC):
     ```
 
     """
+
     _dtype = [
-            ('values', 'f'),
-            ('stations', 'U64'),
-            ('latitudes', 'f'),
-            ('longitudes', 'f'),
-            ('altitudes', 'f'),
-            ('start_times', 'datetime64[s]'),
-            ('end_times', 'datetime64[s]'),
-            ('flags', 'i2'),
-            ('standard_deviations', 'f'),
-        ]
-
-
+        ("values", "f"),
+        ("stations", "U64"),
+        ("latitudes", "f"),
+        ("longitudes", "f"),
+        ("altitudes", "f"),
+        ("start_times", "datetime64[s]"),
+        ("end_times", "datetime64[s]"),
+        ("flags", "i2"),
+        ("standard_deviations", "f"),
+    ]
 
     def __init__(self, variable, units) -> None:
         self._variable = variable
@@ -64,7 +64,7 @@ class Data(abc.ABC):
         return {}.keys()
 
     @abc.abstractmethod
-    def slice(self, index): # -> Self: for 3.11
+    def slice(self, index):  # -> Self: for 3.11
         """Get a copy of this dataset as a slice.
 
         :param index: A boolean index of the size of data or integer. array
@@ -126,7 +126,7 @@ class Data(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def altitude(self) -> np.ndarray:
+    def altitudes(self) -> np.ndarray:
         """A 1-dimensional array of altitudes (float)
 
         :return: 1dim array of floats
@@ -173,7 +173,7 @@ class Data(abc.ABC):
         return
 
 
-class DynamicRecArray():
+class DynamicRecArray:
     def __init__(self, dtype):
         self.dtype = np.dtype(dtype)
         self.length = 0
@@ -185,7 +185,7 @@ class DynamicRecArray():
 
     def append(self, rec):
         if self.length == self.capacity:
-            self.capacity += 10 + (self.capacity >> 3) # 20 + 1.125self.capacity
+            self.capacity += 10 + (self.capacity >> 3)  # 20 + 1.125self.capacity
             self._data = np.resize(self._data, self.capacity)
         self._data[self.length] = rec
         self.length += 1
@@ -197,7 +197,7 @@ class DynamicRecArray():
 
     @property
     def data(self):
-        return self._data[:self.length]
+        return self._data[: self.length]
 
 
 class NpStructuredData(Data):
@@ -211,19 +211,18 @@ class NpStructuredData(Data):
     can be submitted using set_data.
 
     """
+
     _dtype = [
-            ('values', 'f'),
-            ('stations', 'U64'),
-            ('latitudes', 'f'),
-            ('longitudes', 'f'),
-            ('altitudes', 'f'),
-            ('start_times', 'datetime64[s]'),
-            ('end_times', 'datetime64[s]'),
-            ('flags', 'i2'),
-            ('standard_deviations', 'f'),
-        ]
-
-
+        ("values", "f"),
+        ("stations", "U64"),
+        ("latitudes", "f"),
+        ("longitudes", "f"),
+        ("altitudes", "f"),
+        ("start_times", "datetime64[s]"),
+        ("end_times", "datetime64[s]"),
+        ("flags", "i2"),
+        ("standard_deviations", "f"),
+    ]
 
     def __init__(self, variable="", units="") -> None:
         self._variable = variable
@@ -243,7 +242,18 @@ class NpStructuredData(Data):
         considered metadata"""
         return self._data.data.dtype.names
 
-    def append(self, value, station, latitude, longitude, altitude, start_time, end_time, flag=Flag.VALID, standard_deviation=np.nan):
+    def append(
+        self,
+        value,
+        station,
+        latitude,
+        longitude,
+        altitude,
+        start_time,
+        end_time,
+        flag=Flag.VALID,
+        standard_deviation=np.nan,
+    ):
         """append with a new data-row
 
         :param value
@@ -258,9 +268,21 @@ class NpStructuredData(Data):
         """
         if len(station) > 64:
             raise Exception(f"station name too long, max 64char: {station}")
-#        x = np.array([(value, station, latitude, longitude, altitude, start_time, end_time, flag, standard_deviation)],
-#                    dtype=self._dtype)
-        self._data.append((value, station, latitude, longitude, altitude, start_time, end_time, flag, standard_deviation))
+        #        x = np.array([(value, station, latitude, longitude, altitude, start_time, end_time, flag, standard_deviation)],
+        #                    dtype=self._dtype)
+        self._data.append(
+            (
+                value,
+                station,
+                latitude,
+                longitude,
+                altitude,
+                start_time,
+                end_time,
+                flag,
+                standard_deviation,
+            )
+        )
         return
 
     def set_data(self, variable: str, units: str, data: np.array):
@@ -289,7 +311,7 @@ class NpStructuredData(Data):
 
     def slice(self, index):
         newData = NpStructuredData()
-        newData.set_data(self. variable, self.units, self._data.data[index])
+        newData.set_data(self.variable, self.units, self._data.data[index])
         return newData
 
     @property
@@ -341,7 +363,7 @@ class NpStructuredData(Data):
         return self["longitudes"]
 
     @property
-    def altitude(self) -> np.ndarray:
+    def altitudes(self) -> np.ndarray:
         """A 1-dimensional array of altitudes (float)
 
         :return: 1dim array of floats
@@ -383,7 +405,6 @@ class NpStructuredData(Data):
         """
         return self["standard_deviations"]
 
-
     def __str__(self):
         return f"{self.variable}, {self.units}, {self._data.data}"
 
@@ -391,6 +412,7 @@ class NpStructuredData(Data):
 if __name__ == "__main__":
     # code for micro-benchmarking
     import timeit
+
     def append_data():
         da = NpStructuredData("var", "km")
         for i in range(100000):
@@ -399,9 +421,9 @@ if __name__ == "__main__":
             lat = 3.2
             lon = 4.3
             alt = 100
-            start = np.datetime64('1997-01-01 00:00:00')
-            end = np.datetime64('1997-01-01 00:00:00')
+            start = np.datetime64("1997-01-01 00:00:00")
+            end = np.datetime64("1997-01-01 00:00:00")
             da.append(value, station, lat, lon, alt, start, end, Flag.VALID, np.nan)
 
-    number=3
-    print(timeit.timeit("append_data()", globals=globals(), number=number)/number)
+    number = 3
+    print(timeit.timeit("append_data()", globals=globals(), number=number) / number)

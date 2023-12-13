@@ -7,13 +7,16 @@ from importlib.metadata import EntryPoints, entry_points
 from .timeseries.Engine import Engine as TimeseriesEngine
 from .timeseries.Reader import Reader as TimeseriesReader
 
+
 def build_timeseries_engines(entrypoints: EntryPoints) -> dict[str, TimeseriesEngine]:
     backend_entrypoints: dict[str, type[TimeseriesEngine]] = {}
     backend_entrypoints = {}
     for entrypoint in entrypoints:
         name = entrypoint.name
         if name in backend_entrypoints:
-            warnings.warn(f"found multiple versions of {entrypoint.group} entrypoint {name} for {entrypoint.value}")
+            warnings.warn(
+                f"found multiple versions of {entrypoint.group} entrypoint {name} for {entrypoint.value}"
+            )
             continue
         try:
             backend = entrypoint.load()

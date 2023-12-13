@@ -1,6 +1,7 @@
 from .Reader import Reader
 from .Data import Data
 
+
 class VariableNameChangingReader(Reader):
     """A pyaro.timeseries.Reader wrapper taking a real Reader implementation and
     changing variable names in the original reader. Exampel:

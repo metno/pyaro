@@ -4,6 +4,76 @@
 
 The library that solves the mystery of reading airquality measurement databases. (Pronounciation as in French: Poirot)
 
+## Installation
+`python -m pip install 'pyaro@git+https://github.com/metno/pyaro.git'`
+
+This will install pyaro and all its dependencies (numpy).
+
+
+## Usage
+
+```python
+
+import pyaro.timeseries
+TEST_FILE = "csvReader_testdata.csv"
+engines = pyaro.list_timeseries_engines()
+# {'csv_timeseries': <pyaro.csvreader.CSVTimeseriesReader.CSVTimeseriesEngine object at 0x7fcbe67eab00>}
+print(engines['csv_timeseries'].args)
+# ('filename', 'columns', 'variable_units', 'csvreader_kwargs', 'filters')
+with engines['csv_timeseries'].open(filename=TEST_FILE) as ts:
+    for var in ts.variables():
+        # stations
+        ts.data(var).stations
+        # start_times
+        ts.data(var).start_times
+        # stop_times
+        ts.data(var).end_times
+        # latitudes
+        ts.data(var).latitudes
+        # longitudes
+        ts.data(var).longitudes
+        # altitudes
+        ts.data(var).altitudes
+        # values
+        ts.data(var).values
+        # flags
+        ts.data(var).flags
+
+
+```
+
+
+## Supported readers
+* csv_timeseries
+Reader for all tables readable with the python csv module.
+The reader supports reading from a single local file, with csv-parameters added on the command-line.
+
+## Usage - csv_timeseries
+```python
+import pyaro.timeseries
+TEST_FILE = "csvReader_testdata.csv"
+engine = pyaro.list_timeseries_engines()["csv_timeseries"]
+ts = engine.open(TEST_FILE, filters=[], fill_country_flag=False)
+print(ts.variables())
+# stations
+ts.data('SOx').stations
+# start_times
+ts.data('SOx').start_times
+# stop_times
+ts.data('SOx'.end_times
+# latitudes
+ts.data('SOx').latitudes
+# longitudes
+ts.data('SOx').longitudes
+# altitudes
+ts.data('SOx').altitudes
+# values
+ts.data('SOx').values
+
+```
+
+
+
 ## COPYRIGHT
 
 Copyright (C) 2023  Heiko Klein, Daniel Heinesen, Norwegian Meteorological Institute

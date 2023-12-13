@@ -3,6 +3,7 @@ from .Data import Data
 from .Station import Station
 from .Filter import Filter, filters
 
+
 class Reader(abc.ABC):
     """Baseclass for timeseries. This can be used with a context manager"""
 

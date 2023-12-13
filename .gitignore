@@ -3,6 +3,7 @@
 _cache/
 *.py[cogid]
 *$py.class
+.tox/
 
 # C extensions
 *.so

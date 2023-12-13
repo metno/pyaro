@@ -6,8 +6,10 @@ from .Reader import Reader
 from .Engine import Engine
 from .Filter import VariableNameFilter, Filter, filters, FilterFactory
 
+
 class UnkownFilterException(Exception):
     pass
+
 
 class AutoFilterReader(Reader):
     """This helper class applies automatically all filters on the Reader methods
@@ -30,7 +32,9 @@ class AutoFilterReader(Reader):
         :return: list of filters
         """
         filts = []
-        for f in "variables,stations,countries,bounding_boxes,time_bounds,flags".split(","):
+        for f in "variables,stations,countries,bounding_boxes,time_bounds,flags".split(
+            ","
+        ):
             filts.append(filters.get(f))
 
         return filts
@@ -42,12 +46,14 @@ class AutoFilterReader(Reader):
 
         if isinstance(filters, dict):
             filtlist = []
-            for name, kwargs in  filters:
+            for name, kwargs in filters:
                 filtlist.append(FilterFactory().get(name, **kwargs))
             filters = filtlist
         for filt in filters:
             if filt.__class__ not in supported:
-                raise UnkownFilterException(f"Filter {filt.__class__} not supported in {supported}.")
+                raise UnkownFilterException(
+                    f"Filter {filt.__class__} not supported in {supported}."
+                )
         self._filters = filters
 
     def _get_filters(self) -> [Filter]:
@@ -68,6 +74,7 @@ class AutoFilterReader(Reader):
     @abc.abstractmethod
     def _unfiltered_variables(self) -> list[str]:
         pass
+
     def variables(self) -> list[str]:
         vars = self._unfiltered_variables()
         for fi in self._get_filters():
@@ -97,7 +104,8 @@ class AutoFilterEngine(Engine):
     args method using introspection from the corresponding reader-class.
     The reader_class method needs therefore to be implemented by this class.
 
-        """
+    """
+
     @abc.abstractmethod
     def reader_class(self) -> Reader:
         """return the class of the corresponding reader
@@ -117,6 +125,3 @@ class AutoFilterEngine(Engine):
         sig = inspect.signature(self.reader_class().__init__)
         pars = tuple(sig.parameters.keys())
         return pars[1:]
-
-
-

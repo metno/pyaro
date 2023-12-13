@@ -1,5 +1,4 @@
-
-class Station():
+class Station:
     """Baseclass for a station returned from a pyaro.timeseries.Reader.
 
     This is the minimum set of columns required for a reader to return.
@@ -15,20 +14,19 @@ class Station():
 
     """
 
-    def __init__(self, fields: dict=None) -> None:
+    def __init__(self, fields: dict = None) -> None:
         self._fields = {
-            'station': "",
-            'latitude':  float("nan"),
-            'longitude': float("nan"),
-            'altitude':  float("nan"),
-            'long_name': "",
-            'country': "",
-            'url': ""
+            "station": "",
+            "latitude": float("nan"),
+            "longitude": float("nan"),
+            "altitude": float("nan"),
+            "long_name": "",
+            "country": "",
+            "url": "",
         }
         if fields:
             self.set_fields(fields)
         pass
-
 
     def __getitem__(self, key):
         """access the data as a dict"""
@@ -38,7 +36,6 @@ class Station():
         """all available data-fields, excluding variable and units which are
         considered metadata"""
         return self._fields.keys()
-
 
     def set_fields(self, fields: dict):
         """Initialization code for this station.
@@ -52,9 +49,9 @@ class Station():
         for key in self.keys():
             if not key in fields:
                 raise KeyError(f"{key} not in fields")
-        if abs(fields['latitude']) > 90:
+        if abs(fields["latitude"]) > 90:
             raise Exception(f"latitude out of bounds: {fields['latitude']}")
-        if abs(fields['longitude']) > 180:
+        if abs(fields["longitude"]) > 180:
             raise Exception(f"longitude out of bounds: {fields['longitude']}")
         for key in self.keys():
             self._fields[key] = fields[key]
@@ -118,4 +115,3 @@ class Station():
 
     def __str__(self):
         return self._fields.__str__()
-

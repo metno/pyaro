@@ -1,6 +1,10 @@
 fail_fast: true
 default_install_hook_types: [pre-commit]
 repos:
+- repo: https://github.com/psf/black
+  rev: 23.9.1
+  hooks:
+  - id: black
 - repo: local
   hooks:
   - id: tox-code-checks
