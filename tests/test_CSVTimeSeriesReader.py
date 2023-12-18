@@ -52,6 +52,32 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 ts.data(var).flags
         self.assertTrue(True)
 
+    def test_append_data(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.file,
+            filters=[pyaro.timeseries.filters.get("countries", include=["NO"])],
+        ) as ts:
+            var = next(iter(ts.variables()))
+            data = ts.data(var)
+            old_size = len(data)
+            rounds = 3
+            for _ in range(rounds):
+                data.append(
+                    value=data.values,
+                    station=data.stations,
+                    start_time=data.start_times,
+                    end_time=data.end_times,
+                    latitude=data.latitudes,
+                    longitude=data.longitudes,
+                    altitude=data.altitudes,
+                    flag=data.flags,
+                    standard_deviation=data.standard_deviations,
+                )
+            self.assertEqual(
+                (2**rounds) * old_size, len(data), "data append by array"
+            )
+
     def test_stationfilter(self):
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
         sfilter = pyaro.timeseries.filters.get("stations", exclude=["station1"])

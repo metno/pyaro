@@ -173,6 +173,10 @@ class Data(abc.ABC):
         return
 
 
+class DynamicRecArrayException(Exception):
+    pass
+
+
 class DynamicRecArray:
     def __init__(self, dtype):
         self.dtype = np.dtype(dtype)
@@ -183,12 +187,33 @@ class DynamicRecArray:
     def __len__(self):
         return self.length
 
+    def keys(self):
+        """all available data-fields, excluding variable and units which are
+        considered metadata"""
+        return self._data.dtype.names
+
     def append(self, rec):
         if self.length == self.capacity:
             self.capacity += 10 + (self.capacity >> 3)  # 20 + 1.125self.capacity
             self._data = np.resize(self._data, self.capacity)
         self._data[self.length] = rec
         self.length += 1
+
+    def append_array(self, **kwargs):
+        for key in self.keys():
+            if not key in kwargs:
+                raise DynamicRecArrayException(f"missing key {key} in arguments")
+            if kwargs[key].shape[0] != kwargs["values"].shape[0]:
+                raise DynamicRecArrayException(
+                    f"array {key} size ({kwargs['values'].shape[0]}) != values size ({kwargs['values'].shape[0]})"
+                )
+        add_len = kwargs["values"].shape[0]
+        if add_len > 0:
+            last_pos = len(self)
+            data = np.resize(self.data, last_pos + add_len)
+            for key in self.keys():
+                data[key][last_pos:] = kwargs[key]
+            self.set_data(data)
 
     def set_data(self, data):
         self.length = len(data)
@@ -243,7 +268,7 @@ class NpStructuredData(Data):
     def keys(self):
         """all available data-fields, excluding variable and units which are
         considered metadata"""
-        return self._data.data.dtype.names
+        return self._data.keys()
 
     def append(
         self,
@@ -257,7 +282,7 @@ class NpStructuredData(Data):
         flag=Flag.VALID,
         standard_deviation=np.nan,
     ):
-        """append with a new data-row
+        """append with a new data-row, or numpy arrays
 
         :param value
         :param station
@@ -269,6 +294,20 @@ class NpStructuredData(Data):
         :param flag: defaults to Flag.VALID
         :param standard_deviation: defaults to np.nan
         """
+        if type(value).__module__ == np.__name__:  # numpy array handling
+            self._data.append_array(
+                values=value,
+                stations=station,
+                latitudes=latitude,
+                longitudes=longitude,
+                altitudes=altitude,
+                start_times=start_time,
+                end_times=end_time,
+                flags=flag,
+                standard_deviations=standard_deviation,
+            )
+            return
+
         if len(station) > 64:
             raise Exception(f"station name too long, max 64char: {station}")
         #        x = np.array([(value, station, latitude, longitude, altitude, start_time, end_time, flag, standard_deviation)],
