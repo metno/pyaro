@@ -27,6 +27,16 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.assertEqual(count, 208)
             self.assertEqual(len(ts.stations()), 2)
 
+    def test_init2(self):
+        with pyaro.open_timeseries(
+            "csv_timeseries", *[self.file], **{"filters": []}
+        ) as ts:
+            count = 0
+            for var in ts.variables():
+                count += len(ts.data(var))
+            self.assertEqual(count, 208)
+            self.assertEqual(len(ts.stations()), 2)
+
     def test_data(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
