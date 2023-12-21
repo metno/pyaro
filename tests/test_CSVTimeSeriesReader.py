@@ -6,6 +6,13 @@ import pyaro
 import pyaro.timeseries
 from pyaro.timeseries.Wrappers import VariableNameChangingReader
 
+try:
+    import pandas
+
+    has_pandas = True
+except:
+    has_pandas = False
+
 
 class TestCSVTimeSeriesReader(unittest.TestCase):
     file = os.path.join(
@@ -201,6 +208,19 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         filters = pyaro.timeseries.filters.list()
         print(filters["variables"])
         self.assertTrue(True)
+
+    @unittest.skipUnless(has_pandas, "no pandas installed")
+    def test_timeseries_data_to_pd(self):
+        with pyaro.open_timeseries(
+            "csv_timeseries", *[self.file], **{"filters": []}
+        ) as ts:
+            count = 0
+            vars = list(ts.variables())
+            data = ts.data(vars[0])
+            df = pyaro.timeseries_data_to_pd(data)
+            self.assertEqual(len(df), len(data))
+            self.assertEqual(len(df["values"]), len(data["values"]))
+            self.assertEqual(df["values"][3], data["values"][3])
 
 
 if __name__ == "__main__":
