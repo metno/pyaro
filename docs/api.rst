@@ -41,7 +41,6 @@ pyaro.timeseries - Dev API
    :members: Engine, Reader, NpStructuredData
    :undoc-members:
    :imported-members:
-   :private-members: __init__
 
 .. automodule:: pyaro.timeseries.AutoFilterReaderEngine
    :members: AutoFilterReader, AutoFilterEngine

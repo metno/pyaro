@@ -40,7 +40,7 @@ and it must implement the following methods:
 
 The ``YourReader`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader`
 
-- the :py:meth:`~pyaro.timeseries.Reader.__init__` method with two fixed args (`self` and `filename_or_obj_or_url`) and several kwargs,
+- the ``__init__`` method of :py:class:`~pyaro.timeseries.Reader` with two fixed args (`self` and `filename_or_obj_or_url`) and several kwargs,
   one of them should be `filters`
     - it must store the `filters` calling `self._set_filters(filters)`  
 - the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_data` method
