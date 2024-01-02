@@ -11,8 +11,9 @@ Website of pyaro, the Python library that solves the mystery of reading airquali
    :maxdepth: 1
    :caption: Contents:
 
+   how-to-add-new-reader
    reader-design
-   stationdata
+   timeseries_data
 
 Indices and tables
 ==================

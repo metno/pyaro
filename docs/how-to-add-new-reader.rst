@@ -1,7 +1,7 @@
 .. _add_a_reader:
 
 How to add a new reader
-------------------------
+========================
 
 Adding a new reader for read support to pyaerocom does not require
 to integrate any code in PyAerocom; all you need to do is:
