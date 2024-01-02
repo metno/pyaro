@@ -57,7 +57,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # a list of builtin themes.
 #
 html_theme = "sphinx_rtd_theme"
-html_logo = "pyaro.svg"
+html_logo = "pyaro256.png"
 html_theme_options = {
     'logo_only': True,
     'display_version': False,
