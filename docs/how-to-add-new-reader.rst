@@ -10,18 +10,52 @@ to integrate any code in PyAerocom; all you need to do is:
   :py:class:`~pyaro.timeseries.Engine`
   and implements the methods, see :ref:`RST backend_entrypoint`
 
-- Declare the Engine-class as an external plugin in your ``setup.py``, see :ref:`RST reader_registration`
-
-If you also want to support lazy loading and dask see :ref:`RST lazy_loading`.
-
+- Declare the Engine-class as an external plugin in your ``setup.py`` or equivalent,
+  see :ref:`RST reader_registration`
 
 You can see what backends are currently available in your working environment
 with :py:class:`~pyaro.list_timeseries_readers()`.
 
 .. _RST backend_entrypoint:
 
+
 TimeseriesEngine/Reader subclassing
 +++++++++++++++++++++++++++++++++++
+
+It is strongly advised to use the use the helper classes :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine` 
+and :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader` to implement a Engine and a Reader since Filters will
+automatically be handled then.
+
+Subclassing of Engine/Reader using AutoFilterReaderEngine
+###################################
+
+Your ``YourEngine`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine`
+and it must implement the following methods:
+
+- `reader_class``: returning the class of the corresponding Reader
+- `open`: opening a reader with the signature (self, filename, *args, **kwargs) -> YourReader``,
+  usually just like: ``return self.reader_class()(filename, *args, **kwargs)``
+- `description`: a one-line description of this engine
+- `url`: the link to the implementation source
+
+
+The ``YourReader`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader`
+
+- the ``__init__`` method with two fixed args (`self` and `filename_or_obj_or_url`) and several kwargs,
+  one of them should be `filters`
+    - it must store the `filters` calling `self._set_filters(filters)`  
+- the `_unfiltered_data(self, varname)` method
+- the `_unfiltered_stations(self)` method
+- the `_unfiltered_variables(self)` method
+- the `close` method (might be pass, but Readers are also contextmanagers and will call `close()`)
+
+A quite basic example of an implementation can be found in the :py:class:`~pyaro.csvreader.CSVTimeseriesReader`.
+
+Direct subclassing of Engine/Reader
+###################################
+
+This section gives an explanation of the basic usage when extending a Engine/Reader without the AutoFilter
+helper classes. filter-handling is here left to the developer.
 
 Your ``TimeseriesReader`` sub-class is the primary interface with PyAerocom, and
 it should implement the following attributes and methods:
@@ -146,7 +180,7 @@ If ``description`` or ``url`` are not defined, an empty string is returned.
 How to register a reader (backend)
 +++++++++++++++++++++++++
 
-Define a new entrypoint in your ``setup.py`` (or ``setup.cfg``) with:
+Define a new entrypoint in your ``setup.py`` (or ``setup.cfg`` or ``pyproject.toml``) with:
 
 - group: ``pyaro.timeseries``
 - name: the name to be passed to :py:meth:`~pyaro.timeseries`  as ``engine``
@@ -183,13 +217,3 @@ In this case you would need to add the following to your ``pyproject.toml`` file
     "my_timesereiesreader" = "my_package.my_module:MyTimeseriesEngine"
 
 See https://python-poetry.org/docs/pyproject/#plugins for more information on Poetry plugins.
-
-.. _RST lazy_loading:
-
-How to support lazy loading
-+++++++++++++++++++++++++++
-
-TimeseriesReaders are by design lazy loading, i.e. data can be loaded when the ``data`` method is called
-(if supported by the implementation).
-
-
