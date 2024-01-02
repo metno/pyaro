@@ -11,6 +11,7 @@ Website of pyaro, the Python library that solves the mystery of reading airquali
    :maxdepth: 1
    :caption: Contents:
 
+   genindex
    reader-design
    timeseries_data
    api
