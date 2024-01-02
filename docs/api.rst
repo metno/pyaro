@@ -6,6 +6,11 @@ Documentation of the core API of pyaro.
 Classes
 ------------
 
+.. autosummary::
+   :toctree: generated
+
+   pyaro.timeseries
+
 Pyaro - Plugins
 ^^^^^^^^^^^^
 
