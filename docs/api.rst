@@ -9,19 +9,28 @@ Classes
 Pyaro - Plugins
 ^^^^^^^^^^^^
 
-.. automodule:: pyaro
-   :members: list_timeseries_engines, open_timeseries, timeseries_data_to_pd
-   :undoc-members:
-   :imported-members:
+.. autofunction:: pyaro.list_timeseries_engines
+.. autofunction:: pyaro.open_timeseries
+.. autofunction:: pyaro.timeseries_data_to_pd
 
 
 Timeseries - User API
 ^^^^^^^^^^^^
 
-.. automodule:: pyaro.timeseries
-   :members: filters, Data, Station, Flag
+.. autoclass:: pyaro.timeseries.Data
+   :members: 
+   :undoc-members:
+.. autoclass:: pyaro.timeseries.Station
+   :members: 
+   :undoc-members:
+.. autoclass:: pyaro.timeseries.Flag
+   :members: 
+   :undoc-members:
+.. automodule:: pyaro.timeseries.filters
+   :members: 
    :undoc-members:
    :imported-members:
+
 
 Timeseries - Dev API
 ^^^^^^^^^^^
