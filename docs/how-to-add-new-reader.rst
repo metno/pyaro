@@ -14,7 +14,7 @@ to integrate any code in PyAerocom; all you need to do is:
   see :ref:`RST reader_registration`
 
 You can see what backends are currently available in your working environment
-with :py:class:`~pyaro.list_timeseries_readers()`.
+with :py:meth:`~pyaro.list_timeseries_readers()`.
 
 .. _RST backend_entrypoint:
 
@@ -32,22 +32,22 @@ Subclassing of Engine/Reader using AutoFilterReaderEngine
 Your ``YourEngine`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine`
 and it must implement the following methods:
 
-- `reader_class``: returning the class of the corresponding Reader
-- `open`: opening a reader with the signature (self, filename, *args, **kwargs) -> YourReader``,
+- :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine.reader_class``: returning the class of the corresponding Reader
+- :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine.open`: opening a reader with the signature (self, filename, *args, **kwargs) -> YourReader``,
   usually just like: ``return self.reader_class()(filename, *args, **kwargs)``
-- `description`: a one-line description of this engine
-- `url`: the link to the implementation source
+- :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine.description(self)`: a one-line description of this engine
+- :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine.url(self)`: the link to the implementation source
 
 
 The ``YourReader`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader`
 
-- the ``__init__`` method with two fixed args (`self` and `filename_or_obj_or_url`) and several kwargs,
+- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader.__init__` method with two fixed args (`self` and `filename_or_obj_or_url`) and several kwargs,
   one of them should be `filters`
     - it must store the `filters` calling `self._set_filters(filters)`  
-- the `_unfiltered_data(self, varname)` method
-- the `_unfiltered_stations(self)` method
-- the `_unfiltered_variables(self)` method
-- the `close` method (might be pass, but Readers are also contextmanagers and will call `close()`)
+- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_data(self, varname)` method
+- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_stations(self)` method
+- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_variables(self)` method
+- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader.close(self)` method (might be pass, but Readers are also contextmanagers and will call `close()`)
 
 A quite basic example of an implementation can be found in the :py:class:`~pyaro.csvreader.CSVTimeseriesReader`.
 
@@ -125,7 +125,7 @@ This is what a ``TimeseriesReader`` subclass should look like:
 ^^^^^^^^^^^^
 
 The backend-Engine ``open`` shall implement reading from location, the variables
-decoding and it shall instantiate the output PyAerocom class :py:class:`~pyaro.Data`.
+decoding and it shall instantiate the output PyAerocom class :py:class:`~pyaro.timeseries.Data`.
 
 The following is an example of the high level processing steps:
 
@@ -171,7 +171,7 @@ Engine.description and Engine.url
 ``description`` is used to provide a short text description of the backend.
 ``url`` is used to include a link to the backend's documentation or code.
 
-These attributes are surfaced when a user prints :py:class:`~pyaro.timeseries.backends`.
+These attributes are surfaced when a user prints :py:meth:`~pyaro.list_timeseries_readers()`.
 If ``description`` or ``url`` are not defined, an empty string is returned.
 
 
