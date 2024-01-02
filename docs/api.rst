@@ -12,6 +12,7 @@ Pyaro - Plugins
 .. automodule:: pyaro
    :members:
    :undoc-members:
+   :imported-members:
 
 
 Timeseries
@@ -20,7 +21,7 @@ Timeseries
 .. automodule:: pyaro.timeseries
    :members:
    :undoc-members:
-
+   :imported-members:
 
 
 csvreader for timeseries
@@ -31,3 +32,4 @@ A simple implementation of a timeseries reader based on csv-files.
 .. automodule:: pyaro.csvreader
    :members:
    :undoc-members:
+   :imported-members:
