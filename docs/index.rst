@@ -11,11 +11,11 @@ Pyaro is an interface which uses a simple access pattern to different air-pollut
 The goal of pyro was threefold.
 
     1. A simple interface for different types of air-pollution databases
-    2. A programatic interface to these databases easily usable by large applications like `PyAerocom https://pyaerocom.readthedocs.io`_
+    2. A programatic interface to these databases easily usable by large applications like `PyAerocom <https://pyaerocom.readthedocs.io>`_
     3. Easy extension for air-pollution database providers or programmers giving the users (1. or 2.) direct access 
        their databases without the need of a new API.
 
-A few existing implementations of pyaro can be found at `pyaerocom-readers https://github.com/metno/pyaro-readers`_ .
+A few existing implementations of pyaro can be found at `pyaerocom-readers <https://github.com/metno/pyaro-readers>`_ .
 
 .. toctree::
    :maxdepth: 1

@@ -46,6 +46,7 @@ pyaro.timeseries - Dev API
    :members: AutoFilterReader, AutoFilterEngine
    :undoc-members:
    :imported-members:
+   :private-members:
 
 
 csvreader for timeseries

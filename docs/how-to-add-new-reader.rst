@@ -32,11 +32,10 @@ Subclassing of Engine/Reader using AutoFilterReaderEngine
 Your ``YourEngine`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine`
 and it must implement the following methods:
 
-- :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine.reader_class``: returning the class of the corresponding Reader
-- :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine.open`: opening a reader with the signature (self, filename, *args, **kwargs) -> YourReader``,
-  usually just like: ``return self.reader_class()(filename, *args, **kwargs)``
-- :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine.description(self)`: a one-line description of this engine
-- :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine.url(self)`: the link to the implementation source
+- :py:meth:`~pyaro.timeseries.Engine.open`: opening a reader with the signature (self, filename, *args, **kwargs) -> YourReader``,
+  usually just like: ``return YourReader(filename, *args, **kwargs)``
+- :py:meth:`~pyaro.timeseries.Engine.description`: a one-line description of this engine
+- :py:meth:`~pyaro.timeseries.Engine.url`: the link to the implementation source
 
 
 The ``YourReader`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader`
@@ -44,10 +43,10 @@ The ``YourReader`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEn
 - the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader.__init__` method with two fixed args (`self` and `filename_or_obj_or_url`) and several kwargs,
   one of them should be `filters`
     - it must store the `filters` calling `self._set_filters(filters)`  
-- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_data(self, varname)` method
-- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_stations(self)` method
-- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_variables(self)` method
-- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader.close(self)` method (might be pass, but Readers are also contextmanagers and will call `close()`)
+- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_data` method
+- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_stations` method
+- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_variables` method
+- the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader.close` method (might be pass, but Readers are also contextmanagers and will call `close()`)
 
 A quite basic example of an implementation can be found in the :py:class:`~pyaro.csvreader.CSVTimeseriesReader`.
 

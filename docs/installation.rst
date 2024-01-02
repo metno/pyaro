@@ -2,7 +2,7 @@ Installation
 ============
 
 pyaro only needs explicit installation for pyaro developers, i.e. those who implement a new reader.
-Users should install a implementation of pyaro like `pyaerocom-readers https://github.com/metno/pyaro-readers`_ .
+Users should install a implementation of pyaro like `pyaerocom-readers <https://github.com/metno/pyaro-readers>`_ .
 User-installation is only required if only the example reader `csv_timeseries` is needed. 
 
 As interface, pyaro has hardly any other dependencies except python and numpy.
@@ -23,7 +23,7 @@ From source:
 ::
 
 	# install pyaerocom on machines with numpy
-    git clone https://github.com/metno/pyaro.git
-    cd pyaro
+	git clone https://github.com/metno/pyaro.git
+	cd pyaro
 	python -m pip install .
 
