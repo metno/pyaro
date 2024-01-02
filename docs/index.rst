@@ -13,6 +13,7 @@ Website of pyaro, the Python library that solves the mystery of reading airquali
 
    reader-design
    timeseries_data
+   api
    how-to-add-new-reader
 
 Indices and tables
