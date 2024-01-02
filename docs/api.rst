@@ -3,15 +3,8 @@ API
 
 Documentation of the core API of pyaro.
 
-Classes
-------------
 
-.. autosummary::
-   :toctree: generated
-
-   pyaro.timeseries
-
-Pyaro - Plugins
+Pyaro
 ^^^^^^^^^^^^
 
 .. autofunction:: pyaro.list_timeseries_engines
@@ -19,7 +12,7 @@ Pyaro - Plugins
 .. autofunction:: pyaro.timeseries_data_to_pd
 
 
-Timeseries - User API
+pyaro.timeseries - User API
 ^^^^^^^^^^^^
 
 .. autoclass:: pyaro.timeseries.Data
@@ -31,13 +24,17 @@ Timeseries - User API
 .. autoclass:: pyaro.timeseries.Flag
    :members: 
    :undoc-members:
-.. automodule:: pyaro.timeseries.filters
+
+pyaro.timeseries.filters - Filters
+^^^^^^^^^^^^
+
+.. autoclass:: pyaro.timeseries.filters
    :members: 
    :undoc-members:
    :imported-members:
 
 
-Timeseries - Dev API
+pyaro.timeseries - Dev API
 ^^^^^^^^^^^
 
 .. automodule:: pyaro.timeseries
@@ -46,13 +43,16 @@ Timeseries - Dev API
    :imported-members:
 
 .. automodule:: pyaro.timeseries.AutoFilterReaderEngine
+   :members: AutoFilterReader, AutoFilterEngine
+   :undoc-members:
    :imported-members:
 
 
 csvreader for timeseries
 ^^^^^^^^^^^^
 
-A simple implementation of a timeseries reader based on csv-files.
+A simple implementation of a timeseries reader based on csv-files, usually accessed
+as ``pyaro.open-timeseries('csv_timeseries', ...)``
 
 .. automodule:: pyaro.csvreader
    :members: CSVTimeseriesReader
