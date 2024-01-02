@@ -49,6 +49,9 @@ with engines['csv_timeseries'].open(
         ts.data(var).flags
 
 
+        # if pandas is installed, data can be converted to a pandas Dataframe
+        df = pyaro.timeseries_data_to_pd(data)
+
 ```
 
 

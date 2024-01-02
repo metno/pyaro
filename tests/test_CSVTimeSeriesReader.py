@@ -6,6 +6,20 @@ import pyaro
 import pyaro.timeseries
 from pyaro.timeseries.Wrappers import VariableNameChangingReader
 
+try:
+    import pandas
+
+    has_pandas = True
+except:
+    has_pandas = False
+
+try:
+    import geocoder_reverse_natural_earth
+
+    has_geocode = True
+except:
+    has_geocode = False
+
 
 class TestCSVTimeSeriesReader(unittest.TestCase):
     file = os.path.join(
@@ -21,6 +35,16 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engine.description()
         engine.args()
         with engine.open(self.file, filters=[]) as ts:
+            count = 0
+            for var in ts.variables():
+                count += len(ts.data(var))
+            self.assertEqual(count, 208)
+            self.assertEqual(len(ts.stations()), 2)
+
+    def test_init2(self):
+        with pyaro.open_timeseries(
+            "csv_timeseries", *[self.file], **{"filters": []}
+        ) as ts:
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -191,6 +215,29 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         filters = pyaro.timeseries.filters.list()
         print(filters["variables"])
         self.assertTrue(True)
+
+    @unittest.skipUnless(has_pandas, "no pandas installed")
+    def test_timeseries_data_to_pd(self):
+        with pyaro.open_timeseries(
+            "csv_timeseries", *[self.file], **{"filters": []}
+        ) as ts:
+            count = 0
+            vars = list(ts.variables())
+            data = ts.data(vars[0])
+            df = pyaro.timeseries_data_to_pd(data)
+            self.assertEqual(len(df), len(data))
+            self.assertEqual(len(df["values"]), len(data["values"]))
+            self.assertEqual(df["values"][3], data["values"][3])
+
+    @unittest.skipUnless(has_geocode, "geocode-reverse-natural-earth not available")
+    def test_country_lookup(self):
+        with pyaro.open_timeseries(
+            "csv_timeseries", *[self.file], **{"filters": [], "country_lookup": True}
+        ) as ts:
+            count = 0
+            vars = list(ts.variables())
+            data = ts.data(vars[0])
+        self.assertTrue(False)
 
 
 if __name__ == "__main__":

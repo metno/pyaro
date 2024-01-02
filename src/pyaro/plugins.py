@@ -1,4 +1,3 @@
-from copy import deepcopy
 import functools
 import sys
 import warnings
@@ -57,6 +56,6 @@ def open_timeseries(name, *args, **kwargs) -> TimeseriesReader:
     :param name: the name of the entrypoint as key in list_timeseries_readers
     :return: an implementation-object of a TimeseriesReader openend to a location
     """
-    engine = list_timeseries_engines[name]
+    engine = list_timeseries_engines()[name]
 
-    return engine.open(args, kwargs)
+    return engine.open(*args, **kwargs)
