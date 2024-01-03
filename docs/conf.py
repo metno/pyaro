@@ -62,6 +62,10 @@ html_theme_options = {
     'logo_only': True,
     'display_version': False,
 }
+html_css_files = [
+    'rtd_custom.css',
+]
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
