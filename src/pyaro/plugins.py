@@ -8,8 +8,7 @@ from .timeseries.Reader import Reader as TimeseriesReader
 
 
 def build_timeseries_engines(entrypoints: EntryPoints) -> dict[str, TimeseriesEngine]:
-    backend_entrypoints: dict[str, type[TimeseriesEngine]] = {}
-    backend_entrypoints = {}
+    backend_entrypoints: dict[str, TimeseriesEngine] = {}
     for entrypoint in entrypoints:
         name = entrypoint.name
         if name in backend_entrypoints:
