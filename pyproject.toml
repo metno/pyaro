@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyaro"
+version = "0.0.4"
+authors = [
+    { name = "Heiko Klein", email = "Heiko.Klein@met.no" },
+    { name = "Daniel Heinesen" },
+]
+description = "pyaro py-aerocom reader objects"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+urls = { Homepage = "https://github.com/metno/pyaro" }
+dependencies = ["numpy", 'importlib-metadata >= 3.6; python_version < "3.10"']
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.entry-points."pyaro.timeseries"]
+csv_timeseries = "pyaro.csvreader:CSVTimeseriesEngine"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+packages = ["pyaro", "pyaro.timeseries", "pyaro.csvreader"]
+include-package-data = false
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+env_list =
+    py312
+    py311
+    py310
+    py39
+depends =
+    pandas    
+
+[testenv]
+commands = python3 -m unittest discover -s tests
+"""
