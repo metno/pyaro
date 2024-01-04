@@ -2,14 +2,17 @@ import functools
 import sys
 import warnings
 
-from importlib.metadata import EntryPoints, entry_points
+if sys.version_info >= (3, 10):
+    from importlib.metadata import EntryPoints, entry_points
+else:
+    from importlib_metadata import EntryPoints, entry_points
+
 from .timeseries.Engine import Engine as TimeseriesEngine
 from .timeseries.Reader import Reader as TimeseriesReader
 
 
 def build_timeseries_engines(entrypoints: EntryPoints) -> dict[str, TimeseriesEngine]:
-    backend_entrypoints: dict[str, type[TimeseriesEngine]] = {}
-    backend_entrypoints = {}
+    backend_entrypoints: dict[str, TimeseriesEngine] = {}
     for entrypoint in entrypoints:
         name = entrypoint.name
         if name in backend_entrypoints:
@@ -42,10 +45,7 @@ def list_timeseries_engines() -> dict[str, TimeseriesEngine]:
 
     # New selection mechanism introduced with Python 3.10. See GH6514.
     """
-    if sys.version_info >= (3, 10):
-        entrypoints = entry_points(group="pyaro.timeseries")
-    else:
-        entrypoints = entry_points().get("pyaro.timeseries", [])
+    entrypoints = entry_points(group="pyaro.timeseries")
     return build_timeseries_engines(entrypoints)
 
 
