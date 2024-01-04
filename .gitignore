@@ -4,6 +4,7 @@ _cache/
 *.py[cogid]
 *$py.class
 .tox/
+.venv/
 
 # C extensions
 *.so
