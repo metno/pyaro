@@ -76,7 +76,7 @@ class FilterFactoryException(Exception):
 class FilterFactory:
     def __new__(cls):
         if not hasattr(cls, "instance"):
-            cls.instance = super(FilterFactory, cls).__new__(cls)
+            cls.instance = super().__new__(cls)
             cls.instance._filters = {}
         return cls.instance
 
@@ -408,7 +408,7 @@ class FlagFilter(DataIndexFilter):
         """
         self._include = set(include)
         if len(include) == 0:
-            all_include = set([f for f in Flag])
+            all_include = {f for f in Flag}
         else:
             all_include = self._include
         self._exclude = set(exclude)
