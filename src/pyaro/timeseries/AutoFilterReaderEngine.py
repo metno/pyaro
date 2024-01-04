@@ -46,7 +46,7 @@ class AutoFilterReader(Reader):
 
         if isinstance(filters, dict):
             filtlist = []
-            for name, kwargs in filters:
+            for name, kwargs in filters.items():
                 filtlist.append(FilterFactory().get(name, **kwargs))
             filters = filtlist
         for filt in filters:
