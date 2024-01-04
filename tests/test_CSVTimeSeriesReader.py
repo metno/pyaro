@@ -80,7 +80,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
             filename=self.file,
-            filters=[pyaro.timeseries.filters.get("countries", include=["NO"])],
+            filters={"countries": {"include": ["NO"]}},
         ) as ts:
             var = next(iter(ts.variables()))
             data = ts.data(var)
