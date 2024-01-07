@@ -1,3 +1,7 @@
+from importlib import metadata
+
+__version__ = metadata.version(__package__)
+
 from .plugins import list_timeseries_engines, open_timeseries
 
 try:

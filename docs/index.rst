@@ -23,6 +23,7 @@ A few existing implementations of pyaro can be found at `pyaerocom-readers <http
 
    index
    installation
+   tutorials/index
    reader-design
    timeseries_data
    api
