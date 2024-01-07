@@ -1,9 +1,7 @@
 Tutorials
 ---------
 
-pyaro tutorials and examples.
-
-All tutorials are jupyter notebooks.
+pyaro tutorials and examples. All tutorials are jupyter notebooks.
 
 Getting started
 ===============

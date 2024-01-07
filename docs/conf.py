@@ -34,6 +34,8 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
+    "nbsphinx",
+    "sphinxarg.ext",
 ]
 
 intersphinx_mapping = {
@@ -59,8 +61,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "sphinx_rtd_theme"
 html_logo = "pics/pyaro.svg"
 html_theme_options = {
-    'logo_only': True,
-    'display_version': False,
+    "logo_only": True,
+    "display_version": False,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -71,5 +73,5 @@ html_static_path = ["_static"]
 # These paths are either relative to html_static_path
 # or fully qualified paths (eg. https://...)
 html_css_files = [
-    'custom.css',
+    "custom.css",
 ]
