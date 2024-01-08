@@ -10,9 +10,10 @@ Getting started
    :hidden:
 
    basic_api.ipynb
+   filters.ipynb
 
 This section contains tutorials that are meant to help you getting started
 quickly with pyaro.
 
 - `Basic pyaro API usage <basic_api.html>`__ | *basic_api.ipynb*
-
+- `pyaro Filter usage <filters.html>`__ | *filters.ipynb*

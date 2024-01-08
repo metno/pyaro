@@ -69,6 +69,23 @@ class Filter(abc.ABC):
         return f"{type(self).__name__}(**{self.init_kwargs()})"
 
 
+class DataIndexFilter(Filter):
+    """A abstract baseclass implementing filter_data by an abstract method
+    filter_data_idx"""
+
+    @abc.abstractmethod
+    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+        """Filter data to an index which can be applied to Data.slice(idx) later
+
+        :return: a index for Data.slice(idx)
+        """
+        pass
+
+    def filter_data(self, data: Data, stations: dict[str, Station], variables: str):
+        idx = self.filter_data_idx(data, stations, variables)
+        return data.slice(idx)
+
+
 class FilterFactoryException(Exception):
     pass
 
@@ -108,6 +125,62 @@ class FilterFactory:
 
 
 filters = FilterFactory()
+
+
+class FilterCollectionException(Exception):
+    pass
+
+
+class FilterCollection:
+    def __init__(self, filterlist=[]):
+        """A collection of DataIndexFilters which can be appied together.
+
+        :param filterlist: _description_, defaults to []
+        :return: _description_
+        """
+        self._filters = []
+        tmp_filterlist = []
+        if isinstance(filterlist, dict):
+            for name, kwargs in filterlist.items():
+                tmp_filterlist.append(filters.get(name, **kwargs))
+        else:
+            tmp_filterlist = filterlist
+        for f in tmp_filterlist:
+            self.add(f)
+
+    def add(self, difilter: DataIndexFilter):
+        if not isinstance(difilter, DataIndexFilter):
+            raise FilterCollectionException(
+                f"filter not a DataIndexFilter, so can't add to collection"
+            )
+        else:
+            self._filters.append(difilter)
+
+    def filter_data(
+        self, data: Data, stations: dict[str, Station], variables: str
+    ) -> Data:
+        """Filter data with all filters in this collection.
+
+        :param data: Data from a timeseries-reader, i.e. retrieved by ts.data(varname)
+        :param stations: stations-dict of a reader, i.e. retrieved by ts.stations()
+        :param variables: variables of a reader, i.e. retrieved by ts.variables()
+        :return: _description_
+        """
+        for fi in self._filters:
+            data = fi.filter_data(data, stations, variables)
+        return data
+
+    def filter(self, ts_reader, variable: str) -> Data:
+        """Filter the data for a variable of a reader with all filters in this collection.
+
+        :param ts_reader: a timeseries-reader instance
+        :param variable: a valid variable-name
+        :return: filtered data
+        """
+        stations = ts_reader.stations()
+        variables = ts_reader.variables()
+        data = ts_reader.data(variable)
+        return self.filter_data(data, stations, variables)
 
 
 class VariableNameFilter(Filter):
@@ -201,23 +274,6 @@ class VariableNameFilter(Filter):
 
 
 filters.register(VariableNameFilter())
-
-
-class DataIndexFilter(Filter):
-    """A abstract baseclass implementing filter_data by an abstract method
-    filter_data_idx"""
-
-    @abc.abstractmethod
-    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
-        """Filter data to an index which can be applied to Data.slice(idx) later
-
-        :return: a index for Data.slice(idx)
-        """
-        pass
-
-    def filter_data(self, data: Data, stations: dict[str, Station], variables: str):
-        idx = self.filter_data_idx(data, stations, variables)
-        return data.slice(idx)
 
 
 class StationReductionFilter(DataIndexFilter):

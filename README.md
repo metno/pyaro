@@ -41,7 +41,7 @@ print(pyaro.timeseries.filters.list)
 
 with engines['csv_timeseries'].open(
     filename=TEST_FILE,
-    filters=[pyaro.timeseries.filters.get('countries', include=['NO'])]
+    filters={'countries': {include=['NO']}}
     ) as ts:
     for var in ts.variables():
         # stations

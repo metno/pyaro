@@ -216,6 +216,21 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         print(filters["variables"])
         self.assertTrue(True)
 
+    def test_filterCollection(self):
+        with pyaro.open_timeseries(
+            "csv_timeseries",
+            filename=self.file,
+        ) as ts:
+            filters = pyaro.timeseries.FilterCollection(
+                {
+                    "countries": {"include": ["NO"]},
+                    "stations": {"include": ["station1"]},
+                }
+            )
+            data1 = ts.data("SOx")
+            data2 = filters.filter(ts, "SOx")
+            self.assertEqual(len(data1), 2 * len(data2))
+
     @unittest.skipUnless(has_pandas, "no pandas installed")
     def test_timeseries_data_to_pd(self):
         with pyaro.open_timeseries(
