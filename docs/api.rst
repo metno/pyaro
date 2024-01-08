@@ -16,20 +16,20 @@ pyaro.timeseries - User API
 ^^^^^^^^^^^^
 
 .. autoclass:: pyaro.timeseries.Data
-   :members: 
+   :members:
    :undoc-members:
 .. autoclass:: pyaro.timeseries.Station
-   :members: 
+   :members:
    :undoc-members:
 .. autoclass:: pyaro.timeseries.Flag
-   :members: 
+   :members:
    :undoc-members:
 
 pyaro.timeseries.filters - Filters
 ^^^^^^^^^^^^
 
-.. autoclass:: pyaro.timeseries.filters
-   :members: 
+.. automodule:: pyaro.timeseries
+   :members: FilterFactory, FilterCollections, Filter, StationFilter, CountryFilter, BoundingBoxFilter, FlagFilter, TimeBoundsFilter
    :undoc-members:
    :imported-members:
 
@@ -38,7 +38,7 @@ pyaro.timeseries - Dev API
 ^^^^^^^^^^^
 
 .. automodule:: pyaro.timeseries
-   :members: Engine, Reader, NpStructuredData
+   :members: Engine, Reader, NpStructuredData, DataIndexFilter
    :undoc-members:
    :imported-members:
 
