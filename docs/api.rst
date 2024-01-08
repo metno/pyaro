@@ -38,7 +38,7 @@ pyaro.timeseries - Dev API
 ^^^^^^^^^^^
 
 .. automodule:: pyaro.timeseries
-   :members: Engine, Reader, NpStructuredData, DataIndexFilter
+   :members: Engine, Reader, NpStructuredData
    :undoc-members:
    :imported-members:
 
@@ -47,6 +47,11 @@ pyaro.timeseries - Dev API
    :undoc-members:
    :imported-members:
    :private-members:
+
+.. automodule:: pyaro.timeseries.Filter
+   :members: DataIndexFilter
+   :undoc-members:
+   :imported-members:
 
 
 csvreader for timeseries
