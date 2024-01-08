@@ -28,7 +28,7 @@ pyaro.timeseries - User API
 pyaro.timeseries.filters - Filters
 ^^^^^^^^^^^^
 
-.. automodule:: pyaro.timeseries
+.. automodule:: pyaro.timeseries.Filter
    :members: FilterFactory, FilterCollections, Filter, StationFilter, CountryFilter, BoundingBoxFilter, FlagFilter, TimeBoundsFilter
    :undoc-members:
    :imported-members:
