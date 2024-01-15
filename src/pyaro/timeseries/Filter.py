@@ -591,8 +591,8 @@ class TimeBoundsFilter(DataIndexFilter):
             raise TimeBoundsException(
                 "TimeBounds-envelope called but no envelope exists"
             )
-        start = datetime.max()
-        end = datetime.min()
+        start = datetime.max
+        end = datetime.min
         for s, e in self._start_include + self._startend_include + self._end_include:
             start = min(start, s)
             end = max(end, s)

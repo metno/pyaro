@@ -1,3 +1,4 @@
+import datetime
 import unittest
 import os
 
@@ -156,6 +157,9 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         self.assertEqual(
             tfilter.init_kwargs()["startend_include"][0][1], "1997-02-01 00:00:00"
         )
+        (dt1, dt2) = tfilter.envelope()
+        self.assertIsInstance(dt1, datetime.datetime)
+        self.assertIsInstance(dt2, datetime.datetime)
         with engine.open(self.file, filters=[tfilter]) as ts:
             count = 0
             for var in ts.variables():
