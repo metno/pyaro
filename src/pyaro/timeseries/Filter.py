@@ -1,4 +1,5 @@
 import abc
+from collections import defaultdict
 from datetime import datetime
 import inspect
 import types
@@ -11,6 +12,8 @@ from .Station import Station
 
 class Filter(abc.ABC):
     """Base-class for all filters used from pyaro-Readers"""
+
+    time_format = "%Y-%m-%d %H:%M:%S"
 
     def __init__(self, **kwargs):
         """constructor of Filters. All filters must have a default constructor without kwargs
@@ -294,9 +297,7 @@ class StationReductionFilter(DataIndexFilter):
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         pass
 
-    def filter_data_idx(
-        self, data: Data, stations: dict[str, Station], variables: str
-    ) -> Data:
+    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
         stat_names = self.filter_stations(stations).keys()
         dstations = data.stations
         stat_names = np.fromiter(stat_names, dtype=dstations.dtype)
@@ -482,9 +483,7 @@ class FlagFilter(DataIndexFilter):
     def usable_flags(self):
         return self._valid
 
-    def filter_data_idx(
-        self, data: Data, stations: dict[str, Station], variables: str
-    ) -> Data:
+    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
         validflags = np.fromiter(self._valid, dtype=data.flags.dtype)
         index = np.in1d(data.flags, validflags)
         return index
@@ -496,8 +495,6 @@ class TimeBoundsException(Exception):
 
 @registered_filter
 class TimeBoundsFilter(DataIndexFilter):
-    time_format = "%Y-%m-%d %H:%M:%S"
-
     def __init__(
         self,
         start_include: [(str, str)] = [],
@@ -620,10 +617,65 @@ class TimeBoundsFilter(DataIndexFilter):
         )
         return idx
 
-    def filter_data_idx(
-        self, data: Data, stations: dict[str, Station], variables: str
-    ) -> Data:
+    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
         return self.contains(data.start_times, data.end_times)
+
+
+@registered_filter
+class TimeVariableStationFilter(DataIndexFilter):
+    def __init__(self, exclude=[]):
+        """Exclude combinations of variable station and time from the data
+
+        This filter is really a cleanup of the database, but sometimes it is not possible to
+        modify the original database and the cleanup needs to be done on a filter basis.
+
+        :param exclude: tuple of 4 elements: start-time, end-time, variable, station
+        """
+        self._exclude = self._order_exclude(exclude)
+
+    def _order_exclude(self, exclude):
+        """Order excludes to a dict of: [variable][start_time][end_time] -> list[stations]
+
+        :param excludes: tuples of start-time, end-time, variable, station
+        """
+        retval = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [])))
+        for start_time, end_time, variable, station in exclude:
+            # make sure start and end_time can be parsed
+            datetime.strptime(start_time, self.time_format)
+            datetime.strptime(end_time, self.time_format)
+            retval[variable][start_time][end_time].append(station)
+        return retval
+
+    def init_kwargs(self):
+        retval = []
+        for var, start_times in sorted(self._exclude.items()):
+            for start_time, end_times in sorted(start_times.items()):
+                for end_time, stations in sorted(end_times.items()):
+                    for station in sorted(stations):
+                        retval.append((start_time, end_time, var, station))
+        # sort by start_time
+        retval.sort(key=lambda x: x[1])
+        return {"exclude": retval}
+
+    def name(self):
+        return "time_variable_station"
+
+    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+        idx = data.start_times.astype(bool)
+        idx |= True
+        if data.variable in self._exclude:
+            for start_time, end_times in self._exclude[data.variable].items():
+                start_time_dt = datetime.strptime(start_time, self.time_format)
+                for end_time, stations in end_times.items():
+                    end_time_dt = datetime.strptime(end_time, self.time_format)
+                    dstations = data.stations
+                    stat_names = np.fromiter(stations, dtype=dstations.dtype)
+                    exclude_idx = np.in1d(dstations, stat_names)
+                    exclude_idx &= (start_time_dt <= data.start_times) & (
+                        end_time_dt > data.start_times
+                    )
+                    idx &= np.logical_not(exclude_idx)
+        return idx
 
 
 if __name__ == "__main__":

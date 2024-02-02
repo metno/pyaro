@@ -32,7 +32,9 @@ class AutoFilterReader(Reader):
         :return: list of filters
         """
         filts = []
-        for f in "variables,stations,countries,bounding_boxes,time_bounds,flags".split(
+        for (
+            f
+        ) in "variables,stations,countries,bounding_boxes,time_bounds,flags,time_variable_station".split(
             ","
         ):
             filts.append(filters.get(f))
