@@ -127,6 +127,15 @@ class FilterFactory:
 filters = FilterFactory()
 
 
+def registered_filter(filter_class):
+    """Simple decorator to register a FilterClass to the FilterFactory on construction
+
+    :param filter_class: class to register
+    """
+    filters.register(filter_class())
+    return filter_class
+
+
 class FilterCollectionException(Exception):
     pass
 
@@ -183,6 +192,7 @@ class FilterCollection:
         return self.filter_data(data, stations, variables)
 
 
+@registered_filter
 class VariableNameFilter(Filter):
     """Filter to change variable-names and/or include/exclude variables"""
 
@@ -273,9 +283,6 @@ class VariableNameFilter(Filter):
         return self.has_variable(new_var)
 
 
-filters.register(VariableNameFilter())
-
-
 class StationReductionFilter(DataIndexFilter):
     """Abstract method for all filters, which work on reducing the number of stations only.
 
@@ -297,6 +304,7 @@ class StationReductionFilter(DataIndexFilter):
         return index
 
 
+@registered_filter
 class StationFilter(StationReductionFilter):
     def __init__(self, include: [str] = [], exclude: [str] = []):
         self._include = set(include)
@@ -321,9 +329,7 @@ class StationFilter(StationReductionFilter):
         return {s: v for s, v in stations.items() if self.has_station(s)}
 
 
-filters.register(StationFilter())
-
-
+@registered_filter
 class CountryFilter(StationReductionFilter):
     def __init__(self, include: [str] = [], exclude: [str] = []):
         """Filter countries by ISO2 names (capitals!)
@@ -353,13 +359,11 @@ class CountryFilter(StationReductionFilter):
         return {s: v for s, v in stations.items() if self.has_country(v.country)}
 
 
-filters.register(CountryFilter())
-
-
 class BoundingBoxException(Exception):
     pass
 
 
+@registered_filter
 class BoundingBoxFilter(StationReductionFilter):
     """Filter using geographical bounding-boxes"""
 
@@ -452,9 +456,7 @@ class BoundingBoxFilter(StationReductionFilter):
         }
 
 
-filters.register(BoundingBoxFilter())
-
-
+@registered_filter
 class FlagFilter(DataIndexFilter):
     def __init__(self, include: [Flag] = [], exclude: [Flag] = []):
         """Filter data by Flags
@@ -488,13 +490,11 @@ class FlagFilter(DataIndexFilter):
         return index
 
 
-filters.register(FlagFilter())
-
-
 class TimeBoundsException(Exception):
     pass
 
 
+@registered_filter
 class TimeBoundsFilter(DataIndexFilter):
     time_format = "%Y-%m-%d %H:%M:%S"
 
@@ -624,9 +624,6 @@ class TimeBoundsFilter(DataIndexFilter):
         self, data: Data, stations: dict[str, Station], variables: str
     ) -> Data:
         return self.contains(data.start_times, data.end_times)
-
-
-filters.register(TimeBoundsFilter())
 
 
 if __name__ == "__main__":
