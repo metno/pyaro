@@ -216,6 +216,29 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.assertEqual(len(ts.stations()), 2)
             self.assertEqual(count, 204)
 
+    def test_variable_time_station_filter_csv(self):
+        csvfile = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            "testdata",
+            "timeVariableStationFilter_exclude.csv",
+        )
+
+        vtsfilter = pyaro.timeseries.filters.get(
+            "time_variable_station",
+            exclude_from_csvfile=csvfile,
+        )
+        print(vtsfilter)
+        self.assertEqual(
+            vtsfilter.init_kwargs()["exclude"][0][0], "1997-01-11 00:00:00"
+        )
+        engine = pyaro.list_timeseries_engines()["csv_timeseries"]
+        with engine.open(self.file, filters=[vtsfilter]) as ts:
+            count = 0
+            for var in ts.variables():
+                count += len(ts.data(var))
+            self.assertEqual(len(ts.stations()), 2)
+            self.assertEqual(count, 204)
+
     def test_wrappers(self):
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
         newsox = "oxidised_sulphur"

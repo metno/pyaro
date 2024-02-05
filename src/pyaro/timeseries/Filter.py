@@ -1,5 +1,6 @@
 import abc
 from collections import defaultdict
+import csv
 from datetime import datetime
 import inspect
 import types
@@ -623,15 +624,45 @@ class TimeBoundsFilter(DataIndexFilter):
 
 @registered_filter
 class TimeVariableStationFilter(DataIndexFilter):
-    def __init__(self, exclude=[]):
+    def __init__(self, exclude=[], exclude_from_csvfile=""):
         """Exclude combinations of variable station and time from the data
 
         This filter is really a cleanup of the database, but sometimes it is not possible to
         modify the original database and the cleanup needs to be done on a filter basis.
 
         :param exclude: tuple of 4 elements: start-time, end-time, variable, station
+        :excude_from_csvfile: this is a helper option to enable a large list of excludes
+            to be read from a "\t" separated file with columns
+                start \t end \t variable \t station
+            where start and end are timestamps of format YYYY-MM-DD HH:MM:SS in UTC, e.g.
+            the year 2020 is:
+                2020-01-01 00:00:00 \t 2020-12-31 23:59:59 \t ...
         """
-        self._exclude = self._order_exclude(exclude)
+        csvexclude = self._excludes_from_csv(exclude_from_csvfile)
+        self._exclude = self._order_exclude(exclude + csvexclude)
+
+    def _excludes_from_csv(self, file):
+        csvexcludes = []
+        if file:
+            with open(file, "rt", newline="") as fh:
+                crd = csv.reader(fh, delimiter="\t")
+                for row in crd:
+                    try:
+                        if len(row) == 0:
+                            continue
+                        if row[0].startswith("#"):
+                            continue
+                        if len(row) < 4:
+                            raise Exception(f"need 4 elements in row, got {len(row)}")
+                        datetime.strptime(row[0], self.time_format)
+                        datetime.strptime(row[1], self.time_format)
+                        csvexcludes.append((row[0], row[1], row[2], row[3]))
+                    except Exception as ex:
+                        raise Exception(
+                            f"malformated TimeVariableStationFilter exclude file, row: {row}",
+                            ex,
+                        )
+        return csvexcludes
 
     def _order_exclude(self, exclude):
         """Order excludes to a dict of: [variable][start_time][end_time] -> list[stations]
