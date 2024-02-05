@@ -631,7 +631,7 @@ class TimeVariableStationFilter(DataIndexFilter):
         modify the original database and the cleanup needs to be done on a filter basis.
 
         :param exclude: tuple of 4 elements: start-time, end-time, variable, station
-        :excude_from_csvfile: this is a helper option to enable a large list of excludes
+        :param exclude_from_csvfile: this is a helper option to enable a large list of excludes
             to be read from a "\t" separated file with columns
                 start \t end \t variable \t station
             where start and end are timestamps of format YYYY-MM-DD HH:MM:SS in UTC, e.g.
