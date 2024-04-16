@@ -26,7 +26,7 @@ class Station:
         }
         self._metadata = {}
         if metadata:
-            self.set_metadata(metadata=metadata)
+            self._metadata = metadata
         if fields:
             self.set_fields(fields)
         pass
@@ -44,12 +44,6 @@ class Station:
         """all available data-fields, excluding variable and units which are
         considered metadata"""
         return self._fields.keys()
-
-    def metadata_keys(self):
-        """
-        List all available metadata
-        """
-        return self._metadata.keys()
 
     def set_fields(self, fields: dict):
         """Initialization code for this station.
@@ -70,16 +64,6 @@ class Station:
         for key in self.keys():
             self._fields[key] = fields[key]
         return
-
-    def set_metadata(self, metadata: dict):
-        """
-        Adds extra metadata, that is not part of the fields. Not as strict as with fields, so
-        all types of metadata can be added
-
-        :param fields: dict with the metadata
-        """
-
-        self._metadata.update(metadata)
 
     @property
     def station(self) -> str:
@@ -136,6 +120,10 @@ class Station:
         :return: url
         """
         return self._fields["url"]
+
+    @property
+    def metadata(self) -> dict:
+        return self._metadata
 
     def __str__(self):
         return self._fields.__str__()
