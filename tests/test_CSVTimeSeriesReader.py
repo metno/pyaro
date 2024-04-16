@@ -51,6 +51,30 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.assertEqual(count, 208)
             self.assertEqual(len(ts.stations()), 2)
 
+    def test_init_extra_columns(self):
+        columns = {
+            "variable": 0,
+            "station": 1,
+            "longitude": 2,
+            "latitude": 3,
+            "value": 4,
+            "units": 5,
+            "start_time": 6,
+            "end_time": 7,
+            "altitude": "0",
+            "country": "NO",
+            "standard_deviation": "NaN",
+            "flag": "0",
+            "area_classification": 8,
+        }
+        with pyaro.open_timeseries(
+            "csv_timeseries", *[self.file], **{"filters": [], "columns": columns}
+        ) as ts:
+            areas = ["Rural", "Urban"]
+            stations = ts.stations()
+            self.assertEqual(stations["station1"]["area_classification"], areas[0])
+            self.assertEqual(stations["station2"]["area_classification"], areas[1])
+
     def test_data(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
@@ -98,9 +122,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                     flag=data.flags,
                     standard_deviation=data.standard_deviations,
                 )
-            self.assertEqual(
-                (2**rounds) * old_size, len(data), "data append by array"
-            )
+            self.assertEqual((2**rounds) * old_size, len(data), "data append by array")
 
     def test_stationfilter(self):
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
