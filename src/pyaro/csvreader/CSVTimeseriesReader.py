@@ -4,25 +4,6 @@ from pyaro.timeseries import Data, NpStructuredData, Flag, Station
 import pyaro.timeseries.AutoFilterReaderEngine
 
 
-class ExtededStation(Station):
-    def __init__(self, fields: dict = None) -> None:
-        super().__init__(fields)
-
-    def set_fields(self, fields: dict):
-        """
-
-        :param fields: dict with the required fields
-
-        """
-        if abs(fields["latitude"]) > 90:
-            raise Exception(f"latitude out of bounds: {fields['latitude']}")
-        if abs(fields["longitude"]) > 180:
-            raise Exception(f"longitude out of bounds: {fields['longitude']}")
-        for key in fields:
-            self._fields[key] = fields[key]
-        return
-
-
 def _lookup_function():
     from geocoder_reverse_natural_earth import Geocoder_Reverse_NE
 
@@ -146,7 +127,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
                 )
                 if not r["station"] in self._stations:
 
-                    station_metadata = {
+                    station_fields = {
                         "station": r["station"],
                         "longitude": r["longitude"],
                         "latitude": r["latitude"],
@@ -155,10 +136,13 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
                         "url": "",
                         "long_name": r["station"],
                     }
-                    station_metadata.update(
-                        {key: extra_metadata[key] for key in self._extra_metadata}
+                    station_metadata = {
+                        key: extra_metadata[key] for key in self._extra_metadata
+                    }
+
+                    self._stations[r["station"]] = Station(
+                        station_fields, station_metadata
                     )
-                    self._stations[r["station"]] = ExtededStation(station_metadata)
 
     @classmethod
     def col_keys(cls):
@@ -171,7 +155,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
     def _unfiltered_data(self, varname) -> Data:
         return self._data[varname]
 
-    def _unfiltered_stations(self) -> dict[str, ExtededStation]:
+    def _unfiltered_stations(self) -> dict[str, Station]:
         return self._stations
 
     def _unfiltered_variables(self) -> list[str]:

@@ -14,7 +14,7 @@ class Station:
 
     """
 
-    def __init__(self, fields: dict = None) -> None:
+    def __init__(self, fields: dict = None, metadata: dict = None) -> None:
         self._fields = {
             "station": "",
             "latitude": float("nan"),
@@ -24,18 +24,32 @@ class Station:
             "country": "",
             "url": "",
         }
+        self._metadata = {}
+        if metadata:
+            self.set_metadata(metadata=metadata)
         if fields:
             self.set_fields(fields)
         pass
 
     def __getitem__(self, key):
         """access the data as a dict"""
-        return self._fields[key]
+        if key in self._fields:
+            return self._fields[key]
+        elif key in self._metadata:
+            return self._metadata[key]
+        else:
+            return KeyError(f"key {key} not found in station")
 
     def keys(self):
         """all available data-fields, excluding variable and units which are
         considered metadata"""
         return self._fields.keys()
+
+    def metadata_keys(self):
+        """
+        List all available metadata
+        """
+        return self._metadata.keys()
 
     def set_fields(self, fields: dict):
         """Initialization code for this station.
@@ -56,6 +70,16 @@ class Station:
         for key in self.keys():
             self._fields[key] = fields[key]
         return
+
+    def set_metadata(self, metadata: dict):
+        """
+        Adds extra metadata, that is not part of the fields. Not as strict as with fields, so
+        all types of metadata can be added
+
+        :param fields: dict with the metadata
+        """
+
+        self._metadata.update(metadata)
 
     @property
     def station(self) -> str:
