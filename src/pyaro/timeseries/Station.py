@@ -14,7 +14,7 @@ class Station:
 
     """
 
-    def __init__(self, fields: dict = None) -> None:
+    def __init__(self, fields: dict = None, metadata: dict = None) -> None:
         self._fields = {
             "station": "",
             "latitude": float("nan"),
@@ -24,13 +24,21 @@ class Station:
             "country": "",
             "url": "",
         }
+        self._metadata = {}
+        if metadata:
+            self._metadata = metadata
         if fields:
             self.set_fields(fields)
         pass
 
     def __getitem__(self, key):
         """access the data as a dict"""
-        return self._fields[key]
+        if key in self._fields:
+            return self._fields[key]
+        elif key in self._metadata:
+            return self._metadata[key]
+        else:
+            return KeyError(f"key {key} not found in station")
 
     def keys(self):
         """all available data-fields, excluding variable and units which are
@@ -112,6 +120,10 @@ class Station:
         :return: url
         """
         return self._fields["url"]
+
+    @property
+    def metadata(self) -> dict:
+        return self._metadata
 
     def __str__(self):
         return self._fields.__str__()

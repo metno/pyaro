@@ -66,17 +66,25 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         self._stations = {}
         self._data = {}  # var -> {data-array}
         self._set_filters(filters)
+        self._extra_metadata = tuple(set(columns.keys()) - set(self.col_keys()))
         if country_lookup:
             lookupISO2 = _lookup_function()
         with open(self._filename, newline="") as csvfile:
             crd = csv.reader(csvfile, **csvreader_kwargs)
             for row in crd:
                 r = {}
+                extra_metadata = {}
                 for t in self.col_keys():
                     if isinstance(columns[t], str):
                         r[t] = columns[t]
                     else:
                         r[t] = row[columns[t]]
+                for t in self._extra_metadata:
+                    if isinstance(columns[t], str):
+                        extra_metadata[t] = columns[t]
+                    else:
+                        extra_metadata[t] = row[columns[t]]
+
                 for t in (
                     "value",
                     "latitude",
@@ -118,16 +126,22 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
                     ]
                 )
                 if not r["station"] in self._stations:
+
+                    station_fields = {
+                        "station": r["station"],
+                        "longitude": r["longitude"],
+                        "latitude": r["latitude"],
+                        "altitude": r["altitude"],
+                        "country": r["country"],
+                        "url": "",
+                        "long_name": r["station"],
+                    }
+                    station_metadata = {
+                        key: extra_metadata[key] for key in self._extra_metadata
+                    }
+
                     self._stations[r["station"]] = Station(
-                        {
-                            "station": r["station"],
-                            "longitude": r["longitude"],
-                            "latitude": r["latitude"],
-                            "altitude": r["altitude"],
-                            "country": r["country"],
-                            "url": "",
-                            "long_name": r["station"],
-                        }
+                        station_fields, station_metadata
                     )
 
     @classmethod
