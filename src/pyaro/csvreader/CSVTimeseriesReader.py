@@ -63,6 +63,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         :filters: default auto-filter filters
         """
         self._filename = filename
+        self._metadata = {"path": str(filename)}
         self._stations = {}
         self._data = {}  # var -> {data-array}
         self._set_filters(filters)
@@ -126,7 +127,6 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
                     ]
                 )
                 if not r["station"] in self._stations:
-
                     station_fields = {
                         "station": r["station"],
                         "longitude": r["longitude"],
@@ -151,6 +151,9 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         :return: list of columns possible to initialize with columns argument of this reader
         """
         return cls._col_keys
+
+    def metadata(self) -> dict():
+        return self._metadata
 
     def _unfiltered_data(self, varname) -> Data:
         return self._data[varname]
