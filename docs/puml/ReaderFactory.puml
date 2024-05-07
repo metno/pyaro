@@ -44,6 +44,7 @@ interface timeseries.Reader {
   + __init__(args)
   --
   + data(): Data
+  + metadata(): dict[str, str]
   + stations(): dict[str, Station]
   + variables(): [str]
   + close()
