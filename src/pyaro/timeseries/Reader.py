@@ -19,6 +19,16 @@ class Reader(abc.ABC):
         """
         pass
 
+    def metadata(self) -> dict[str, str]:
+        """Metadata set by the datasource.
+
+        The reader-implementation might add metadata depending on the data-source
+        to this method.
+
+        :return dictionary with different metadata
+        """
+        return dict()
+
     @abc.abstractmethod
     def data(self, varname) -> Data:
         """Return all data for a variable
