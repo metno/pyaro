@@ -1,4 +1,6 @@
 import datetime
+import logging
+import sys
 import unittest
 import os
 
@@ -26,8 +28,17 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     file = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         "testdata",
+        "datadir",
         "csvReader_testdata.csv",
     )
+    multifile = "glob:" + os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "testdata", "datadir", "**/*.csv"
+    )
+
+    def setUp(self):
+        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+        logging.getLogger().setLevel(logging.DEBUG)
+        pass
 
     def test_init(self):
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
@@ -40,6 +51,19 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             for var in ts.variables():
                 count += len(ts.data(var))
             self.assertEqual(count, 208)
+            self.assertEqual(len(ts.stations()), 2)
+
+    def test_init_multifile(self):
+        engine = pyaro.list_timeseries_engines()["csv_timeseries"]
+        self.assertEqual(engine.url(), "https://github.com/metno/pyaro")
+        # just see that it doesn't fails
+        engine.description()
+        engine.args()
+        with engine.open(self.multifile, filters=[]) as ts:
+            count = 0
+            for var in ts.variables():
+                count += len(ts.data(var))
+            self.assertEqual(count, 416)
             self.assertEqual(len(ts.stations()), 2)
 
     def test_init2(self):

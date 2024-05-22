@@ -1,7 +1,13 @@
 import csv
+import glob
+import logging
+
 import numpy as np
-from pyaro.timeseries import Data, NpStructuredData, Flag, Station
+
 import pyaro.timeseries.AutoFilterReaderEngine
+from pyaro.timeseries import Data, Flag, NpStructuredData, Station
+
+logger = logging.getLogger(__name__)
 
 
 def _lookup_function():
@@ -51,7 +57,10 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
     ):
         """open a new csv timeseries-reader
 
-        :param filename_or_obj_or_url: path-like object to csv-file
+        :param filename_or_obj_or_url: path-like object to csv-file. For multi-file support
+            path may also start with the `glob:`-keyword, e.g. `glob:/data/csvdir/**/*.csv` will
+            add all csv-files under `/data/csvdir/`, recursively.
+            All multi-files need to have the same csv-format.
         :param columns: mapping of column in the csv-file to key, see col_keys().
             Column-numbering starts with 0.
             If column is a string rather than a integer, it is a constant value and not
@@ -62,7 +71,10 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         :csvreader_kwargs: kwargs send directly to csv.reader module
         :filters: default auto-filter filters
         """
-        self._filename = filename
+        if filename.startswith("glob:"):
+            self._file_iterator = glob.iglob(filename[5:], recursive=True)
+        else:
+            self._file_iterator = [filename]
         self._metadata = {"path": str(filename)}
         self._stations = {}
         self._data = {}  # var -> {data-array}
@@ -70,7 +82,18 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         self._extra_metadata = tuple(set(columns.keys()) - set(self.col_keys()))
         if country_lookup:
             lookupISO2 = _lookup_function()
-        with open(self._filename, newline="") as csvfile:
+        else:
+            lookupISO2 = None
+        for path in self._file_iterator:
+            logger.debug("%s: %s", filename, path)
+            self._read_single_file(
+                path, columns, variable_units, lookupISO2, csvreader_kwargs
+            )
+
+    def _read_single_file(
+        self, filename, columns, variable_units, country_lookup, csvreader_kwargs
+    ):
+        with open(filename, newline="") as csvfile:
             crd = csv.reader(csvfile, **csvreader_kwargs)
             for row in crd:
                 r = {}
@@ -99,8 +122,8 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
 
                 if r["variable"] in variable_units:
                     r["units"] = variable_units[r["variable"]]
-                if country_lookup:
-                    r["country"] = lookupISO2(r["latitude"], r["longitude"])
+                if country_lookup is not None:
+                    r["country"] = country_lookup(r["latitude"], r["longitude"])
                 if r["variable"] in self._data:
                     da = self._data[r["variable"]]
                     if da.units != r["units"]:
