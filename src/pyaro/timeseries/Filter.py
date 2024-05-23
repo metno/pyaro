@@ -714,6 +714,13 @@ class DuplicateFilter(DataIndexFilter):
     default_keys = ["stations", "start_times", "end_times"]
 
     def __init__(self, duplicate_keys: list[str] | None = None):
+        """remove duplicates from the data. By default, data with common
+        station, start_time, end_time are consider duplicates. Only one of the duplicates
+        is kept.
+
+        :param duplicate_keys: list of data-fields/columns, defaults to None, being the same
+            as ["stations", "start_times", "end_times"]
+        """
         self._keys = duplicate_keys
 
     def init_kwargs(self):
