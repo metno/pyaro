@@ -1,6 +1,7 @@
 import csv
 import glob
 import logging
+import os
 
 import numpy as np
 
@@ -61,6 +62,8 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
             path may also start with the `glob:`-keyword, e.g. `glob:/data/csvdir/**/*.csv` will
             add all csv-files under `/data/csvdir/`, recursively.
             All multi-files need to have the same csv-format.
+            If filename_or_obj_or_url is a directory, all *.csv file in this directory will be read,
+            i.e. it is mapped to glob:/directory/*.csv
         :param columns: mapping of column in the csv-file to key, see col_keys().
             Column-numbering starts with 0.
             If column is a string rather than a integer, it is a constant value and not
@@ -71,6 +74,8 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         :csvreader_kwargs: kwargs send directly to csv.reader module
         :filters: default auto-filter filters
         """
+        if os.path.isdir(filename):
+            filename = "glob:" + filename + "/*.csv"
         if filename.startswith("glob:"):
             self._file_iterator = glob.iglob(filename[5:], recursive=True)
         else:
