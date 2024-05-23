@@ -709,6 +709,30 @@ class TimeVariableStationFilter(DataIndexFilter):
         return idx
 
 
+@registered_filter
+class DuplicateFilter(DataIndexFilter):
+    default_keys = ["stations", "start_times", "end_times"]
+
+    def __init__(self, duplicate_keys: list[str] | None = None):
+        self._keys = duplicate_keys
+
+    def init_kwargs(self):
+        if self._keys is None:
+            return {}
+        else:
+            return {"duplicate_keys": self._keys}
+
+    def name(self):
+        return "duplicates"
+
+    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+        if self._keys is None:
+            xkeys = self.default_keys
+        else:
+            xkeys = self._keys
+        return np.unique(data[xkeys], return_index=True)[1]
+
+
 if __name__ == "__main__":
     for name, fil in filters._filters.items():
         assert name == fil.name()

@@ -34,7 +34,7 @@ class AutoFilterReader(Reader):
         filts = []
         for (
             f
-        ) in "variables,stations,countries,bounding_boxes,time_bounds,flags,time_variable_station".split(
+        ) in "variables,stations,countries,bounding_boxes,duplicates,time_bounds,flags,time_variable_station".split(
             ","
         ):
             filts.append(filters.get(f))

@@ -329,6 +329,21 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.assertEqual(ts.data(newsox).variable, newsox)
         pass
 
+    def test_duplicate_filter(self):
+        engine = pyaro.list_timeseries_engines()["csv_timeseries"]
+        with engine.open(
+            self.multifile_dir + "/csvReader_testdata2.csv",
+            filters={"duplicates": {"duplicate_keys": None}},
+        ) as ts:
+            self.assertEqual(len(ts.data("NOx")), 8)
+        with engine.open(
+            self.multifile_dir + "/csvReader_testdata2.csv",
+            filters={
+                "duplicates": {"duplicate_keys": ["stations", "start_times", "values"]}
+            },
+        ) as ts:
+            self.assertEqual(len(ts.data("NOx")), 10)
+
     def test_filterFactory(self):
         filters = pyaro.timeseries.filters.list()
         print(filters["variables"])
