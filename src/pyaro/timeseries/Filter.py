@@ -43,7 +43,9 @@ class Filter(abc.ABC):
         :return: a string to be used by FilterFactory
         """
 
-    def filter_data(self, data: Data, stations: [Station], variables: [str]) -> Data:
+    def filter_data(
+        self, data: Data, stations: list[Station], variables: list[str]
+    ) -> Data:
         """Filtering of data
 
         :param data: Data of e.g. a Reader.data(varname) call
@@ -61,7 +63,7 @@ class Filter(abc.ABC):
         """
         return stations
 
-    def filter_variables(self, variables: [str]) -> [str]:
+    def filter_variables(self, variables: list[str]) -> list[str]:
         """Filtering of variables
 
         :param variables: List of variables, e.g. from a Reader.variables() call
@@ -203,8 +205,8 @@ class VariableNameFilter(Filter):
     def __init__(
         self,
         reader_to_new: dict[str, str] = {},
-        include: [str] = [],
-        exclude: [str] = [],
+        include: list[str] = [],
+        exclude: list[str] = [],
     ):
         """Create a new variable name filter.
 
@@ -251,7 +253,7 @@ class VariableNameFilter(Filter):
         data._set_variable(self._reader_to_new.get(data.variable, data.variable))
         return data
 
-    def filter_variables(self, variables: [str]) -> [str]:
+    def filter_variables(self, variables: list[str]) -> list[str]:
         """change variable name and reduce variables applying include and exclude parameters
 
         :param variables: variable names as in the reader
@@ -308,7 +310,7 @@ class StationReductionFilter(DataIndexFilter):
 
 @registered_filter
 class StationFilter(StationReductionFilter):
-    def __init__(self, include: [str] = [], exclude: [str] = []):
+    def __init__(self, include: list[str] = [], exclude: list[str] = []):
         self._include = set(include)
         self._exclude = set(exclude)
         return
@@ -333,7 +335,7 @@ class StationFilter(StationReductionFilter):
 
 @registered_filter
 class CountryFilter(StationReductionFilter):
-    def __init__(self, include: [str] = [], exclude: [str] = []):
+    def __init__(self, include: list[str] = [], exclude: list[str] = []):
         """Filter countries by ISO2 names (capitals!)
 
         :param include: countries to include, defaults to [], meaning all countries
@@ -371,8 +373,8 @@ class BoundingBoxFilter(StationReductionFilter):
 
     def __init__(
         self,
-        include: [(float, float, float, float)] = [],
-        exclude: [(float, float, float, float)] = [],
+        include: list[(float, float, float, float)] = [],
+        exclude: list[(float, float, float, float)] = [],
     ):
         """Filter using geographical bounding-boxes. Coordinates should be given in the range
         [-180,180] (degrees_east) for longitude and [-90,90] (degrees_north) for latitude.
@@ -460,7 +462,7 @@ class BoundingBoxFilter(StationReductionFilter):
 
 @registered_filter
 class FlagFilter(DataIndexFilter):
-    def __init__(self, include: [Flag] = [], exclude: [Flag] = []):
+    def __init__(self, include: list[Flag] = [], exclude: list[Flag] = []):
         """Filter data by Flags
 
         :param include: flags to include, defaults to [], meaning all flags
@@ -498,12 +500,12 @@ class TimeBoundsException(Exception):
 class TimeBoundsFilter(DataIndexFilter):
     def __init__(
         self,
-        start_include: [(str, str)] = [],
-        start_exclude: [(str, str)] = [],
-        startend_include: [(str, str)] = [],
-        startend_exclude: [(str, str)] = [],
-        end_include: [(str, str)] = [],
-        end_exclude: [(str, str)] = [],
+        start_include: list[(str, str)] = [],
+        start_exclude: list[(str, str)] = [],
+        startend_include: list[(str, str)] = [],
+        startend_exclude: list[(str, str)] = [],
+        end_include: list[(str, str)] = [],
+        end_exclude: list[(str, str)] = [],
     ):
         """Filter data by start and/or end-times of the measurements. Each timebound consists
         of a bound-start and bound-end (both included). Timestamps are given as YYYY-MM-DD HH:MM:SS
@@ -527,7 +529,7 @@ class TimeBoundsFilter(DataIndexFilter):
     def name(self):
         return "time_bounds"
 
-    def _str_list_to_datetime_list(self, tuple_list: [(str, str)]):
+    def _str_list_to_datetime_list(self, tuple_list: list[(str, str)]):
         retlist = []
         for start, end in tuple_list:
             start_dt = datetime.strptime(start, self.time_format)
@@ -539,7 +541,7 @@ class TimeBoundsFilter(DataIndexFilter):
             retlist.append((start_dt, end_dt))
         return retlist
 
-    def _datetime_list_to_str_list(self, tuple_list) -> [(str, str)]:
+    def _datetime_list_to_str_list(self, tuple_list) -> list[(str, str)]:
         retlist = []
         for start_dt, end_dt in tuple_list:
             retlist.append(
@@ -579,7 +581,7 @@ class TimeBoundsFilter(DataIndexFilter):
             or len(self._end_include)
         )
 
-    def envelope(self) -> (datetime, datetime):
+    def envelope(self) -> tuple[datetime, datetime]:
         """Get the earliest and latest time possible for this filter.
 
         :return: earliest start and end-time (approximately)
