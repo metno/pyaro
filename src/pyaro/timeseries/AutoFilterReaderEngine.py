@@ -18,7 +18,7 @@ class AutoFilterReader(Reader):
     _unfiltered_variables.
 
     It adds also an overwritable classmethod supported_filters() listing all
-    possible filters. This is both used for the AutoEngine, and for the
+    possible filters. This is both used for the AutoFilterEngine, and for the
     check_filters method which should be used during initialization when
     filters are given.
 
@@ -97,14 +97,14 @@ class AutoFilterReader(Reader):
 
 
 class AutoFilterEngine(Engine):
-    """The AutoEngine class implements the supported_filters and
+    """The AutoFilterEngine class implements the supported_filters and
     args method using introspection from the corresponding reader-class.
     The reader_class method needs therefore to be implemented by this class.
 
     """
 
     @abc.abstractmethod
-    def reader_class(self) -> Reader:
+    def reader_class(self) -> AutoFilterReader:
         """return the class of the corresponding reader
 
         :return: the class returned from open
