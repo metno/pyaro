@@ -7,7 +7,7 @@ from .Engine import Engine
 from .Filter import VariableNameFilter, Filter, filters, FilterFactory
 
 
-class UnkownFilterException(Exception):
+class UnknownFilterException(Exception):
     pass
 
 
@@ -26,20 +26,15 @@ class AutoFilterReader(Reader):
     """
 
     @classmethod
-    def supported_filters(cls) -> [Filter]:
+    def supported_filters(cls) -> list[Filter]:
         """Get the default list of implemented filters.
 
         :return: list of filters
         """
-        filts = []
-        for (
-            f
-        ) in "variables,stations,countries,bounding_boxes,time_bounds,flags,time_variable_station".split(
+        supported = "variables,stations,countries,bounding_boxes,duplicates,time_bounds,flags,time_variable_station".split(
             ","
-        ):
-            filts.append(filters.get(f))
-
-        return filts
+        )
+        return [filters.get(name) for name in supported]
 
     def _set_filters(self, filters):
         supported = set()
@@ -53,12 +48,12 @@ class AutoFilterReader(Reader):
             filters = filtlist
         for filt in filters:
             if filt.__class__ not in supported:
-                raise UnkownFilterException(
+                raise UnknownFilterException(
                     f"Filter {filt.__class__} not supported in {supported}."
                 )
         self._filters = filters
 
-    def _get_filters(self) -> [Filter]:
+    def _get_filters(self) -> list[Filter]:
         """Get a list of filters actually set during initialization of this object.
 
         :return: list of filters
@@ -116,7 +111,7 @@ class AutoFilterEngine(Engine):
         """
         pass
 
-    def supported_filters(self) -> [Filter]:
+    def supported_filters(self) -> list[Filter]:
         """The supported filters by this Engine. Maps to the Readers supported_filters.
 
         :return: a list of filters
