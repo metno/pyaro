@@ -24,7 +24,7 @@ class Engine(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def supported_filters(self) -> [str]:
+    def supported_filters(self) -> list[str]:
         """The class-names of the supported filters by this reader.
 
         If the reader is called with a filter which is not a instance of this class,
