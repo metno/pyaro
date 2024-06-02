@@ -64,7 +64,7 @@ class timeseries.CountryFilter {
 }
 
 class timeseries.BoundingBoxFilter {
-  + __init__(include=[country], exclude=[country]): CountryFilter
+  + __init__(include=[country], exclude=[country]): BoundingBoxFilter
   + name(): "bounding_boxes"
   + init_kwargs(): dict
   + filter_stations(stations): dict[str, Station]
@@ -72,7 +72,7 @@ class timeseries.BoundingBoxFilter {
 }
 
 class timeseries.TimeBoundsFilter {
-  + __init__(start_include=[flag], start_exclude=[flag],\n start_end_include, startend_exclude,\n end_include, end_exclude): FlagFilter
+  + __init__(start_include=[flag], start_exclude=[flag],\n start_end_include, startend_exclude,\n end_include, end_exclude): TimeBoundsFilter
   + name(): "time_bounds"
   + init_kwargs(): dict
   + filter_data_idx(data, stations, variables): Data
@@ -81,6 +81,19 @@ class timeseries.TimeBoundsFilter {
   contains(start_dt_array, end_dt_array): bool-array
 }
 
+class timeseries.TimeResolutionFilter {
+  + __init__(resolutions=[resolution_string]): TimeResolutionFilter
+  + name(): "time_resolutions"
+  + init_kwargs(): dict
+  + filter_data_idx(data, stations, variables): Data
+}
+
+class timeseries.DuplicateFilter {
+  + __init__(duplicate_keys=["stations", "start_times", "end_times"]): DuplicateFilter
+  + name(): "duplicates"
+  + init_kwargs(): dict
+  + filter_data_idx(data, stations, variables): Data
+}
 
 class timeseries.FlagFilter {
   + __init__(include=[flag], exclude=[flag]): FlagFilter
@@ -98,6 +111,8 @@ timeseries.StationReductionFilter <|.. timeseries.StationFilter
 timeseries.StationReductionFilter <|.. timeseries.CountryFilter
 timeseries.StationReductionFilter <|.. timeseries.BoundingBoxFilter
 timeseries.DataIndexFilter <|.. timeseries.TimeBoundsFilter
+timeseries.DataIndexFilter <|.. timeseries.TimeResolutionFilter
+timeseries.DataIndexFilter <|.. timeseries.DuplicateFilter
 timeseries.DataIndexFilter <|.. timeseries.FlagFilter
 
 timeseries.FilterFactory ..> timeseries.VariableNameFilter
@@ -105,4 +120,6 @@ timeseries.FilterFactory ..> timeseries.StationFilter
 timeseries.FilterFactory ..> timeseries.CountryFilter
 timeseries.FilterFactory ..> timeseries.BoundingBoxFilter
 timeseries.FilterFactory ..> timeseries.TimeBoundsFilter
+timeseries.FilterFactory ..> timeseries.TimeResolutionFilter
+timeseries.FilterFactory ..> timeseries.DuplicateFilter
 timeseries.FilterFactory ..> timeseries.FlagFilter

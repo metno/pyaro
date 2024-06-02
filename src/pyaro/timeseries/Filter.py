@@ -3,7 +3,9 @@ from collections import defaultdict
 import csv
 from datetime import datetime
 import inspect
+import re
 import types
+from typing import Any
 
 import numpy as np
 
@@ -93,6 +95,10 @@ class DataIndexFilter(Filter):
 
 
 class FilterFactoryException(Exception):
+    pass
+
+
+class FilterException(Exception):
     pass
 
 
@@ -740,6 +746,74 @@ class DuplicateFilter(DataIndexFilter):
         else:
             xkeys = self._keys
         return np.unique(data[xkeys], return_index=True)[1]
+
+
+@registered_filter
+class TimeResolutionFilter(DataIndexFilter):
+    pattern = re.compile(r"\s*(\d+)\s*(\w+)\s*")
+    named_resolutions = dict(
+        minute=(59, 61),
+        hour=(59 * 60, 61 * 60),
+        day=(60 * (59 + (60 * 22)), 60 * (1 + (60 * 25))),
+        week=(6 * 24 * 60 * 60, 8 * 24 * 60 * 60),
+        month=(27 * 24 * 60 * 60, 33 * 24 * 60 * 60),
+        year=(360 * 24 * 60 * 60, 370 * 24 * 60 * 60),
+    )
+
+    def __init__(self, resolutions: list[str] = []):
+        """The timeresolution filter allows to restrict the observation data to
+        certain time-resolutions. Time-resolutions are not exact, and might be interpreted
+        slightly differently by different observation networks.
+
+        Default named time-resoultions are
+          * minute: 59 to 61 s (+-1sec)
+          * hour: 59*60 s to 61*60 s (+-1min)
+          * day: 22:59:00 to 25:01:00 to allow for leap-days and a extra min
+          * week: 6 to 8 days (+-1 day)
+          * month: 27-33 days (30 +- 3 days)
+          * year: 360-370 days (+- 5days)
+
+        :param resolutions: a list of wanted time resolutions. A resolution consists of a integer
+        number and a time-resolution name, e.g. 3 hour (no plural).
+        """
+        self._resolutions = resolutions
+        self._minmax = self._resolve_resolutions()
+
+    def _resolve_resolutions(self):
+        minmax_list = []
+        for res in self._resolutions:
+            minmax = None
+            if m := self.pattern.match(res):
+                count = int(m[1])
+                name = m[2]
+                if name in self.named_resolutions:
+                    minmax = tuple(count * x for x in self.named_resolutions[name])
+            if minmax is None:
+                raise FilterException(f"Cannot parse time-resolution of {res}")
+            else:
+                minmax_list.append(minmax)
+        return minmax_list
+
+    def init_kwargs(self):
+        if len(self._resolutions) == 0:
+            return {}
+        else:
+            return {"resolutions": self._resolutions}
+
+    def name(self):
+        return "time_resolution"
+
+    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+        idx = data.start_times.astype(bool)
+        idx[:] = True
+        if len(self._minmax) > 0:
+            idx[:] = False
+            data_resolution = (data.end_times - data.start_times) / np.timedelta64(
+                1, "s"
+            )
+            for minmax in self._minmax:
+                idx |= (minmax[0] <= data_resolution) & (data_resolution <= minmax[1])
+        return idx
 
 
 if __name__ == "__main__":
