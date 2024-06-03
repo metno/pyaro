@@ -7,6 +7,7 @@ import os
 import numpy as np
 import pyaro
 import pyaro.timeseries
+from pyaro.timeseries.Filter import FilterException
 from pyaro.timeseries.Wrappers import VariableNameChangingReader
 
 try:
@@ -343,6 +344,32 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             },
         ) as ts:
             self.assertEqual(len(ts.data("NOx")), 10)
+
+    def test_time_resolution_filter(self):
+        engine = pyaro.list_timeseries_engines()["csv_timeseries"]
+        with self.assertRaises(FilterException):
+            with engine.open(
+                self.file,
+                filters={"time_resolution": {"resolutions": ["ldjf4098"]}},
+            ) as ts:
+                pass
+        with engine.open(
+            self.file,
+            filters={"time_resolution": {"resolutions": ["1 day"]}},
+        ) as ts:
+            count = 0
+            for var in ts.variables():
+                count += len(ts.data(var))
+            self.assertEqual(count, 208)
+        for resolution in "1 minute, 1 hour, 1week, 1month, 3year".split(","):
+            with engine.open(
+                self.file,
+                filters={"time_resolution": {"resolutions": ["1 hour"]}},
+            ) as ts:
+                count = 0
+                for var in ts.variables():
+                    count += len(ts.data(var))
+                self.assertEqual(count, 0)
 
     def test_filterFactory(self):
         filters = pyaro.timeseries.filters.list()

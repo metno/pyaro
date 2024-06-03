@@ -28,8 +28,11 @@ pyaro.timeseries - User API
 pyaro.timeseries.filters - Filters
 ^^^^^^^^^^^^
 
+.. image:: pics/Filter.svg
+  :alt: Filter UML diagram
+
 .. automodule:: pyaro.timeseries.Filter
-   :members: FilterFactory, FilterCollections, Filter, StationFilter, CountryFilter, BoundingBoxFilter, FlagFilter, TimeBoundsFilter
+   :members: FilterFactory, FilterCollections, Filter, StationFilter, CountryFilter, BoundingBoxFilter, FlagFilter, TimeBoundsFilter, TimeResolutionFilter, DuplicateFilter
    :undoc-members:
    :imported-members:
 
