@@ -814,10 +814,3 @@ class TimeResolutionFilter(DataIndexFilter):
             for minmax in self._minmax:
                 idx |= (minmax[0] <= data_resolution) & (data_resolution <= minmax[1])
         return idx
-
-
-if __name__ == "__main__":
-    for name, fil in filters._filters.items():
-        assert name == fil.name()
-        print(name, fil.args())
-        print(fil)
