@@ -125,5 +125,16 @@ class Station:
     def metadata(self) -> dict:
         return self._metadata
 
-    def __str__(self):
-        return self._fields.__str__()
+    def init_kwargs(self) -> dict[str, dict]:
+        """implement a dict representation of this class to make it easier json serializable.
+        Station(**another_station.init_kwargs()) should make a copy of the station.
+
+        :return: a dict representation.
+        """
+        return {"fields": self._fields, "metadata": self.metadata}
+
+    def __rep__(self):
+        return f'Station("fields": {self._fields}, "metadata": {self.metadata})'
+
+    def __str__(self) -> str:
+        return str((self._fields, self.metadata))

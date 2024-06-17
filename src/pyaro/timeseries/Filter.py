@@ -153,12 +153,13 @@ class FilterCollectionException(Exception):
 
 
 class FilterCollection:
-    def __init__(self, filterlist=[]):
-        """A collection of DataIndexFilters which can be appied together.
+    """A collection of DataIndexFilters which can be appied together.
 
-        :param filterlist: _description_, defaults to []
-        :return: _description_
-        """
+    :param filterlist: _description_, defaults to []
+    :return: _description_
+    """
+
+    def __init__(self, filterlist=[]):
         self._filters = []
         tmp_filterlist = []
         if isinstance(filterlist, dict):
@@ -206,7 +207,14 @@ class FilterCollection:
 
 @registered_filter
 class VariableNameFilter(Filter):
-    """Filter to change variable-names and/or include/exclude variables"""
+    """Filter to change variable-names and/or include/exclude variables
+
+    :param reader_to_new: dictionary from readers-variable names to new variable-names,
+        e.g. used in your project, defaults to {}
+    :param include: list of variables to include only (new names if changed), defaults to []
+        meaning keep all variables unless excluded.
+    :param exclude: list of variables to exclude (new names if changed), defaults to []
+    """
 
     def __init__(
         self,
@@ -214,14 +222,6 @@ class VariableNameFilter(Filter):
         include: list[str] = [],
         exclude: list[str] = [],
     ):
-        """Create a new variable name filter.
-
-        :param reader_to_new: dictionary from readers-variable names to new variable-names,
-            e.g. used in your project, defaults to {}
-        :param include: list of variables to include only (new names if changed), defaults to []
-            meaning keep all variables unless excluded.
-        :param exclude: list of variables to exclude (new names if changed), defaults to []
-        """
         self._reader_to_new = reader_to_new
         self._new_to_reader = {v: k for k, v in reader_to_new.items()}
         self._include = set(include)
@@ -341,12 +341,13 @@ class StationFilter(StationReductionFilter):
 
 @registered_filter
 class CountryFilter(StationReductionFilter):
-    def __init__(self, include: list[str] = [], exclude: list[str] = []):
-        """Filter countries by ISO2 names (capitals!)
+    """Filter countries by ISO2 names (capitals!)
 
-        :param include: countries to include, defaults to [], meaning all countries
-        :param exclude: countries to exclude, defaults to [], meaning none
-        """
+    :param include: countries to include, defaults to [], meaning all countries
+    :param exclude: countries to exclude, defaults to [], meaning none
+    """
+
+    def __init__(self, include: list[str] = [], exclude: list[str] = []):
         self._include = set(include)
         self._exclude = set(exclude)
         return
@@ -375,22 +376,21 @@ class BoundingBoxException(Exception):
 
 @registered_filter
 class BoundingBoxFilter(StationReductionFilter):
-    """Filter using geographical bounding-boxes"""
+    """Filter using geographical bounding-boxes. Coordinates should be given in the range
+    [-180,180] (degrees_east) for longitude and [-90,90] (degrees_north) for latitude.
+    Order of coordinates is clockwise starting with north, i.e.: (north, east, south, west) = NESW
+
+    :param include: bounding boxes to include. Each bounding box is a tuple of four float for
+        (NESW),  defaults to [] meaning no restrictions
+    :param exclude: bounding boxes to exclude. Defaults to []
+    :raises BoundingBoxException: on any errors of the bounding boxes
+    """
 
     def __init__(
         self,
         include: list[(float, float, float, float)] = [],
         exclude: list[(float, float, float, float)] = [],
     ):
-        """Filter using geographical bounding-boxes. Coordinates should be given in the range
-        [-180,180] (degrees_east) for longitude and [-90,90] (degrees_north) for latitude.
-        Order of coordinates is clockwise starting with north, i.e.: (north, east, south, west) = NESW
-
-        :param include: bounding boxes to include. Each bounding box is a tuple of four float for
-            (NESW),  defaults to [] meaning no restrictions
-        :param exclude: bounding boxes to exclude. Defaults to []
-        :raises BoundingBoxException: on any errors of the bounding boxes
-        """
         for tup in include:
             self._test_bounding_box(tup)
         for tup in exclude:
@@ -468,12 +468,13 @@ class BoundingBoxFilter(StationReductionFilter):
 
 @registered_filter
 class FlagFilter(DataIndexFilter):
-    def __init__(self, include: list[Flag] = [], exclude: list[Flag] = []):
-        """Filter data by Flags
+    """Filter data by Flags
 
-        :param include: flags to include, defaults to [], meaning all flags
-        :param exclude: flags to exclude, defaults to [], meaning none
-        """
+    :param include: flags to include, defaults to [], meaning all flags
+    :param exclude: flags to exclude, defaults to [], meaning none
+    """
+
+    def __init__(self, include: list[Flag] = [], exclude: list[Flag] = []):
         self._include = set(include)
         if len(include) == 0:
             all_include = set([f for f in Flag])
@@ -504,6 +505,18 @@ class TimeBoundsException(Exception):
 
 @registered_filter
 class TimeBoundsFilter(DataIndexFilter):
+    """Filter data by start and/or end-times of the measurements. Each timebound consists
+    of a bound-start and bound-end (both included). Timestamps are given as YYYY-MM-DD HH:MM:SS
+
+    :param start_include: list of tuples of start-times, defaults to [], meaning all
+    :param start_exclude: list of tuples of start-times, defaults to []
+    :param startend_include: list of tuples of start and end-times, defaults to [], meaning all
+    :param startend_exclude: list of tuples of start and end-times, defaults to []
+    :param end_include: list of tuples of end-times, defaults to [], meaning all
+    :param end_exclude: list of tuples of end-times, defaults to []
+    :raises TimeBoundsException: on any errors with the time-bounds
+    """
+
     def __init__(
         self,
         start_include: list[(str, str)] = [],
@@ -513,17 +526,6 @@ class TimeBoundsFilter(DataIndexFilter):
         end_include: list[(str, str)] = [],
         end_exclude: list[(str, str)] = [],
     ):
-        """Filter data by start and/or end-times of the measurements. Each timebound consists
-        of a bound-start and bound-end (both included). Timestamps are given as YYYY-MM-DD HH:MM:SS
-
-        :param start_include: list of tuples of start-times, defaults to [], meaning all
-        :param start_exclude: list of tuples of start-times, defaults to []
-        :param startend_include: list of tuples of start and end-times, defaults to [], meaning all
-        :param startend_exclude: list of tuples of start and end-times, defaults to []
-        :param end_include: list of tuples of end-times, defaults to [], meaning all
-        :param end_exclude: list of tuples of end-times, defaults to []
-        :raises TimeBoundsException: on any errors with the time-bounds
-        """
         self._start_include = self._str_list_to_datetime_list(start_include)
         self._start_exclude = self._str_list_to_datetime_list(start_exclude)
         self._startend_include = self._str_list_to_datetime_list(startend_include)
@@ -632,20 +634,21 @@ class TimeBoundsFilter(DataIndexFilter):
 
 @registered_filter
 class TimeVariableStationFilter(DataIndexFilter):
+    """Exclude combinations of variable station and time from the data
+
+    This filter is really a cleanup of the database, but sometimes it is not possible to
+    modify the original database and the cleanup needs to be done on a filter basis.
+
+    :param exclude: tuple of 4 elements: start-time, end-time, variable, station
+    :param exclude_from_csvfile: this is a helper option to enable a large list of excludes
+        to be read from a "\t" separated file with columns
+            start \t end \t variable \t station
+        where start and end are timestamps of format YYYY-MM-DD HH:MM:SS in UTC, e.g.
+        the year 2020 is:
+            2020-01-01 00:00:00 \t 2020-12-31 23:59:59 \t ...
+    """
+
     def __init__(self, exclude=[], exclude_from_csvfile=""):
-        """Exclude combinations of variable station and time from the data
-
-        This filter is really a cleanup of the database, but sometimes it is not possible to
-        modify the original database and the cleanup needs to be done on a filter basis.
-
-        :param exclude: tuple of 4 elements: start-time, end-time, variable, station
-        :param exclude_from_csvfile: this is a helper option to enable a large list of excludes
-            to be read from a "\t" separated file with columns
-                start \t end \t variable \t station
-            where start and end are timestamps of format YYYY-MM-DD HH:MM:SS in UTC, e.g.
-            the year 2020 is:
-                2020-01-01 00:00:00 \t 2020-12-31 23:59:59 \t ...
-        """
         csvexclude = self._excludes_from_csv(exclude_from_csvfile)
         self._exclude = self._order_exclude(exclude + csvexclude)
 
@@ -719,16 +722,17 @@ class TimeVariableStationFilter(DataIndexFilter):
 
 @registered_filter
 class DuplicateFilter(DataIndexFilter):
+    """remove duplicates from the data. By default, data with common
+    station, start_time, end_time are consider duplicates. Only one of the duplicates
+    is kept.
+
+    :param duplicate_keys: list of data-fields/columns, defaults to None, being the same
+        as ["stations", "start_times", "end_times"]
+    """
+
     default_keys = ["stations", "start_times", "end_times"]
 
     def __init__(self, duplicate_keys: list[str] | None = None):
-        """remove duplicates from the data. By default, data with common
-        station, start_time, end_time are consider duplicates. Only one of the duplicates
-        is kept.
-
-        :param duplicate_keys: list of data-fields/columns, defaults to None, being the same
-            as ["stations", "start_times", "end_times"]
-        """
         self._keys = duplicate_keys
 
     def init_kwargs(self):
@@ -750,6 +754,22 @@ class DuplicateFilter(DataIndexFilter):
 
 @registered_filter
 class TimeResolutionFilter(DataIndexFilter):
+    """The timeresolution filter allows to restrict the observation data to
+    certain time-resolutions. Time-resolutions are not exact, and might be interpreted
+    slightly differently by different observation networks.
+
+    Default named time-resoultions are
+        * minute: 59 to 61 s (+-1sec)
+        * hour: 59*60 s to 61*60 s (+-1min)
+        * day: 22:59:00 to 25:01:00 to allow for leap-days and a extra min
+        * week: 6 to 8 days (+-1 day)
+        * month: 27-33 days (30 +- 3 days)
+        * year: 360-370 days (+- 5days)
+
+    :param resolutions: a list of wanted time resolutions. A resolution consists of a integer
+    number and a time-resolution name, e.g. 3 hour (no plural).
+    """
+
     pattern = re.compile(r"\s*(\d+)\s*(\w+)\s*")
     named_resolutions = dict(
         minute=(59, 61),
@@ -761,21 +781,6 @@ class TimeResolutionFilter(DataIndexFilter):
     )
 
     def __init__(self, resolutions: list[str] = []):
-        """The timeresolution filter allows to restrict the observation data to
-        certain time-resolutions. Time-resolutions are not exact, and might be interpreted
-        slightly differently by different observation networks.
-
-        Default named time-resoultions are
-          * minute: 59 to 61 s (+-1sec)
-          * hour: 59*60 s to 61*60 s (+-1min)
-          * day: 22:59:00 to 25:01:00 to allow for leap-days and a extra min
-          * week: 6 to 8 days (+-1 day)
-          * month: 27-33 days (30 +- 3 days)
-          * year: 360-370 days (+- 5days)
-
-        :param resolutions: a list of wanted time resolutions. A resolution consists of a integer
-        number and a time-resolution name, e.g. 3 hour (no plural).
-        """
         self._resolutions = resolutions
         self._minmax = self._resolve_resolutions()
 

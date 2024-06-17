@@ -15,6 +15,9 @@ Pyaro
 pyaro.timeseries - User API
 ^^^^^^^^^^^^
 
+.. autoclass:: pyaro.timeseries.Reader
+   :members:
+   :undoc-members:
 .. autoclass:: pyaro.timeseries.Data
    :members:
    :undoc-members:
@@ -41,7 +44,7 @@ pyaro.timeseries - Dev API
 ^^^^^^^^^^^
 
 .. automodule:: pyaro.timeseries
-   :members: Engine, Reader, NpStructuredData
+   :members: Engine, NpStructuredData
    :undoc-members:
    :imported-members:
 
