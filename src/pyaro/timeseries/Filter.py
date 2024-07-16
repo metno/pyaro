@@ -310,7 +310,7 @@ class StationReductionFilter(DataIndexFilter):
         stat_names = self.filter_stations(stations).keys()
         dstations = data.stations
         stat_names = np.fromiter(stat_names, dtype=dstations.dtype)
-        index = np.in1d(dstations, stat_names)
+        index = np.isin(dstations, stat_names)
         return index
 
 
@@ -495,7 +495,7 @@ class FlagFilter(DataIndexFilter):
 
     def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
         validflags = np.fromiter(self._valid, dtype=data.flags.dtype)
-        index = np.in1d(data.flags, validflags)
+        index = np.isin(data.flags, validflags)
         return index
 
 
@@ -712,7 +712,7 @@ class TimeVariableStationFilter(DataIndexFilter):
                     end_time_dt = datetime.strptime(end_time, self.time_format)
                     dstations = data.stations
                     stat_names = np.fromiter(stations, dtype=dstations.dtype)
-                    exclude_idx = np.in1d(dstations, stat_names)
+                    exclude_idx = np.isin(dstations, stat_names)
                     exclude_idx &= (start_time_dt <= data.start_times) & (
                         end_time_dt > data.start_times
                     )
