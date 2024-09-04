@@ -832,6 +832,9 @@ class AltitudeFilter(StationReductionFilter):
         """
         :param min_altitude : float of minimum altitude in meters required to keep the station.
         :param max_altitude : float of maximum altitude in meters required to keep the station.
+
+        Stations will be kept if min_altitude ≤ x ≤ max_altitude where x is the elevation of the
+        station. If station elevation is nan, it is always excluded.
         """
         if min_altitude is not None and max_altitude is not None:
             if min_altitude > max_altitude:
@@ -848,9 +851,9 @@ class AltitudeFilter(StationReductionFilter):
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         if self._min_altitude is not None:
-            stations = {n: s for n, s in stations.items() if (math.isnan(s["altitude"]) or s["altitude"] >= self._min_altitude) }
+            stations = {n: s for n, s in stations.items() if (not math.isnan(s["altitude"]) and s["altitude"] >= self._min_altitude) }
         
         if self._max_altitude is not None:
-            stations = {n: s for n, s in stations.items() if (math.isnan(s["altitude"]) or s["altitude"] <= self._max_altitude) }
+            stations = {n: s for n, s in stations.items() if (not math.isnan(s["altitude"]) and s["altitude"] <= self._max_altitude) }
         
         return stations
