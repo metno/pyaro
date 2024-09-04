@@ -851,6 +851,6 @@ class AltitudeFilter(StationReductionFilter):
             stations = {n: s for n, s in stations.items() if (math.isnan(s["altitude"]) or s["altitude"] >= self._min_altitude) }
         
         if self._max_altitude is not None:
-            stations = {n: s for n, s in stations.items() if (math.isnan(s["altitude"]) or s["altitude"] <= self._min_altitude) }
+            stations = {n: s for n, s in stations.items() if (math.isnan(s["altitude"]) or s["altitude"] <= self._max_altitude) }
         
         return stations
