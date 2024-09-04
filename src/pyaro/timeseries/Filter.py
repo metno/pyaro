@@ -856,3 +856,22 @@ class AltitudeFilter(StationReductionFilter):
             stations = {n: s for n, s in stations.items() if (not math.isnan(s["altitude"]) and s["altitude"] <= self._max_altitude) }
         
         return stations
+    
+class RelativeAltitudeFilter(StationFilter):
+    """
+    Filter class which filters stations based on the relative difference between
+    the station altitude, and the model topography altitude.
+
+    https://github.com/metno/pyaro/issues/39
+    """
+    def __init__(self):
+        pass
+
+    def init_kwargs(self):
+        return {}
+
+    def name(self):
+        return "relaltitude"
+
+    def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
+        return stations

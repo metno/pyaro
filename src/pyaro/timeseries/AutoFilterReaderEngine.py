@@ -31,7 +31,11 @@ class AutoFilterReader(Reader):
 
         :return: list of filters
         """
+<<<<<<< HEAD
         supported = "variables,stations,countries,bounding_boxes,duplicates,time_bounds,time_resolution,flags,time_variable_station,altitude".split(
+=======
+        supported = "variables,stations,countries,bounding_boxes,duplicates,time_bounds,time_resolution,flags,time_variable_station,relaltitude".split(
+>>>>>>> 0ad9bdf (Boilerplate)
             ","
         )
         return [filters.get(name) for name in supported]
