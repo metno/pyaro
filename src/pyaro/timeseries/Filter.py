@@ -825,7 +825,7 @@ class TimeResolutionFilter(DataIndexFilter):
 class AltitudeFilter(StationReductionFilter):
     """
     Filter which filters stations based on their altitude. Can be used to filter for a
-    minimum or maximum altitude.
+    minimum and/or maximum altitude.
     """
 
     def __init__(self, min_altitude: float | None = None, max_altitude: float | None = None):
