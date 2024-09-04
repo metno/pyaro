@@ -423,7 +423,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             for _, station in ts.stations().items():
                 self.assertTrue(station["altitude"] <= 1000)
 
-            self.assertEqual(len(ts.stations() == 2))
+            self.assertEqual(len(ts.stations()), 2)
 
     def test_elevation_filter_2(self):
         engines = pyaro.list_timeseries_engines()
@@ -434,8 +434,8 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             for _, station in ts.stations().items():
                 self.assertTrue(station["altitude"] >= 1000) 
 
-        self.assertEqual(len(ts.stations() == 0))
+            self.assertEqual(len(ts.stations()), 0)
     
-    
+
 if __name__ == "__main__":
     unittest.main()
