@@ -418,17 +418,45 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
             filename=self.file,
-            filters=[pyaro.timeseries.filters.get("altitude", max_altitude=-5)],
+            filters=[pyaro.timeseries.filters.get("altitude", max_altitude=150)],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            }
         ) as ts:
-            self.assertEqual(len(ts.stations()), 0)
+            self.assertEqual(len(ts.stations()), 1)
 
     def test_altitude_filter_2(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
             filename=self.file,
-            filters=[pyaro.timeseries.filters.get("altitude", min_altitude=5)],
+            filters=[pyaro.timeseries.filters.get("altitude", min_altitude=150)],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            }
         ) as ts:
-            self.assertEqual(len(ts.stations()), 0)
+            self.assertEqual(len(ts.stations()), 1)
     
 
 if __name__ == "__main__":
