@@ -830,11 +830,10 @@ class AltitudeFilter(StationReductionFilter):
 
     def __init__(self, min_altitude: float | None = None, max_altitude: float | None = None):
         """
-        :param min_altitude : float of minimum altitude in meters required to keep the station.
-        :param max_altitude : float of maximum altitude in meters required to keep the station.
+        :param min_altitude : float of minimum altitude in meters required to keep the station (inclusive).
+        :param max_altitude : float of maximum altitude in meters required to keep the station (inclusive).
 
-        Stations will be kept if min_altitude ≤ x ≤ max_altitude where x is the elevation of the
-        station. If station elevation is nan, it is always excluded.
+        If station elevation is nan, it is always excluded.
         """
         if min_altitude is not None and max_altitude is not None:
             if min_altitude > max_altitude:
