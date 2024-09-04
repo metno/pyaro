@@ -9,6 +9,7 @@ import types
 from typing import Any
 
 import numpy as np
+import xarray as xr
 
 from .Data import Data, Flag
 from .Station import Station
@@ -857,6 +858,7 @@ class AltitudeFilter(StationReductionFilter):
         
         return stations
     
+@registered_filter
 class RelativeAltitudeFilter(StationFilter):
     """
     Filter class which filters stations based on the relative difference between
@@ -864,14 +866,61 @@ class RelativeAltitudeFilter(StationFilter):
 
     https://github.com/metno/pyaro/issues/39
     """
-    def __init__(self):
-        pass
+    def __init__(self, topo_file: str = "/lustre/storeB/project/fou/kl/emep/Auxiliary/topography.nc", topo_var: str = "topography", rtol: float = 1):
+        """
+        :param topo_file : A .nc file from which to read model topography data.
+        :param topo_var : Name of variable that stores altitude.
+        :param rtol : Relative toleranse.
+        """
+        self._file = topo_file
+        self._topo_var = topo_var
+        self._rtol = rtol
 
+        self._topography = xr.open_dataset(self._file)
+
+    def _model_altitude_from_lat_lon(self, lat: float, lon: float) -> float:
+        data = self._topography.sel({"lat": lat, "lon": lon}, method="nearest")
+        
+        # Should not vary in time too much so picking the first one here.
+        altitude = data["topography"][0]
+
+        return float(altitude)
+
+    def _is_close(self, altmod: float, altobs: float) -> bool:
+        """
+        Function to check if two altitudes are within a relative tolerance of each
+        other.
+        
+        :param altmod : Model altitude (in meters).
+        :param altobs : Observation / station altitude (in meters).
+
+        :returns :
+            True if the values are close with station altitude as the reference 
+            value.
+        """
+        return abs(altmod-altobs) <= (self._rtol * abs(altobs))
+    
     def init_kwargs(self):
-        return {}
+        return {
+            "topo_file": self._file,
+            "topo_var": self._topo_var,
+            "rtol": self._rtol 
+        }
 
     def name(self):
         return "relaltitude"
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
-        return stations
+        new_stations = dict()
+
+        for name, station in stations.items():
+            lat = station["latitude"]
+            lon = station["longitude"]
+
+            altobs = station["altitude"]
+            altmod = self._model_altitude_from_lat_lon(lat, lon)
+
+            if self._is_close(altmod, altobs):
+                new_stations[name] = station
+
+        return new_stations

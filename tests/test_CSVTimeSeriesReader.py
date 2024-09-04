@@ -485,6 +485,29 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             }
         ) as ts:
             self.assertEqual(len(ts.stations()), 1)
+
+    def test_relaltitude_filter_1(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.elevation_file,
+            filters=[pyaro.timeseries.filters.get("relaltitude")],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            }
+        ) as ts:
+            ts.stations()
+            self.assertTrue(True)
     
 
 if __name__ == "__main__":
