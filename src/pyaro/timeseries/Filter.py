@@ -1,3 +1,4 @@
+import math
 import abc
 from collections import defaultdict
 import csv
@@ -819,3 +820,37 @@ class TimeResolutionFilter(DataIndexFilter):
             for minmax in self._minmax:
                 idx |= (minmax[0] <= data_resolution) & (data_resolution <= minmax[1])
         return idx
+
+@registered_filter
+class AltitudeFilter(StationReductionFilter):
+    """
+    Filter which filters stations based on their altitude. Can be used to filter for a
+    minimum or maximum altitude.
+    """
+
+    def __init__(self, min_altitude: float | None = None, max_altitude: float | None = None):
+        """
+        :param min_altitude : float of minimum altitude in meters required to keep the station.
+        :param max_altitude : float of maximum altitude in meters required to keep the station.
+        """
+        if min_altitude is not None and max_altitude is not None:
+            if min_altitude > max_altitude:
+                raise ValueError(f"min_altitude ({min_altitude}) > max_altitude ({max_altitude}).")
+
+        self._min_altitude = min_altitude
+        self._max_altitude = max_altitude
+
+    def init_kwargs(self):
+        return {"min_altitude": self._min_altitude, "max_altitude": self._max_altitude}
+
+    def name(self):
+        return "altitude"
+
+    def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
+        if self._min_altitude is not None:
+            stations = {n: s for n, s in stations.items() if (math.isnan(s["altitude"]) or s["altitude"] >= self._min_altitude) }
+        
+        if self._max_altitude is not None:
+            stations = {n: s for n, s in stations.items() if (math.isnan(s["altitude"]) or s["altitude"] <= self._min_altitude) }
+        
+        return stations
