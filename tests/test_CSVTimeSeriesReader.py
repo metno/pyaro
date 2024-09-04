@@ -414,6 +414,28 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             data = ts.data(vars[0])
         self.assertTrue(False)
 
+    def test_elevation_filter_1(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.file,
+            filters=[pyaro.timeseries.filters.get("altitude", max_altitude=1000)],
+        ) as ts:
+            for _, station in ts.stations().items():
+                self.assertTrue(station["altitude"] <= 1000)
 
+            self.assertEqual(len(ts.stations() == 2))
+
+    def test_elevation_filter_2(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.file,
+            filters=[pyaro.timeseries.filters.get("altitude", min_altitude=1000)],
+        ) as ts:
+            for _, station in ts.stations().items():
+                self.assertTrue(station["altitude"] >= 1000) 
+
+        self.assertEqual(len(ts.stations() == 0))
+    
+    
 if __name__ == "__main__":
     unittest.main()
