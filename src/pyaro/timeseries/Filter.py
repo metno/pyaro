@@ -879,7 +879,8 @@ class RelativeAltitudeFilter(StationFilter):
 
         Note:
         -----
-        Stations will be kept if abs(altobs-altmod) <= rdiff
+        - Stations will be kept if abs(altobs-altmod) <= rdiff.
+        - Stations will not be kept if station altitude is NaN.
         """
         self._topo_file = topo_file
         self._topo_var = topo_var
@@ -929,11 +930,11 @@ class RelativeAltitudeFilter(StationFilter):
                 continue
         
         self._time = "time"
-        # TODO: Time does not have a unit. Decide what to do about it.
+        # TODO: Time does not have a unit that is parsed by cfunits. Decide what to do about it.
         if any(x is None for x in [self._time, self._lat, self._lon]):
             raise ValueError(f"Required variable names for lat, lon dimensions could not be found in file '{self._topo_file}")
     
-    def _model_altitude_from_lat_lon(self, lat: float, lon: float) -> float:
+    def _gridded_altitude_from_lat_lon(self, lat: float, lon: float) -> float:
         # TODO: Include a tolerance?
         data = self._topography.sel({self._lat: lat, self._lon: lon}, method="nearest")
         
@@ -970,16 +971,16 @@ class RelativeAltitudeFilter(StationFilter):
         if self._topography is None:
             return stations
         
-        new_stations = dict()
+        filtered_stations = dict()
 
         for name, station in stations.items():
             lat = station["latitude"]
             lon = station["longitude"]
 
             altobs = station["altitude"]
-            altmod = self._model_altitude_from_lat_lon(lat, lon)
+            topo = self._gridded_altitude_from_lat_lon(lat, lon)
 
-            if self._is_close(altmod, altobs):
-                new_stations[name] = station
+            if not math.isnan(altobs) and self._is_close(topo, altobs):
+                filtered_stations[name] = station
 
-        return new_stations
+        return filtered_stations
