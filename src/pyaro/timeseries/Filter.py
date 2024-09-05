@@ -873,6 +873,10 @@ class RelativeAltitudeFilter(StationFilter):
         :param topo_file : A .nc file from which to read model topography data.
         :param topo_var : Name of variable that stores altitude.
         :param rtol : Relative toleranse.
+
+        Note:
+        -----
+        Stations will be kept if abs(altobs-altmod) <= rtol*abs(altobs)
         """
         self._topo_file = topo_file
         self._topo_var = topo_var
