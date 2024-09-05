@@ -870,7 +870,7 @@ class RelativeAltitudeFilter(StationFilter):
     """
     def __init__(self, topo_file: str | None = None, topo_var: str = "topography", rdiff: float = 1):
         """
-        :param topo_file : A .nc file from which to read model topography data.
+        :param topo_file : A .nc file from which to read gridded topography data.
         :param topo_var : Name of variable that stores altitude.
         :param rtol : Relative toleranse.
 
@@ -909,7 +909,7 @@ class RelativeAltitudeFilter(StationFilter):
             True if the values are close with station altitude as the reference 
             value.
         """
-        return abs(altmod-altobs) <= (self._rdiff * abs(altobs))
+        return abs(altmod-altobs) <= self._rdiff
     
     def init_kwargs(self):
         return {
