@@ -534,7 +534,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
-            # At rtol = 0.89, only the first station should be included.
+            # At rdiff = 0.89, only the first station should be included.
             self.assertEqual(len(ts.stations()), 1)
 
     def test_relaltitude_filter_3(self):
@@ -557,7 +557,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
-            # Since rtol=1, all stations should be included.
+            # Since rdiff=1, all stations should be included.
             self.assertEqual(len(ts.stations()), 3)
 
 
