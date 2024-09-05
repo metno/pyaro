@@ -864,11 +864,11 @@ class AltitudeFilter(StationReductionFilter):
 class RelativeAltitudeFilter(StationFilter):
     """
     Filter class which filters stations based on the relative difference between
-    the station altitude, and the model topography altitude.
+    the station altitude, and the gridded topography altitude.
 
     https://github.com/metno/pyaro/issues/39
     """
-    def __init__(self, topo_file: str | None = None, topo_var: str = "topography", rtol: float = 1):
+    def __init__(self, topo_file: str | None = None, topo_var: str = "topography", rdiff: float = 1):
         """
         :param topo_file : A .nc file from which to read model topography data.
         :param topo_var : Name of variable that stores altitude.
@@ -876,11 +876,11 @@ class RelativeAltitudeFilter(StationFilter):
 
         Note:
         -----
-        Stations will be kept if abs(altobs-altmod) <= rtol*abs(altobs)
+        Stations will be kept if abs(altobs-altmod) <= rdiff
         """
         self._topo_file = topo_file
         self._topo_var = topo_var
-        self._rtol = rtol
+        self._rdiff = rdiff
 
         self._topography = None
         if topo_file is not None:
@@ -909,13 +909,13 @@ class RelativeAltitudeFilter(StationFilter):
             True if the values are close with station altitude as the reference 
             value.
         """
-        return abs(altmod-altobs) <= (self._rtol * abs(altobs))
+        return abs(altmod-altobs) <= (self._rdiff * abs(altobs))
     
     def init_kwargs(self):
         return {
             "topo_file": self._file,
             "topo_var": self._topo_var,
-            "rtol": self._rtol 
+            "rtol": self._rdiff 
         }
 
     def name(self):
