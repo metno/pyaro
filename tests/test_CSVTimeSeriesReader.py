@@ -490,7 +490,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
             filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rtol=0)],
+            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "/lustre/storeB/project/fou/kl/emep/Auxiliary/topography.nc", rdiff=0)],
             columns={
                 "variable": 0,
                 "station": 1,
@@ -506,11 +506,11 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
-            # Altitudes in dataset:
-            # Station     | Alt_obs   | Modeobs |
-            # Station 1   | 100       | 12.2554 |
-            # Station 2   | 200       |  4.9016 |
-            # Station 3   | 300       |  4.9016 |
+            # Altitudes in test dataset:
+            # Station     | Alt_obs   | Modeobs | rdiff |
+            # Station 1   | 100       | 12.2554 |  87.7446 |
+            # Station 2   | 200       |  4.9016 | 195.0984 |
+            # Station 3   | 300       |  4.9016 | 195.0984 |
             # Since rtol = 0, no station should be included.
             self.assertEqual(len(ts.stations()), 0)
 
@@ -518,7 +518,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
             filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rtol=0.89)],
+            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=90)],
             columns={
                 "variable": 0,
                 "station": 1,
@@ -541,7 +541,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
             filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rtol=1)],
+            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=300)],
             columns={
                 "variable": 0,
                 "station": 1,

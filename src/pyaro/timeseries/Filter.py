@@ -11,6 +11,7 @@ from typing import Any
 
 import numpy as np
 import xarray as xr
+import cfunits
 
 from .Data import Data, Flag
 from .Station import Station
@@ -868,11 +869,13 @@ class RelativeAltitudeFilter(StationFilter):
 
     https://github.com/metno/pyaro/issues/39
     """
+    UNITS_METER = cfunits.Units("m")
+
     def __init__(self, topo_file: str | None = None, topo_var: str = "topography", rdiff: float = 1):
         """
         :param topo_file : A .nc file from which to read gridded topography data.
         :param topo_var : Name of variable that stores altitude.
-        :param rtol : Relative toleranse.
+        :param rdiff : Relative difference (in meters).
 
         Note:
         -----
@@ -885,15 +888,57 @@ class RelativeAltitudeFilter(StationFilter):
         self._topography = None
         if topo_file is not None:
             self._topography = xr.open_dataset(topo_file)
+            self._convert_altitude_to_meters()
+            self._find_lat_lon_variables()
         else:
             logger.warning("No topography data provided (topo_file='%s'). Relative elevation filtering will not be applied.", topo_file)
 
+    def _convert_altitude_to_meters(self):
+        """
+        Method which attempts to convert the altitude variable in the gridded topography data
+        to meters.
+
+        :raises TypeError
+            If conversion isn't possible.
+        """
+        # Convert altitude to meters
+        units = cfunits.Units(self._topography[self._topo_var].units)
+        if units.equivalent(self.UNITS_METER):
+            self._topography[self._topo_var].values = self.UNITS_METER.conform(self._topography[self._topo_var].values, units, self.UNITS_METER)
+            self._topography[self._topo_var]["units"] = self.UNITS_METER
+        else:
+            raise TypeError(f"Expected altitude units to be convertible to 'm', got '{units}'")
+        
+    def _find_lat_lon_variables(self):
+        """
+        Determines the names of variables which represent the time, latitude and longitude
+        dimensions in the topography data.
+
+        These are assigned to self._lat, self._lon, respectively for later use. 
+        """
+        for var_name in self._topography.coords:
+            units = cfunits.Units(self._topography[var_name].attrs.get("units", None))
+            if units.istime:
+                self._time = var_name
+                continue
+            if units.islatitude:
+                self._lat = var_name
+                continue
+            if units.islongitude:
+                self._lon = var_name
+                continue
+        
+        self._time = "time"
+        # TODO: Time does not have a unit. Decide what to do about it.
+        if any(x is None for x in [self._time, self._lat, self._lon]):
+            raise ValueError(f"Required variable names for lat, lon dimensions could not be found in file '{self._topo_file}")
+    
     def _model_altitude_from_lat_lon(self, lat: float, lon: float) -> float:
         # TODO: Include a tolerance?
-        data = self._topography.sel({"lat": lat, "lon": lon}, method="nearest")
+        data = self._topography.sel({self._lat: lat, self._lon: lon}, method="nearest")
         
         # Should not vary in time too much so picking the first one here.
-        altitude = data["topography"][0]
+        altitude = data[self._topo_var][0]
 
         return float(altitude)
 
@@ -913,9 +958,9 @@ class RelativeAltitudeFilter(StationFilter):
     
     def init_kwargs(self):
         return {
-            "topo_file": self._file,
+            "topo_file": self._topo_file,
             "topo_var": self._topo_var,
-            "rtol": self._rdiff 
+            "rdiff": self._rdiff 
         }
 
     def name(self):
