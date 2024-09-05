@@ -11,7 +11,7 @@ from typing import Any
 
 import numpy as np
 import xarray as xr
-import cfunits
+from cf_units import Unit
 
 from .Data import Data, Flag
 from .Station import Station
@@ -869,7 +869,12 @@ class RelativeAltitudeFilter(StationFilter):
 
     https://github.com/metno/pyaro/issues/39
     """
-    UNITS_METER = cfunits.Units("m")
+    UNITS_METER = Unit("m")
+    # https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#latitude-coordinate
+    UNITS_LAT = set(["degrees_north", "degree_north", "degree_N", "degrees_N", "degreeN", "degreesN"])
+
+    # https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#longitude-coordinate
+    UNITS_LON = set(["degrees_east", "degree_east", "degree_E", "degrees_E", "degreeE", "degreesE"])
 
     def __init__(self, topo_file: str | None = None, topo_var: str = "topography", rdiff: float = 1):
         """
@@ -904,10 +909,11 @@ class RelativeAltitudeFilter(StationFilter):
             If conversion isn't possible.
         """
         # Convert altitude to meters
-        units = cfunits.Units(self._topography[self._topo_var].units)
-        if units.equivalent(self.UNITS_METER):
-            self._topography[self._topo_var].values = self.UNITS_METER.conform(self._topography[self._topo_var].values, units, self.UNITS_METER)
-            self._topography[self._topo_var]["units"] = self.UNITS_METER
+        units = Unit(self._topography[self._topo_var].units)
+        if units.is_convertible(self.UNITS_METER):
+            self._topography[self._topo_var].values = self.UNITS_METER.convert(self._topography[self._topo_var].values, self.UNITS_METER)
+            #self._topography[self._topo_var].values = self.UNITS_METER.conform(self._topography[self._topo_var].values, units, self.UNITS_METER)
+            self._topography[self._topo_var]["units"] = str(self.UNITS_METER)
         else:
             raise TypeError(f"Expected altitude units to be convertible to 'm', got '{units}'")
         
@@ -919,20 +925,15 @@ class RelativeAltitudeFilter(StationFilter):
         These are assigned to self._lat, self._lon, respectively for later use. 
         """
         for var_name in self._topography.coords:
-            units = cfunits.Units(self._topography[var_name].attrs.get("units", None))
-            if units.istime:
-                self._time = var_name
-                continue
-            if units.islatitude:
+            unit_str = self._topography[var_name].attrs.get("units", None)
+            if unit_str in self.UNITS_LAT:
                 self._lat = var_name
                 continue
-            if units.islongitude:
+            if unit_str in self.UNITS_LON:
                 self._lon = var_name
                 continue
         
-        self._time = "time"
-        # TODO: Time does not have a unit that is parsed by cfunits. Decide what to do about it.
-        if any(x is None for x in [self._time, self._lat, self._lon]):
+        if any(x is None for x in [self._lat, self._lon]):
             raise ValueError(f"Required variable names for lat, lon dimensions could not be found in file '{self._topo_file}")
     
     def _gridded_altitude_from_lat_lon(self, lat: float, lon: float) -> float:
