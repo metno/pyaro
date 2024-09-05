@@ -943,19 +943,19 @@ class RelativeAltitudeFilter(StationFilter):
 
         return float(altitude)
 
-    def _is_close(self, altmod: float, altobs: float) -> bool:
+    def _is_close(self, alt_gridded: float, alt_station: float) -> bool:
         """
         Function to check if two altitudes are within a relative tolerance of each
         other.
         
-        :param altmod : Gridded altitude (in meters).
-        :param altobs : Observation / station altitude (in meters).
+        :param alt_gridded : Gridded altitude (in meters).
+        :param alt_station : Observation / station altitude (in meters).
 
         :returns :
-            True if the values are close with station altitude as the reference 
-            value.
+            True if the absolute difference between alt_gridded and alt_station is
+            <= self._rdiff
         """
-        return abs(altmod-altobs) <= self._rdiff
+        return abs(alt_gridded-alt_station) <= self._rdiff
     
     def init_kwargs(self):
         return {
