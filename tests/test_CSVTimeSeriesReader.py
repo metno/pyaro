@@ -486,7 +486,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         ) as ts:
             self.assertEqual(len(ts.stations()), 1)
 
-    def test_relaltitude_filter_1(self):
+    def test_relaltitude_filter_emep_1(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
             filename=self.elevation_file,
@@ -514,7 +514,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             # Since rtol = 0, no station should be included.
             self.assertEqual(len(ts.stations()), 0)
 
-    def test_relaltitude_filter_2(self):
+    def test_relaltitude_filter_emep_2(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
             filename=self.elevation_file,
@@ -537,7 +537,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             # At rdiff = 0.89, only the first station should be included.
             self.assertEqual(len(ts.stations()), 1)
 
-    def test_relaltitude_filter_3(self):
+    def test_relaltitude_filter_emep_3(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
             filename=self.elevation_file,
