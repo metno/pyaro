@@ -876,7 +876,7 @@ class RelativeAltitudeFilter(StationFilter):
     # https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#longitude-coordinate
     UNITS_LON = set(["degrees_east", "degree_east", "degree_E", "degrees_E", "degreeE", "degreesE"])
 
-    def __init__(self, topo_file: str | None = None, topo_var: str = "topography", rdiff: float = 1):
+    def __init__(self, topo_file: str | None = None, topo_var: str = "topography", rdiff: float = 0):
         """
         :param topo_file : A .nc file from which to read gridded topography data.
         :param topo_var : Name of variable that stores altitude.
@@ -896,7 +896,6 @@ class RelativeAltitudeFilter(StationFilter):
             self._topography = xr.open_dataset(topo_file)
             self._convert_altitude_to_meters()
             self._find_lat_lon_variables()
-            # TODO: Convert lat/lon to degrees?
         else:
             logger.warning("No topography data provided (topo_file='%s'). Relative elevation filtering will not be applied.", topo_file)
 
@@ -912,7 +911,6 @@ class RelativeAltitudeFilter(StationFilter):
         units = Unit(self._topography[self._topo_var].units)
         if units.is_convertible(self.UNITS_METER):
             self._topography[self._topo_var].values = self.UNITS_METER.convert(self._topography[self._topo_var].values, self.UNITS_METER)
-            #self._topography[self._topo_var].values = self.UNITS_METER.conform(self._topography[self._topo_var].values, units, self.UNITS_METER)
             self._topography[self._topo_var]["units"] = str(self.UNITS_METER)
         else:
             raise TypeError(f"Expected altitude units to be convertible to 'm', got '{units}'")
@@ -950,7 +948,7 @@ class RelativeAltitudeFilter(StationFilter):
         Function to check if two altitudes are within a relative tolerance of each
         other.
         
-        :param altmod : Model altitude (in meters).
+        :param altmod : Gridded altitude (in meters).
         :param altobs : Observation / station altitude (in meters).
 
         :returns :
