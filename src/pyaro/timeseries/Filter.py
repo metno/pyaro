@@ -917,7 +917,7 @@ class RelativeAltitudeFilter(StationFilter):
         
     def _find_lat_lon_variables(self):
         """
-        Determines the names of variables which represent the time, latitude and longitude
+        Determines the names of variables which represent the latitude and longitude
         dimensions in the topography data.
 
         These are assigned to self._lat, self._lon, respectively for later use. 
