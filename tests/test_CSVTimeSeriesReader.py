@@ -490,7 +490,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
             filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "/lustre/storeB/project/fou/kl/emep/Auxiliary/topography.nc", rdiff=0)],
+            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=0)],
             columns={
                 "variable": 0,
                 "station": 1,
