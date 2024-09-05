@@ -891,6 +891,7 @@ class RelativeAltitudeFilter(StationFilter):
             self._topography = xr.open_dataset(topo_file)
             self._convert_altitude_to_meters()
             self._find_lat_lon_variables()
+            # TODO: Convert lat/lon to degrees?
         else:
             logger.warning("No topography data provided (topo_file='%s'). Relative elevation filtering will not be applied.", topo_file)
 
