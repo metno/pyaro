@@ -879,6 +879,7 @@ class RelativeAltitudeFilter(StationFilter):
         self._topography = xr.open_dataset(self._file)
 
     def _model_altitude_from_lat_lon(self, lat: float, lon: float) -> float:
+        # TODO: Include a tolerance?
         data = self._topography.sel({"lat": lat, "lon": lon}, method="nearest")
         
         # Should not vary in time too much so picking the first one here.
