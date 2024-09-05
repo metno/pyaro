@@ -1,3 +1,4 @@
+import logging
 import math
 import abc
 from collections import defaultdict
@@ -14,6 +15,7 @@ import xarray as xr
 from .Data import Data, Flag
 from .Station import Station
 
+logger = logging.getLogger(__name__)
 
 class Filter(abc.ABC):
     """Base-class for all filters used from pyaro-Readers"""
@@ -866,17 +868,21 @@ class RelativeAltitudeFilter(StationFilter):
 
     https://github.com/metno/pyaro/issues/39
     """
-    def __init__(self, topo_file: str = "/lustre/storeB/project/fou/kl/emep/Auxiliary/topography.nc", topo_var: str = "topography", rtol: float = 1):
+    def __init__(self, topo_file: str | None = None, topo_var: str = "topography", rtol: float = 1):
         """
         :param topo_file : A .nc file from which to read model topography data.
         :param topo_var : Name of variable that stores altitude.
         :param rtol : Relative toleranse.
         """
-        self._file = topo_file
+        self._topo_file = topo_file
         self._topo_var = topo_var
         self._rtol = rtol
 
-        self._topography = xr.open_dataset(self._file)
+        self._topography = None
+        if topo_file is not None:
+            self._topography = xr.open_dataset(topo_file)
+        else:
+            logger.warning("No topography data provided (topo_file='%s'). Relative elevation filtering will not be applied.", topo_file)
 
     def _model_altitude_from_lat_lon(self, lat: float, lon: float) -> float:
         # TODO: Include a tolerance?
@@ -912,6 +918,9 @@ class RelativeAltitudeFilter(StationFilter):
         return "relaltitude"
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
+        if self._topography is None:
+            return stations
+        
         new_stations = dict()
 
         for name, station in stations.items():
