@@ -485,6 +485,149 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             }
         ) as ts:
             self.assertEqual(len(ts.stations()), 1)
+
+    def test_relaltitude_filter_emep_1(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.elevation_file,
+            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=0)],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            }
+        ) as ts:
+            # Altitudes in test dataset:
+            # Station     | Alt_obs   | Modeobs | rdiff |
+            # Station 1   | 100       | 12.2554 |  87.7446 |
+            # Station 2   | 200       |  4.9016 | 195.0984 |
+            # Station 3   | 300       |  4.9016 | 195.0984 |
+            # Since rtol = 0, no station should be included.
+            self.assertEqual(len(ts.stations()), 0)
+
+    def test_relaltitude_filter_emep_2(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.elevation_file,
+            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=90)],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            }
+        ) as ts:
+            # At rdiff = 90, only the first station should be included.
+            self.assertEqual(len(ts.stations()), 1)
+
+    def test_relaltitude_filter_emep_3(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.elevation_file,
+            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=300)],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            }
+        ) as ts:
+            # Since rdiff=300, all stations should be included.
+            self.assertEqual(len(ts.stations()), 3)
+
+    def test_relaltitude_filter_1(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.elevation_file,
+            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=0)],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            }
+        ) as ts:
+            self.assertEqual(len(ts.stations()), 0)
+
+    def test_relaltitude_filter_2(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.elevation_file,
+            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=90)],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            }
+        ) as ts:
+            # At rdiff = 90, only the first station should be included.
+            self.assertEqual(len(ts.stations()), 1)
+
+    def test_relaltitude_filter_3(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.elevation_file,
+            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=300)],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            }
+        ) as ts:
+            # Since rdiff=300, all stations should be included.
+            self.assertEqual(len(ts.stations()), 3)
+
     
 
 if __name__ == "__main__":

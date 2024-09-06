@@ -1,3 +1,4 @@
+import logging
 import math
 import abc
 from collections import defaultdict
@@ -5,14 +6,22 @@ import csv
 from datetime import datetime
 import inspect
 import re
+import sys
 import types
-from typing import Any
 
 import numpy as np
 
 from .Data import Data, Flag
 from .Station import Station
 
+try:
+    # Optional dependencies required for relative altitude filter.
+    import xarray as xr
+    from cf_units import Unit
+except ImportError:
+    pass
+
+logger = logging.getLogger(__name__)
 
 class Filter(abc.ABC):
     """Base-class for all filters used from pyaro-Readers"""
@@ -856,3 +865,156 @@ class AltitudeFilter(StationReductionFilter):
             stations = {n: s for n, s in stations.items() if (not math.isnan(s["altitude"]) and s["altitude"] <= self._max_altitude) }
         
         return stations
+    
+@registered_filter
+class RelativeAltitudeFilter(StationFilter):
+    """
+    Filter class which filters stations based on the relative difference between
+    the station altitude, and the gridded topography altitude.
+
+    https://github.com/metno/pyaro/issues/39
+    """
+    UNITS_METER = Unit("m")
+    # https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#latitude-coordinate
+    UNITS_LAT = set(["degrees_north", "degree_north", "degree_N", "degrees_N", "degreeN", "degreesN"])
+
+    # https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#longitude-coordinate
+    UNITS_LON = set(["degrees_east", "degree_east", "degree_E", "degrees_E", "degreeE", "degreesE"])
+
+    def __init__(self, topo_file: str | None = None, topo_var: str = "topography", rdiff: float = 0):
+        """
+        :param topo_file : A .nc file from which to read gridded topography data.
+        :param topo_var : Name of variable that stores altitude.
+        :param rdiff : Relative difference (in meters).
+
+        Note:
+        -----
+        - Stations will be kept if abs(altobs-altmod) <= rdiff.
+        - Stations will not be kept if station altitude is NaN.
+
+        Note:
+        -----
+        This filter requires additional dependencies (xarray, netcdf4, cf-units) to function. These can be installed
+        with `pip install .[optional] 
+        """
+        if "cf_units" not in sys.modules:
+            logger.warning("relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter.")
+        if "xarray" not in sys.modules:
+            logger.warning("relaltitude filter is missing required dependency 'xarray'. Please install to use this filter.")
+            
+        self._topo_file = topo_file
+        self._topo_var = topo_var
+        self._rdiff = rdiff
+
+        self._topography = None
+        if topo_file is not None:
+            self._topography = xr.open_dataset(topo_file)
+            self._convert_altitude_to_meters()
+            self._find_lat_lon_variables()
+            self._extract_bounding_box()
+        else:
+            logger.warning("No topography data provided (topo_file='%s'). Relative elevation filtering will not be applied.", topo_file)
+
+    def _convert_altitude_to_meters(self):
+        """
+        Method which attempts to convert the altitude variable in the gridded topography data
+        to meters.
+
+        :raises TypeError
+            If conversion isn't possible.
+        """
+        # Convert altitude to meters
+        units = Unit(self._topography[self._topo_var].units)
+        if units.is_convertible(self.UNITS_METER):
+            self._topography[self._topo_var].values = self.UNITS_METER.convert(self._topography[self._topo_var].values, self.UNITS_METER)
+            self._topography[self._topo_var]["units"] = str(self.UNITS_METER)
+        else:
+            raise TypeError(f"Expected altitude units to be convertible to 'm', got '{units}'")
+        
+    def _find_lat_lon_variables(self):
+        """
+        Determines the names of variables which represent the latitude and longitude
+        dimensions in the topography data.
+
+        These are assigned to self._lat, self._lon, respectively for later use. 
+        """
+        for var_name in self._topography.coords:
+            unit_str = self._topography[var_name].attrs.get("units", None)
+            if unit_str in self.UNITS_LAT:
+                self._lat = var_name
+                continue
+            if unit_str in self.UNITS_LON:
+                self._lon = var_name
+                continue
+        
+        if any(x is None for x in [self._lat, self._lon]):
+            raise ValueError(f"Required variable names for lat, lon dimensions could not be found in file '{self._topo_file}")
+    
+    def _extract_bounding_box(self):
+        """
+        Extract the bounding box of the grid.
+        """
+        self._boundary_west = float(self._topography[self._lon].min())
+        self._boundary_east = float(self._topography[self._lon].max())
+        self._boundary_south = float(self._topography[self._lat].min())
+        self._boundary_north = float(self._topography[self._lat].max())
+        logger.info("Bounding box (NESW): %.2f, %.2f, %.2f, %.2f", self._boundary_north, self._boundary_east, self._boundary_south, self._boundary_west)
+
+    def _gridded_altitude_from_lat_lon(self, lat: np.ndarray, lon: np.ndarray) -> np.ndarray:
+        altitude = self._topography.sel({"lat": xr.DataArray(lat, dims="latlon"), "lon": xr.DataArray(lon, dims="latlon")}, method="nearest")
+
+        return altitude[self._topo_var].values[0]
+
+    def _is_close(self, alt_gridded: np.ndarray, alt_station: np.ndarray) -> np.ndarray[bool]:
+        """
+        Function to check if two altitudes are within a relative tolerance of each
+        other.
+        
+        :param alt_gridded : Gridded altitude (in meters).
+        :param alt_station : Observation / station altitude (in meters).
+
+        :returns :
+            True if the absolute difference between alt_gridded and alt_station is
+            <= self._rdiff
+        """
+        return np.abs(alt_gridded-alt_station) <= self._rdiff
+    
+    def init_kwargs(self):
+        return {
+            "topo_file": self._topo_file,
+            "topo_var": self._topo_var,
+            "rdiff": self._rdiff 
+        }
+
+    def name(self):
+        return "relaltitude"
+
+    def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
+        if self._topography is None:
+            return stations
+        
+        names = np.ndarray(len(stations), dtype=np.dtypes.StrDType)
+        lats = np.ndarray(len(stations), dtype=np.float64)
+        lons = np.ndarray(len(stations), dtype=np.float64)
+        alts = np.ndarray(len(stations), dtype=np.float64)
+
+        for i, name in enumerate(stations):
+            station = stations[name]
+            names[i] = name
+            lats[i] = station["latitude"]
+            lons[i] = station["longitude"]
+            alts[i] = station["altitude"]
+
+        out_of_bounds_mask = np.logical_or(np.logical_or(lons < self._boundary_west, lons > self._boundary_east), np.logical_or(lats < self._boundary_south, lats > self._boundary_north))
+        if np.sum(out_of_bounds_mask) > 0:
+            logger.warning("Some stations were removed due to being out of bounds of the gridded topography")
+
+        topo = self._gridded_altitude_from_lat_lon(lats, lons)
+
+        within_rdiff_mask = self._is_close(topo, alts)
+
+        mask = np.logical_and(~out_of_bounds_mask, within_rdiff_mask)
+
+        selected_names = names[mask]
+
+        return {name: stations[name] for name in selected_names}

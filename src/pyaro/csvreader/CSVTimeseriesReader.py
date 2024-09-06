@@ -180,7 +180,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         """
         return cls._col_keys
 
-    def metadata(self) -> dict():
+    def metadata(self) -> dict:
         return self._metadata
 
     def _unfiltered_data(self, varname) -> Data:
