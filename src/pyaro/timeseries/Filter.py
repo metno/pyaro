@@ -895,7 +895,7 @@ class RelativeAltitudeFilter(StationFilter):
         Note:
         -----
         This filter requires additional dependencies (xarray, netcdf4, cf-units) to function. These can be installed
-        with `pip install .[relalt] 
+        with `pip install .[optional] 
         """
         if "cf_units" not in sys.modules:
             logger.warning("relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter.")
