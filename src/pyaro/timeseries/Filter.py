@@ -911,6 +911,7 @@ class RelativeAltitudeFilter(StationFilter):
             self._topography = xr.open_dataset(topo_file)
             self._convert_altitude_to_meters()
             self._find_lat_lon_variables()
+            self._extract_bounding_box()
         else:
             logger.warning("No topography data provided (topo_file='%s'). Relative elevation filtering will not be applied.", topo_file)
 
@@ -949,6 +950,16 @@ class RelativeAltitudeFilter(StationFilter):
         if any(x is None for x in [self._lat, self._lon]):
             raise ValueError(f"Required variable names for lat, lon dimensions could not be found in file '{self._topo_file}")
     
+    def _extract_bounding_box(self):
+        """
+        Extract the bounding box of the grid.
+        """
+        self._boundary_west = float(self._topography[self._lon].min())
+        self._boundary_east = float(self._topography[self._lon].max())
+        self._boundary_south = float(self._topography[self._lat].min())
+        self._boundary_north = float(self._topography[self._lat].max())
+        logger.info("Bounding box (NESW): %.2f, %.2f, %.2f, %.2f", self._boundary_north, self._boundary_east, self._boundary_south, self._boundary_west)
+
     def _gridded_altitude_from_lat_lon(self, lat: float, lon: float) -> float:
         # TODO: Include a tolerance?
         data = self._topography.sel({self._lat: lat, self._lon: lon}, method="nearest")
@@ -991,6 +1002,10 @@ class RelativeAltitudeFilter(StationFilter):
         for name, station in stations.items():
             lat = station["latitude"]
             lon = station["longitude"]
+
+            if lon < self._boundary_west or lon > self._boundary_east or lat < self._boundary_south or lat > self._boundary_north:
+                logger.warning("Station '%s' (lat=%.2f, lon=%.2f) lies outside topography bounding box. It has been removed.", name, lat, lon)
+                continue
 
             altobs = station["altitude"]
             topo = self._gridded_altitude_from_lat_lon(lat, lon)
