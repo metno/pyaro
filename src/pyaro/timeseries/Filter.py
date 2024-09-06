@@ -960,16 +960,12 @@ class RelativeAltitudeFilter(StationFilter):
         self._boundary_north = float(self._topography[self._lat].max())
         logger.info("Bounding box (NESW): %.2f, %.2f, %.2f, %.2f", self._boundary_north, self._boundary_east, self._boundary_south, self._boundary_west)
 
-    def _gridded_altitude_from_lat_lon(self, lat: float, lon: float) -> float:
-        # TODO: Include a tolerance?
-        data = self._topography.sel({self._lat: lat, self._lon: lon}, method="nearest")
-        
-        # Should not vary in time too much so picking the first one here.
-        altitude = data[self._topo_var][0]
+    def _gridded_altitude_from_lat_lon(self, lat: np.ndarray, lon: np.ndarray) -> np.ndarray:
+        altitude = self._topography.sel({"lat": xr.DataArray(lat, dims="latlon"), "lon": xr.DataArray(lon, dims="latlon")}, method="nearest")
 
-        return float(altitude)
+        return altitude[self._topo_var].values[0]
 
-    def _is_close(self, alt_gridded: float, alt_station: float) -> bool:
+    def _is_close(self, alt_gridded: np.ndarray, alt_station: np.ndarray) -> np.ndarray[bool]:
         """
         Function to check if two altitudes are within a relative tolerance of each
         other.
@@ -981,7 +977,7 @@ class RelativeAltitudeFilter(StationFilter):
             True if the absolute difference between alt_gridded and alt_station is
             <= self._rdiff
         """
-        return abs(alt_gridded-alt_station) <= self._rdiff
+        return np.abs(alt_gridded-alt_station) <= self._rdiff
     
     def init_kwargs(self):
         return {
@@ -999,18 +995,31 @@ class RelativeAltitudeFilter(StationFilter):
         
         filtered_stations = dict()
 
+        names: list[str] = []
+        lats: list[float] = []
+        lons: list[float] = []
+        alts: list[float] = []
         for name, station in stations.items():
-            lat = station["latitude"]
-            lon = station["longitude"]
+            names.append(name)
+            lats.append(station["latitude"])
+            lons.append(station["longitude"])
+            alts.append(station["altitude"])
 
-            if lon < self._boundary_west or lon > self._boundary_east or lat < self._boundary_south or lat > self._boundary_north:
-                logger.warning("Station '%s' (lat=%.2f, lon=%.2f) lies outside topography bounding box. It has been removed.", name, lat, lon)
-                continue
+        names = np.array(names)
+        lats = np.array(lats)
+        lons = np.array(lons)
+        alts = np.array(alts)
 
-            altobs = station["altitude"]
-            topo = self._gridded_altitude_from_lat_lon(lat, lon)
+        out_of_bounds_mask = np.logical_or(np.logical_or(lons < self._boundary_west, lons > self._boundary_east), np.logical_or(lats < self._boundary_south, lats > self._boundary_north))
+        if np.sum(out_of_bounds_mask) > 0:
+            logger.warning("Some stations were removed due to being out of bounds of the gridded topography")
 
-            if not math.isnan(altobs) and self._is_close(topo, altobs):
-                filtered_stations[name] = station
+        topo = self._gridded_altitude_from_lat_lon(lats, lons)
 
-        return filtered_stations
+        within_rdiff_mask = self._is_close(topo, alts)
+
+        mask = np.logical_and(~out_of_bounds_mask, within_rdiff_mask)
+
+        selected_names = names[mask]
+
+        return {name: stations[name] for name in selected_names}

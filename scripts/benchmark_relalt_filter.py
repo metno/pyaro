@@ -20,13 +20,14 @@ if not os.path.exists("tmp_data.csv"):
             end_time = "1997-01-02 00:00:00"
 
 
-            writer.writerow((variable, name, lat, lon, value, unit, start_time, end_time, altitude))
+            writer.writerow((variable, name, lon, lat, value, unit, start_time, end_time, altitude))
 
 # Benchmark
 engines = pyaro.list_timeseries_engines()
 with engines["csv_timeseries"].open(
     filename="tmp_data.csv",
-    filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "../tests/testdata/datadir_elevation/topography.nc", rdiff=90)],
+    #filters=[pyaro.timeseries.filters.get("altitude", min_altitude=200)], # 0.023s
+    filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "../tests/testdata/datadir_elevation/topography.nc", rdiff=90)], # 27.133s
     columns={
         "variable": 0,
         "station": 1,
