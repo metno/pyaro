@@ -6,15 +6,20 @@ import csv
 from datetime import datetime
 import inspect
 import re
+import sys
 import types
-from typing import Any
 
 import numpy as np
-import xarray as xr
-from cf_units import Unit
 
 from .Data import Data, Flag
 from .Station import Station
+
+try:
+    # Optional dependencies required for relative altitude filter.
+    import xarray as xr
+    from cf_units import Unit
+except ImportError:
+    pass
 
 logger = logging.getLogger(__name__)
 
@@ -886,7 +891,17 @@ class RelativeAltitudeFilter(StationFilter):
         -----
         - Stations will be kept if abs(altobs-altmod) <= rdiff.
         - Stations will not be kept if station altitude is NaN.
+
+        Note:
+        -----
+        This filter requires additional dependencies (xarray, netcdf4, cf-units) to function. These can be installed
+        with `pip install .[relalt] 
         """
+        if "cf_units" not in sys.modules:
+            logger.warning("relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter.")
+        if "xarray" not in sys.modules:
+            logger.warning("relaltitude filter is missing required dependency 'xarray'. Please install to use this filter.")
+            
         self._topo_file = topo_file
         self._topo_var = topo_var
         self._rdiff = rdiff
