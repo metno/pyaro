@@ -993,22 +993,17 @@ class RelativeAltitudeFilter(StationFilter):
         if self._topography is None:
             return stations
         
-        filtered_stations = dict()
+        names = np.ndarray(len(stations), dtype=np.dtypes.StrDType)
+        lats = np.ndarray(len(stations), dtype=np.float64)
+        lons = np.ndarray(len(stations), dtype=np.float64)
+        alts = np.ndarray(len(stations), dtype=np.float64)
 
-        names: list[str] = []
-        lats: list[float] = []
-        lons: list[float] = []
-        alts: list[float] = []
-        for name, station in stations.items():
-            names.append(name)
-            lats.append(station["latitude"])
-            lons.append(station["longitude"])
-            alts.append(station["altitude"])
-
-        names = np.array(names)
-        lats = np.array(lats)
-        lons = np.array(lons)
-        alts = np.array(alts)
+        for i, name in enumerate(stations):
+            station = stations[name]
+            names[i] = name
+            lats[i] = station["latitude"]
+            lons[i] = station["longitude"]
+            alts[i] = station["altitude"]
 
         out_of_bounds_mask = np.logical_or(np.logical_or(lons < self._boundary_west, lons > self._boundary_east), np.logical_or(lats < self._boundary_south, lats > self._boundary_north))
         if np.sum(out_of_bounds_mask) > 0:
