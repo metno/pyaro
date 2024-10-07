@@ -46,7 +46,7 @@ class VariableNameChangingReader(Reader):
         return data
 
     def stations(self):
-        return self._reader.stations
+        return self._reader.stations()
 
     def variables(self):
         """Variables with new variable names
