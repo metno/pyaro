@@ -1,10 +1,11 @@
 from .Reader import Reader
 from .Data import Data
+from contextlib import contextmanager
 
 
 class VariableNameChangingReader(Reader):
     """A pyaro.timeseries.Reader wrapper taking a real Reader implementation and
-    changing variable names in the original reader. Exampel:
+    changing variable names in the original reader. Example:
 
         with VariableNameChangingReader(pyaro.open_timeseries(file, filters=[]),
                                         {'SOx': 'oxidised_sulphur'}) as ts:
@@ -14,7 +15,7 @@ class VariableNameChangingReader(Reader):
 
     """
 
-    def __init__(self, reader: Reader, reader_to_new: dict[str, str]):
+    def __init__(self, reader: Reader, reader_to_new: dict[str, str], **kwargs,):
         """Initialize the variable name changes of Reader
 
         :param reader: The Reader instance to change variable names on
@@ -57,3 +58,13 @@ class VariableNameChangingReader(Reader):
 
     def close(self):
         self._reader.close()
+
+    def read(self,):
+        """define read method. All needed parameters should be put into self
+        by the __init__ method
+
+        This function is usually called after the Engine's open function.'
+        """
+        return self._reader.read()
+
+
