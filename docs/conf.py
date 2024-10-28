@@ -4,6 +4,7 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+from pathlib import Path
 import os
 import sys
 
@@ -16,6 +17,7 @@ author = "pyaerocom developers"
 # -- Add paths ---------------------------------------
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, str(Path("..", "src").resolve()))
 
 
 # -- General configuration ---------------------------------------------------
