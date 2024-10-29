@@ -73,10 +73,9 @@ class VariableNameChangingReader(Reader):
         """define read method. All needed parameters should be put into self
         by the __init__ method
 
-        This function is usually called after the Engine's open function.'
+        This method is called after the Engine's open function.
         """
         with self._reader.read() as ts:
             yield self
-        # return self._reader.read()
 
 
