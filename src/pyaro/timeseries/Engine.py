@@ -1,4 +1,5 @@
 import abc
+from contextlib import contextmanager
 
 
 class Engine(abc.ABC):
@@ -15,13 +16,14 @@ class Engine(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def read(self, **kwargs):
+    @contextmanager
+    def read(self):
         """read-method of the timeseries
 
         :return pyaro.timeseries.Reader
         :raises UnknownFilterException
         """
-        pass
+        yield self
 
     @property
     @abc.abstractmethod
