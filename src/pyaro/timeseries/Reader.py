@@ -1,8 +1,9 @@
 import abc
+from contextlib import contextmanager
+
 from .Data import Data
 from .Station import Station
 from .Filter import Filter, filters
-# from contextlib import contextmanager
 
 
 class Reader(abc.ABC):
@@ -21,14 +22,17 @@ class Reader(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def read(self,):
+    @contextmanager
+    def read(self):
         """define read method. All needed parameters should be put into self
         by the __init__ method
 
-        This function is usually called after the Engine's open function.'
+        This function is usually called after the Engine's open function.
+        Should implement context manager
         """
-        pass
+        yield self
 
+    @abc.abstractmethod
     def metadata(self) -> dict[str, str]:
         """Metadata set by the datasource.
 
@@ -75,18 +79,3 @@ class Reader(abc.ABC):
         Implement as dummy (pass) if no cleanup needed.
         """
         pass
-
-    # def __enter__(self):
-    #     """Context managaer function
-    #
-    #     :return: context-object
-    #     """
-    #     return self
-    #
-    # def __exit__(self, type, value, traceback):
-    #     """Context manager function.
-    #
-    #     The default implementation calls the close function.
-    #     """
-    #     self.close()
-    #     return

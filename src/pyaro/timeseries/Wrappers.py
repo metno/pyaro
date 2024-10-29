@@ -46,6 +46,15 @@ class VariableNameChangingReader(Reader):
         data._set_variable(varname)
         return data
 
+    def metadata(self):
+        """Get the metadata from the reader
+        NOT changing the variable name to the newly given ones for the moment
+
+        :return: metadata from the original reader class
+        """
+        metadata = self._reader.metadata()
+        return metadata
+
     def stations(self):
         return self._reader.stations()
 
@@ -59,12 +68,15 @@ class VariableNameChangingReader(Reader):
     def close(self):
         self._reader.close()
 
+    @contextmanager
     def read(self,):
         """define read method. All needed parameters should be put into self
         by the __init__ method
 
         This function is usually called after the Engine's open function.'
         """
-        return self._reader.read()
+        with self._reader.read() as ts:
+            yield self
+        # return self._reader.read()
 
 
