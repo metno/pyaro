@@ -4,5 +4,8 @@ sphinxcontrib-napoleon
 sphinx_rtd_theme
 sphinx-argparse
 nbsphinx
+cf-units
+xarray
+netcdf4
 pandas
 pyaro @ git+https://github.com/metno/pyaro@main
