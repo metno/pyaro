@@ -1,6 +1,4 @@
 from .Reader import Reader
-from .Data import Data
-from contextlib import contextmanager
 
 
 class VariableNameChangingReader(Reader):
@@ -15,7 +13,7 @@ class VariableNameChangingReader(Reader):
 
     """
 
-    def __init__(self, reader: Reader, reader_to_new: dict[str, str], **kwargs,):
+    def __init__(self, reader: Reader, reader_to_new: dict[str, str], **kwargs, ):
         """Initialize the variable name changes of Reader
 
         :param reader: The Reader instance to change variable names on
@@ -68,13 +66,10 @@ class VariableNameChangingReader(Reader):
     def close(self):
         self._reader.close()
 
-    # @contextmanager
-    def read(self,):
+    def read(self, ):
         """define read method. All needed parameters should be put into self
         by the __init__ method
 
         This method is called after the Engine's open function.
         """
         return self._reader.read()
-
-

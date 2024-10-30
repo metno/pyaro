@@ -1,5 +1,4 @@
 import abc
-from contextlib import contextmanager
 
 
 class Engine(abc.ABC):
@@ -16,7 +15,6 @@ class Engine(abc.ABC):
         pass
 
     @abc.abstractmethod
-    # @contextmanager
     def read(self):
         """read-method of the timeseries
 

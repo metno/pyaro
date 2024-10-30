@@ -1,9 +1,7 @@
 import abc
-from contextlib import contextmanager
 
 from .Data import Data
 from .Station import Station
-from .Filter import Filter, filters
 
 
 class Reader(abc.ABC):
@@ -22,7 +20,6 @@ class Reader(abc.ABC):
         pass
 
     @abc.abstractmethod
-    # @contextmanager
     def read(self):
         """define read method. All needed parameters should be put into self
         by the __init__ method
