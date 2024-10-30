@@ -68,14 +68,13 @@ class VariableNameChangingReader(Reader):
     def close(self):
         self._reader.close()
 
-    @contextmanager
+    # @contextmanager
     def read(self,):
         """define read method. All needed parameters should be put into self
         by the __init__ method
 
         This method is called after the Engine's open function.
         """
-        with self._reader.read() as ts:
-            yield self
+        return self._reader.read()
 
 

@@ -57,6 +57,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engine.description()
         engine.args()
         with engine.open(self.file, filters=[]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -70,6 +71,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engine.description()
         engine.args()
         with engine.open(self.multifile, filters=[]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -83,6 +85,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engine.description()
         engine.args()
         with engine.open(self.multifile_dir, filters=[]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -93,6 +96,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         with pyaro.open_timeseries(
             "csv_timeseries", *[self.file], **{"filters": []}
         ) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -118,6 +122,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         with pyaro.open_timeseries(
             "csv_timeseries", *[self.file], **{"filters": [], "columns": columns}
         ) as ts:
+            ts.read()
             areas = ["Rural", "Urban"]
             stations = ts.stations()
             self.assertEqual(stations["station1"]["area_classification"], areas[0])
@@ -127,6 +132,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         with pyaro.open_timeseries(
             "csv_timeseries", *[self.file], **{"filters": []}
         ) as ts:
+            ts.read()
             self.assertIsInstance(ts.metadata(), dict)
             self.assertIn("path", ts.metadata())
 
@@ -136,6 +142,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             filename=self.file,
             filters=[pyaro.timeseries.filters.get("countries", include=["NO"])],
         ) as ts:
+            ts.read()
             for var in ts.variables():
                 # stations
                 ts.data(var).stations
@@ -161,6 +168,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             filename=self.file,
             filters={"countries": {"include": ["NO"]}},
         ) as ts:
+            ts.read()
             var = next(iter(ts.variables()))
             data = ts.data(var)
             old_size = len(data)
@@ -185,6 +193,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
         sfilter = pyaro.timeseries.filters.get("stations", exclude=["station1"])
         with engine.open(self.file, filters=[sfilter]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -202,6 +211,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         )
         self.assertEqual(sfilter.init_kwargs()["include"][0][3], 0)
         with engine.open(self.file, filters=[sfilter]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -212,6 +222,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         )
         self.assertEqual(sfilter.init_kwargs()["exclude"][0][3], -180)
         with engine.open(self.file, filters=[sfilter]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -239,6 +250,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         self.assertIsInstance(dt1, datetime.datetime)
         self.assertIsInstance(dt2, datetime.datetime)
         with engine.open(self.file, filters=[tfilter]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -258,6 +270,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             ffilter.init_kwargs()["include"][0], pyaro.timeseries.Flag.VALID
         )
         with engine.open(self.file, filters=[ffilter]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -268,6 +281,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             "flags", include=[pyaro.timeseries.Flag.INVALID]
         )
         with engine.open(self.file, filters=[ffilter]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -288,6 +302,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         )
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
         with engine.open(self.file, filters=[vtsfilter]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -311,6 +326,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         )
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
         with engine.open(self.file, filters=[vtsfilter]) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -323,6 +339,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         with VariableNameChangingReader(
             engine.open(self.file, filters=[]), {"SOx": newsox}
         ) as ts:
+            ts.read()
             self.assertEqual(ts.data(newsox).variable, newsox)
         pass
 
@@ -333,6 +350,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             "variables", reader_to_new={"SOx": newsox}
         )
         with engine.open(self.file, filters=[vfilter]) as ts:
+            ts.read()
             self.assertEqual(ts.data(newsox).variable, newsox)
         pass
 
@@ -342,6 +360,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.multifile_dir + "/csvReader_testdata2.csv",
             filters={"duplicates": {"duplicate_keys": None}},
         ) as ts:
+            ts.read()
             self.assertEqual(len(ts.data("NOx")), 8)
         with engine.open(
             self.multifile_dir + "/csvReader_testdata2.csv",
@@ -349,6 +368,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "duplicates": {"duplicate_keys": ["stations", "start_times", "values"]}
             },
         ) as ts:
+            ts.read()
             self.assertEqual(len(ts.data("NOx")), 10)
 
     def test_time_resolution_filter(self):
@@ -363,6 +383,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.file,
             filters={"time_resolution": {"resolutions": ["1 day"]}},
         ) as ts:
+            ts.read()
             count = 0
             for var in ts.variables():
                 count += len(ts.data(var))
@@ -372,6 +393,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 self.file,
                 filters={"time_resolution": {"resolutions": ["1 hour"]}},
             ) as ts:
+                ts.read()
                 count = 0
                 for var in ts.variables():
                     count += len(ts.data(var))
@@ -387,6 +409,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             "csv_timeseries",
             filename=self.file,
         ) as ts:
+            ts.read()
             filters = pyaro.timeseries.FilterCollection(
                 {
                     "countries": {"include": ["NO"]},
@@ -402,6 +425,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         with pyaro.open_timeseries(
             "csv_timeseries", *[self.file], **{"filters": []}
         ) as ts:
+            ts.read()
             count = 0
             vars = list(ts.variables())
             data = ts.data(vars[0])
@@ -415,6 +439,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         with pyaro.open_timeseries(
             "csv_timeseries", *[self.file], **{"filters": [], "country_lookup": True}
         ) as ts:
+            ts.read()
             count = 0
             vars = list(ts.variables())
             data = ts.data(vars[0])
@@ -440,6 +465,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
+            ts.read()
             self.assertEqual(len(ts.stations()), 1)
 
     def test_altitude_filter_2(self):
@@ -462,6 +488,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
+            ts.read()
             self.assertEqual(len(ts.stations()), 1)
 
     def test_altitude_filter_3(self):
@@ -484,6 +511,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
+            ts.read()
             self.assertEqual(len(ts.stations()), 1)
 
     def test_relaltitude_filter_emep_1(self):
@@ -506,6 +534,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
+            ts.read()
             # Altitudes in test dataset:
             # Station     | Alt_obs   | Modeobs | rdiff |
             # Station 1   | 100       | 12.2554 |  87.7446 |
@@ -534,6 +563,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
+            ts.read()
             # At rdiff = 90, only the first station should be included.
             self.assertEqual(len(ts.stations()), 1)
 
@@ -557,6 +587,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
+            ts.read()
             # Since rdiff=300, all stations should be included.
             self.assertEqual(len(ts.stations()), 3)
 
@@ -580,6 +611,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
+            ts.read()
             self.assertEqual(len(ts.stations()), 0)
 
     def test_relaltitude_filter_2(self):
@@ -602,6 +634,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
+            ts.read()
             # At rdiff = 90, only the first station should be included.
             self.assertEqual(len(ts.stations()), 1)
 
@@ -625,6 +658,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             }
         ) as ts:
+            ts.read()
             # Since rdiff=300, all stations should be included.
             self.assertEqual(len(ts.stations()), 3)
 

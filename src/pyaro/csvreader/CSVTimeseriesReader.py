@@ -86,14 +86,23 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         self._set_filters(filters)
         self._extra_metadata = tuple(set(columns.keys()) - set(self.col_keys()))
         if country_lookup:
-            lookupISO2 = _lookup_function()
+            self._lookupISO2 = _lookup_function()
         else:
-            lookupISO2 = None
+            self._lookupISO2 = None
+        self._filename = filename
+        self._columns = columns
+        self._variable_units = variable_units
+        self._csvreader_kwargs = csvreader_kwargs
+
+    def read(self):
+        """read method"""
+
         for path in self._file_iterator:
-            logger.debug("%s: %s", filename, path)
+            logger.debug("%s: %s", self._filename, path)
             self._read_single_file(
-                path, columns, variable_units, lookupISO2, csvreader_kwargs
+                path, self._columns, self._variable_units, self._lookupISO2, self._csvreader_kwargs
             )
+
 
     def _read_single_file(
         self, filename, columns, variable_units, country_lookup, csvreader_kwargs
@@ -208,3 +217,6 @@ class CSVTimeseriesEngine(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngi
 
     def url(self):
         return "https://github.com/metno/pyaro"
+
+    def read(self):
+        return self.reader_class().read(*args, **kwargs)

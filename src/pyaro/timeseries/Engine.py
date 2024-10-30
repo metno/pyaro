@@ -16,14 +16,15 @@ class Engine(abc.ABC):
         pass
 
     @abc.abstractmethod
-    @contextmanager
+    # @contextmanager
     def read(self):
         """read-method of the timeseries
 
         :return pyaro.timeseries.Reader
         :raises UnknownFilterException
         """
-        yield self
+        # yield self
+        pass
 
     @property
     @abc.abstractmethod
