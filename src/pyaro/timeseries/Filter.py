@@ -215,6 +215,9 @@ class FilterCollection:
         data = ts_reader.data(variable)
         return self.filter_data(data, stations, variables)
 
+    def __iter__(self):
+        return self._filters.__iter__()
+
 
 @registered_filter
 class VariableNameFilter(Filter):
@@ -340,7 +343,7 @@ class StationFilter(StationReductionFilter):
 
     def has_station(self, station) -> bool:
         if len(self._include) > 0:
-            if not station in self._include:
+            if station not in self._include:
                 return False
         if station in self._exclude:
             return False
@@ -371,7 +374,7 @@ class CountryFilter(StationReductionFilter):
 
     def has_country(self, country) -> bool:
         if len(self._include) > 0:
-            if not country in self._include:
+            if country not in self._include:
                 return False
         if country in self._exclude:
             return False
