@@ -30,7 +30,7 @@ end note
 entity "metadata" {
   *station_id: float
   --
-  *var_info|varibales : list_of_varnames|dictionary
+  *var_info|variables : list_of_varnames|dictionary
   *instrument_name
   *latitude: float
   *longitude: float

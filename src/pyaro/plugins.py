@@ -40,7 +40,7 @@ def list_timeseries_engines() -> dict[str, TimeseriesEngine]:
     Notes
     -----
     This function lives in the backends namespace (``engs=pyaro.list_timeseries_enginess()``).
-    More information about each reader is available via the TimeserieEngine obj.url() and
+    More information about each reader is available via the TimeseriesEngine obj.url() and
     obj.description()
 
     # New selection mechanism introduced with Python 3.10. See GH6514.
@@ -54,7 +54,7 @@ def open_timeseries(name, *args, **kwargs) -> TimeseriesReader:
     directly to the TimeseriesReader.open_reader() function
 
     :param name: the name of the entrypoint as key in list_timeseries_readers
-    :return: an implementation-object of a TimeseriesReader openend to a location
+    :return: an implementation-object of a TimeseriesReader opened to a location
     """
     engine = list_timeseries_engines()[name]
 

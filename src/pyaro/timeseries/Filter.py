@@ -143,7 +143,7 @@ class FilterFactory:
         return filter.__class__(**kwargs)
 
     def list(self) -> dict[str, Filter]:
-        """List all available filter-names and their initalizations"""
+        """List all available filter-names and their initializations"""
         return types.MappingProxyType(self._filters)
 
 
@@ -164,7 +164,7 @@ class FilterCollectionException(Exception):
 
 
 class FilterCollection:
-    """A collection of DataIndexFilters which can be appied together.
+    """A collection of DataIndexFilters which can be applied together.
 
     :param filterlist: _description_, defaults to []
     :return: _description_
@@ -772,7 +772,7 @@ class TimeResolutionFilter(DataIndexFilter):
     certain time-resolutions. Time-resolutions are not exact, and might be interpreted
     slightly differently by different observation networks.
 
-    Default named time-resoultions are
+    Default named time-resolutions are
         * minute: 59 to 61 s (+-1sec)
         * hour: 59*60 s to 61*60 s (+-1min)
         * day: 22:59:00 to 25:01:00 to allow for leap-days and a extra min
@@ -992,7 +992,7 @@ class RelativeAltitudeFilter(StationFilter):
         Method which attempts to convert the altitude variable in the gridded topography data
         to meters.
 
-        :param topo_xr xarray dataset containting topo
+        :param topo_xr xarray dataset containing topo
         :raises TypeError
             If conversion isn't possible.
         :return xr.DataArray

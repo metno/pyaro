@@ -4,7 +4,7 @@ from .Data import Data
 
 class VariableNameChangingReader(Reader):
     """A pyaro.timeseries.Reader wrapper taking a real Reader implementation and
-    changing variable names in the original reader. Exampel:
+    changing variable names in the original reader. Example:
 
         with VariableNameChangingReader(pyaro.open_timeseries(file, filters=[]),
                                         {'SOx': 'oxidised_sulphur'}) as ts:

@@ -6,7 +6,7 @@ class timeseries.FilterFactory {
     +list(): [str]
 }
 note right of timeseries.FilterFactory
-  Singelton
+  Singleton
   instance available as
   pyaro.timeseries.filters
 end note

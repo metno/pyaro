@@ -2,7 +2,7 @@
 pyaro - Airquality Reader-interface for Observations
 ***************************
 
-Website of pyaro, the Python library that solves the mystery of reading airquality measurement databases. (Pronounciation as in French: Poirot)
+Website of pyaro, the Python library that solves the mystery of reading airquality measurement databases. (Pronunciation as in French: Poirot)
 
 About
 ============
@@ -11,7 +11,7 @@ Pyaro is an interface which uses a simple access pattern to different air-pollut
 The goal of pyro was threefold.
 
     1. A simple interface for different types of air-pollution databases
-    2. A programatic interface to these databases easily usable by large applications like `PyAerocom <https://pyaerocom.readthedocs.io>`_
+    2. A programmatic interface to these databases easily usable by large applications like `PyAerocom <https://pyaerocom.readthedocs.io>`_
     3. Easy extension for air-pollution database providers or programmers giving the users (1. or 2.) direct access
        their databases without the need of a new API.
 
