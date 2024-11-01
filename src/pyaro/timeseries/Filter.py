@@ -614,7 +614,7 @@ class TimeBoundsFilter(DataIndexFilter):
         end = datetime.min
         for s, e in self._start_include + self._startend_include + self._end_include:
             start = min(start, s)
-            end = max(end, s)
+            end = max(end, e)
         if end < start:
             raise TimeBoundsException(
                 f"TimeBoundsEnvelope end < start: {end} < {start}"
