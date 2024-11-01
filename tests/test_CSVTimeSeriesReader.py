@@ -1,10 +1,10 @@
 import datetime
 import logging
+import os
 import sys
 import unittest
-import os
+from datetime import datetime
 
-import numpy as np
 import pyaro
 import pyaro.timeseries
 from pyaro.timeseries.Filter import FilterException
@@ -94,7 +94,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
 
     def test_init2(self):
         with pyaro.open_timeseries(
-            "csv_timeseries", *[self.file], **{"filters": []}
+                "csv_timeseries", *[self.file], **{"filters": []}
         ) as ts:
             ts.read()
             count = 0
@@ -102,6 +102,13 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 count += len(ts.data(var))
             self.assertEqual(count, 208)
             self.assertEqual(len(ts.stations()), 2)
+
+    def test_revision_date(self):
+        engine = pyaro.list_timeseries_engines()["csv_timeseries"]
+        bla = engine.read_revisiondate(self.file)
+        blubb = engine.read_revisiondate(self.multifile)
+        self.assertGreater(bla, datetime.fromtimestamp(0))
+        self.assertGreater(blubb, datetime.fromtimestamp(0))
 
     def test_init_extra_columns(self):
         columns = {
@@ -120,7 +127,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             "area_classification": 8,
         }
         with pyaro.open_timeseries(
-            "csv_timeseries", *[self.file], **{"filters": [], "columns": columns}
+                "csv_timeseries", *[self.file], **{"filters": [], "columns": columns}
         ) as ts:
             ts.read()
             areas = ["Rural", "Urban"]
@@ -130,7 +137,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
 
     def test_metadata(self):
         with pyaro.open_timeseries(
-            "csv_timeseries", *[self.file], **{"filters": []}
+                "csv_timeseries", *[self.file], **{"filters": []}
         ) as ts:
             ts.read()
             self.assertIsInstance(ts.metadata(), dict)
@@ -139,8 +146,8 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_data(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.file,
-            filters=[pyaro.timeseries.filters.get("countries", include=["NO"])],
+                filename=self.file,
+                filters=[pyaro.timeseries.filters.get("countries", include=["NO"])],
         ) as ts:
             ts.read()
             for var in ts.variables():
@@ -165,8 +172,8 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_append_data(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.file,
-            filters={"countries": {"include": ["NO"]}},
+                filename=self.file,
+                filters={"countries": {"include": ["NO"]}},
         ) as ts:
             ts.read()
             var = next(iter(ts.variables()))
@@ -186,7 +193,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                     standard_deviation=data.standard_deviations,
                 )
             self.assertEqual(
-                (2**rounds) * old_size, len(data), "data append by array"
+                (2 ** rounds) * old_size, len(data), "data append by array"
             )
 
     def test_stationfilter(self):
@@ -337,7 +344,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
         newsox = "oxidised_sulphur"
         with VariableNameChangingReader(
-            engine.open(self.file, filters=[]), {"SOx": newsox}
+                engine.open(self.file, filters=[]), {"SOx": newsox}
         ) as ts:
             ts.read()
             self.assertEqual(ts.data(newsox).variable, newsox)
@@ -357,16 +364,16 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_duplicate_filter(self):
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
         with engine.open(
-            self.multifile_dir + "/csvReader_testdata2.csv",
-            filters={"duplicates": {"duplicate_keys": None}},
+                self.multifile_dir + "/csvReader_testdata2.csv",
+                filters={"duplicates": {"duplicate_keys": None}},
         ) as ts:
             ts.read()
             self.assertEqual(len(ts.data("NOx")), 8)
         with engine.open(
-            self.multifile_dir + "/csvReader_testdata2.csv",
-            filters={
-                "duplicates": {"duplicate_keys": ["stations", "start_times", "values"]}
-            },
+                self.multifile_dir + "/csvReader_testdata2.csv",
+                filters={
+                    "duplicates": {"duplicate_keys": ["stations", "start_times", "values"]}
+                },
         ) as ts:
             ts.read()
             self.assertEqual(len(ts.data("NOx")), 10)
@@ -375,13 +382,13 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
         with self.assertRaises(FilterException):
             with engine.open(
-                self.file,
-                filters={"time_resolution": {"resolutions": ["ldjf4098"]}},
+                    self.file,
+                    filters={"time_resolution": {"resolutions": ["ldjf4098"]}},
             ) as ts:
                 pass
         with engine.open(
-            self.file,
-            filters={"time_resolution": {"resolutions": ["1 day"]}},
+                self.file,
+                filters={"time_resolution": {"resolutions": ["1 day"]}},
         ) as ts:
             ts.read()
             count = 0
@@ -390,8 +397,8 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.assertEqual(count, 208)
         for resolution in "1 minute, 1 hour, 1week, 1month, 3year".split(","):
             with engine.open(
-                self.file,
-                filters={"time_resolution": {"resolutions": ["1 hour"]}},
+                    self.file,
+                    filters={"time_resolution": {"resolutions": ["1 hour"]}},
             ) as ts:
                 ts.read()
                 count = 0
@@ -406,8 +413,8 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
 
     def test_filterCollection(self):
         with pyaro.open_timeseries(
-            "csv_timeseries",
-            filename=self.file,
+                "csv_timeseries",
+                filename=self.file,
         ) as ts:
             ts.read()
             filters = pyaro.timeseries.FilterCollection(
@@ -423,7 +430,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     @unittest.skipUnless(has_pandas, "no pandas installed")
     def test_timeseries_data_to_pd(self):
         with pyaro.open_timeseries(
-            "csv_timeseries", *[self.file], **{"filters": []}
+                "csv_timeseries", *[self.file], **{"filters": []}
         ) as ts:
             ts.read()
             count = 0
@@ -437,7 +444,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     @unittest.skipUnless(has_geocode, "geocode-reverse-natural-earth not available")
     def test_country_lookup(self):
         with pyaro.open_timeseries(
-            "csv_timeseries", *[self.file], **{"filters": [], "country_lookup": True}
+                "csv_timeseries", *[self.file], **{"filters": [], "country_lookup": True}
         ) as ts:
             ts.read()
             count = 0
@@ -448,22 +455,22 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_altitude_filter_1(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("altitude", max_altitude=150)],
-            columns={
-                "variable": 0,
-                "station": 1,
-                "longitude": 2,
-                "latitude": 3,
-                "value": 4,
-                "units": 5,
-                "start_time": 6,
-                "end_time": 7,
-                "altitude": 9,
-                "country": "NO",
-                "standard_deviation": "NaN",
-                "flag": "0",
-            }
+                filename=self.elevation_file,
+                filters=[pyaro.timeseries.filters.get("altitude", max_altitude=150)],
+                columns={
+                    "variable": 0,
+                    "station": 1,
+                    "longitude": 2,
+                    "latitude": 3,
+                    "value": 4,
+                    "units": 5,
+                    "start_time": 6,
+                    "end_time": 7,
+                    "altitude": 9,
+                    "country": "NO",
+                    "standard_deviation": "NaN",
+                    "flag": "0",
+                }
         ) as ts:
             ts.read()
             self.assertEqual(len(ts.stations()), 1)
@@ -471,22 +478,22 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_altitude_filter_2(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("altitude", min_altitude=250)],
-            columns={
-                "variable": 0,
-                "station": 1,
-                "longitude": 2,
-                "latitude": 3,
-                "value": 4,
-                "units": 5,
-                "start_time": 6,
-                "end_time": 7,
-                "altitude": 9,
-                "country": "NO",
-                "standard_deviation": "NaN",
-                "flag": "0",
-            }
+                filename=self.elevation_file,
+                filters=[pyaro.timeseries.filters.get("altitude", min_altitude=250)],
+                columns={
+                    "variable": 0,
+                    "station": 1,
+                    "longitude": 2,
+                    "latitude": 3,
+                    "value": 4,
+                    "units": 5,
+                    "start_time": 6,
+                    "end_time": 7,
+                    "altitude": 9,
+                    "country": "NO",
+                    "standard_deviation": "NaN",
+                    "flag": "0",
+                }
         ) as ts:
             ts.read()
             self.assertEqual(len(ts.stations()), 1)
@@ -494,22 +501,22 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_altitude_filter_3(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("altitude", min_altitude=150, max_altitude=250)],
-            columns={
-                "variable": 0,
-                "station": 1,
-                "longitude": 2,
-                "latitude": 3,
-                "value": 4,
-                "units": 5,
-                "start_time": 6,
-                "end_time": 7,
-                "altitude": 9,
-                "country": "NO",
-                "standard_deviation": "NaN",
-                "flag": "0",
-            }
+                filename=self.elevation_file,
+                filters=[pyaro.timeseries.filters.get("altitude", min_altitude=150, max_altitude=250)],
+                columns={
+                    "variable": 0,
+                    "station": 1,
+                    "longitude": 2,
+                    "latitude": 3,
+                    "value": 4,
+                    "units": 5,
+                    "start_time": 6,
+                    "end_time": 7,
+                    "altitude": 9,
+                    "country": "NO",
+                    "standard_deviation": "NaN",
+                    "flag": "0",
+                }
         ) as ts:
             ts.read()
             self.assertEqual(len(ts.stations()), 1)
@@ -517,22 +524,24 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_relaltitude_filter_emep_1(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=0)],
-            columns={
-                "variable": 0,
-                "station": 1,
-                "longitude": 2,
-                "latitude": 3,
-                "value": 4,
-                "units": 5,
-                "start_time": 6,
-                "end_time": 7,
-                "altitude": 9,
-                "country": "NO",
-                "standard_deviation": "NaN",
-                "flag": "0",
-            }
+                filename=self.elevation_file,
+                filters=[pyaro.timeseries.filters.get("relaltitude",
+                                                      topo_file="./tests/testdata/datadir_elevation/topography.nc",
+                                                      rdiff=0)],
+                columns={
+                    "variable": 0,
+                    "station": 1,
+                    "longitude": 2,
+                    "latitude": 3,
+                    "value": 4,
+                    "units": 5,
+                    "start_time": 6,
+                    "end_time": 7,
+                    "altitude": 9,
+                    "country": "NO",
+                    "standard_deviation": "NaN",
+                    "flag": "0",
+                }
         ) as ts:
             ts.read()
             # Altitudes in test dataset:
@@ -546,22 +555,24 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_relaltitude_filter_emep_2(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=90)],
-            columns={
-                "variable": 0,
-                "station": 1,
-                "longitude": 2,
-                "latitude": 3,
-                "value": 4,
-                "units": 5,
-                "start_time": 6,
-                "end_time": 7,
-                "altitude": 9,
-                "country": "NO",
-                "standard_deviation": "NaN",
-                "flag": "0",
-            }
+                filename=self.elevation_file,
+                filters=[pyaro.timeseries.filters.get("relaltitude",
+                                                      topo_file="./tests/testdata/datadir_elevation/topography.nc",
+                                                      rdiff=90)],
+                columns={
+                    "variable": 0,
+                    "station": 1,
+                    "longitude": 2,
+                    "latitude": 3,
+                    "value": 4,
+                    "units": 5,
+                    "start_time": 6,
+                    "end_time": 7,
+                    "altitude": 9,
+                    "country": "NO",
+                    "standard_deviation": "NaN",
+                    "flag": "0",
+                }
         ) as ts:
             ts.read()
             # At rdiff = 90, only the first station should be included.
@@ -570,22 +581,24 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_relaltitude_filter_emep_3(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=300)],
-            columns={
-                "variable": 0,
-                "station": 1,
-                "longitude": 2,
-                "latitude": 3,
-                "value": 4,
-                "units": 5,
-                "start_time": 6,
-                "end_time": 7,
-                "altitude": 9,
-                "country": "NO",
-                "standard_deviation": "NaN",
-                "flag": "0",
-            }
+                filename=self.elevation_file,
+                filters=[pyaro.timeseries.filters.get("relaltitude",
+                                                      topo_file="./tests/testdata/datadir_elevation/topography.nc",
+                                                      rdiff=300)],
+                columns={
+                    "variable": 0,
+                    "station": 1,
+                    "longitude": 2,
+                    "latitude": 3,
+                    "value": 4,
+                    "units": 5,
+                    "start_time": 6,
+                    "end_time": 7,
+                    "altitude": 9,
+                    "country": "NO",
+                    "standard_deviation": "NaN",
+                    "flag": "0",
+                }
         ) as ts:
             ts.read()
             # Since rdiff=300, all stations should be included.
@@ -594,22 +607,24 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_relaltitude_filter_1(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=0)],
-            columns={
-                "variable": 0,
-                "station": 1,
-                "longitude": 2,
-                "latitude": 3,
-                "value": 4,
-                "units": 5,
-                "start_time": 6,
-                "end_time": 7,
-                "altitude": 9,
-                "country": "NO",
-                "standard_deviation": "NaN",
-                "flag": "0",
-            }
+                filename=self.elevation_file,
+                filters=[pyaro.timeseries.filters.get("relaltitude",
+                                                      topo_file="./tests/testdata/datadir_elevation/topography.nc",
+                                                      rdiff=0)],
+                columns={
+                    "variable": 0,
+                    "station": 1,
+                    "longitude": 2,
+                    "latitude": 3,
+                    "value": 4,
+                    "units": 5,
+                    "start_time": 6,
+                    "end_time": 7,
+                    "altitude": 9,
+                    "country": "NO",
+                    "standard_deviation": "NaN",
+                    "flag": "0",
+                }
         ) as ts:
             ts.read()
             self.assertEqual(len(ts.stations()), 0)
@@ -617,22 +632,24 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_relaltitude_filter_2(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=90)],
-            columns={
-                "variable": 0,
-                "station": 1,
-                "longitude": 2,
-                "latitude": 3,
-                "value": 4,
-                "units": 5,
-                "start_time": 6,
-                "end_time": 7,
-                "altitude": 9,
-                "country": "NO",
-                "standard_deviation": "NaN",
-                "flag": "0",
-            }
+                filename=self.elevation_file,
+                filters=[pyaro.timeseries.filters.get("relaltitude",
+                                                      topo_file="./tests/testdata/datadir_elevation/topography.nc",
+                                                      rdiff=90)],
+                columns={
+                    "variable": 0,
+                    "station": 1,
+                    "longitude": 2,
+                    "latitude": 3,
+                    "value": 4,
+                    "units": 5,
+                    "start_time": 6,
+                    "end_time": 7,
+                    "altitude": 9,
+                    "country": "NO",
+                    "standard_deviation": "NaN",
+                    "flag": "0",
+                }
         ) as ts:
             ts.read()
             # At rdiff = 90, only the first station should be included.
@@ -641,28 +658,29 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_relaltitude_filter_3(self):
         engines = pyaro.list_timeseries_engines()
         with engines["csv_timeseries"].open(
-            filename=self.elevation_file,
-            filters=[pyaro.timeseries.filters.get("relaltitude", topo_file = "./tests/testdata/datadir_elevation/topography.nc", rdiff=300)],
-            columns={
-                "variable": 0,
-                "station": 1,
-                "longitude": 2,
-                "latitude": 3,
-                "value": 4,
-                "units": 5,
-                "start_time": 6,
-                "end_time": 7,
-                "altitude": 9,
-                "country": "NO",
-                "standard_deviation": "NaN",
-                "flag": "0",
-            }
+                filename=self.elevation_file,
+                filters=[pyaro.timeseries.filters.get("relaltitude",
+                                                      topo_file="./tests/testdata/datadir_elevation/topography.nc",
+                                                      rdiff=300)],
+                columns={
+                    "variable": 0,
+                    "station": 1,
+                    "longitude": 2,
+                    "latitude": 3,
+                    "value": 4,
+                    "units": 5,
+                    "start_time": 6,
+                    "end_time": 7,
+                    "altitude": 9,
+                    "country": "NO",
+                    "standard_deviation": "NaN",
+                    "flag": "0",
+                }
         ) as ts:
             ts.read()
             # Since rdiff=300, all stations should be included.
             self.assertEqual(len(ts.stations()), 3)
 
-    
 
 if __name__ == "__main__":
     unittest.main()

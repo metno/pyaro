@@ -2,11 +2,12 @@ import csv
 import glob
 import logging
 import os
+from datetime import datetime
 
 import numpy as np
 
 import pyaro.timeseries.AutoFilterReaderEngine
-from pyaro.timeseries import Data, Flag, NpStructuredData, Station
+from pyaro.timeseries import Data, NpStructuredData, Station
 
 logger = logging.getLogger(__name__)
 
@@ -35,26 +36,26 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
     )
 
     def __init__(
-        self,
-        filename,
-        columns={
-            "variable": 0,
-            "station": 1,
-            "longitude": 2,
-            "latitude": 3,
-            "value": 4,
-            "units": 5,
-            "start_time": 6,
-            "end_time": 7,
-            "altitude": "0",
-            "country": "NO",
-            "standard_deviation": "NaN",
-            "flag": "0",
-        },
-        variable_units={"SOx": "Gg", "NOx": "Mg"},
-        country_lookup=False,
-        csvreader_kwargs={"delimiter": ","},
-        filters=[],
+            self,
+            filename,
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": "0",
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            },
+            variable_units={"SOx": "Gg", "NOx": "Mg"},
+            country_lookup=False,
+            csvreader_kwargs={"delimiter": ","},
+            filters=[],
     ):
         """open a new csv timeseries-reader
 
@@ -103,9 +104,24 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
                 path, self._columns, self._variable_units, self._lookupISO2, self._csvreader_kwargs
             )
 
+    def read_revisiondate(self, filename):
+        """quick way of getting the revision date"""
+        if os.path.isdir(filename):
+            filename = "glob:" + filename + "/*.csv"
+        if filename.startswith("glob:"):
+            _file_iterator = glob.iglob(filename[5:], recursive=True)
+        else:
+            return datetime.fromtimestamp(os.path.getmtime(filename))
+
+        newest_date = datetime.fromtimestamp(0)
+        for path in _file_iterator:
+            filedate = datetime.fromtimestamp(os.path.getmtime(path))
+            if filedate > newest_date:
+                newest_date = filedate
+        return newest_date
 
     def _read_single_file(
-        self, filename, columns, variable_units, country_lookup, csvreader_kwargs
+            self, filename, columns, variable_units, country_lookup, csvreader_kwargs
     ):
         with open(filename, newline="") as csvfile:
             crd = csv.reader(csvfile, **csvreader_kwargs)
@@ -124,11 +140,11 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
                         extra_metadata[t] = row[columns[t]]
 
                 for t in (
-                    "value",
-                    "latitude",
-                    "longitude",
-                    "altitude",
-                    "standard_deviation",
+                        "value",
+                        "latitude",
+                        "longitude",
+                        "altitude",
+                        "standard_deviation",
                 ):
                     r[t] = float(r[t])
                 for t in ("start_time", "end_time"):
@@ -220,3 +236,6 @@ class CSVTimeseriesEngine(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngi
 
     def read(self):
         return self.reader_class().read(*args, **kwargs)
+
+    def read_revisiondate(self, filename):
+        return self.reader_class().read_revisiondate(self, filename)
