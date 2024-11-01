@@ -2,7 +2,7 @@ import abc
 
 
 class Engine(abc.ABC):
-    """The engine is the 'singelton' generator object for databases of the engines type."""
+    """The engine is the 'singleton' generator object for databases of the engines type."""
 
     @abc.abstractmethod
     def open(self, filename_or_obj_or_url, *, filters=None):

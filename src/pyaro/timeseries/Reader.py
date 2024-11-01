@@ -30,7 +30,7 @@ class Reader(abc.ABC):
         return dict()
 
     @abc.abstractmethod
-    def data(self, varname) -> Data:
+    def data(self, varname: str) -> Data:
         """Return all data for a variable
 
         :param varname: variable name as returned from variables
