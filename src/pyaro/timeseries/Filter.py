@@ -579,16 +579,15 @@ class TimeBoundsFilter(DataIndexFilter):
         }
 
     def _index_from_include_exclude(self, times1, times2, includes, excludes):
-        idx = times1.astype("bool")
         if len(includes) == 0:
-            idx[:] = True
+            idx = np.repeat(True, len(times1))
         else:
-            idx[:] = False
+            idx = np.repeat(False, len(times1))
             for start, end in includes:
-                idx |= (start <= times1) & (times2 <= end)
+                idx |= (np.datetime64(start) <= times1) & (times2 <= np.datetime64(end))
 
         for start, end in excludes:
-            idx &= (times1 < start) | (end < times2)
+            idx &= (times1 < np.datetime64(start)) | (np.datetime64(end) < times2)
 
         return idx
 
