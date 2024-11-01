@@ -1,14 +1,14 @@
 import abc
+
 from .Data import Data
 from .Station import Station
-from .Filter import Filter, filters
 
 
 class Reader(abc.ABC):
     """Baseclass for timeseries. This can be used with a context manager"""
 
     @abc.abstractmethod
-    def __init__(self, filename_or_obj_or_url, *, filters=None):
+    def __init__(self, filename_or_obj_or_url, filters=None, **kwargs):
         """Initialize the reader.
 
         This function is usually called from the Engine's open function.
@@ -19,6 +19,18 @@ class Reader(abc.ABC):
         """
         pass
 
+    @abc.abstractmethod
+    def read(self):
+        """define read method. All needed parameters should be put into self
+        by the __init__ method
+
+        This function is usually called after the Engine's open function.
+        Should implement context manager
+        """
+        # yield self
+        pass
+
+    @abc.abstractmethod
     def metadata(self) -> dict[str, str]:
         """Metadata set by the datasource.
 

@@ -43,6 +43,7 @@ with engines['csv_timeseries'].open(
     filename=TEST_FILE,
     filters={'countries': {include=['NO']}}
     ) as ts:
+    ts.read()
     for var in ts.variables():
         # stations
         ts.data(var).stations
@@ -79,6 +80,7 @@ import pyaro.timeseries
 TEST_FILE = "csvReader_testdata.csv"
 engine = pyaro.list_timeseries_engines()["csv_timeseries"]
 ts = engine.open(TEST_FILE, filters=[], fill_country_flag=False)
+ts.read()
 print(ts.variables())
 # stations
 ts.data('SOx').stations

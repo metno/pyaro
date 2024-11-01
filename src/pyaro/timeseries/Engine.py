@@ -14,6 +14,16 @@ class Engine(abc.ABC):
         """
         pass
 
+    @abc.abstractmethod
+    def read(self):
+        """read-method of the timeseries
+
+        :return pyaro.timeseries.Reader
+        :raises UnknownFilterException
+        """
+        # yield self
+        pass
+
     @property
     @abc.abstractmethod
     def args(self) -> list[str]:
