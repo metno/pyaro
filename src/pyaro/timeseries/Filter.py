@@ -8,8 +8,10 @@ import inspect
 import re
 import sys
 import types
+from typing import Any
 
 import numpy as np
+import numpy.typing as npt
 
 from .Data import Data, Flag
 from .Station import Station
@@ -34,7 +36,7 @@ class Filter(abc.ABC):
         for an empty filter object"""
         return
 
-    def args(self) -> list:
+    def args(self) -> dict[str, Any]:
         """retrieve the kwargs possible to retrieve a new object of this filter with filter restrictions
 
         :return: a dictionary possible to use as kwargs for the new method
@@ -57,7 +59,7 @@ class Filter(abc.ABC):
         """
 
     def filter_data(
-        self, data: Data, stations: list[Station], variables: list[str]
+        self, data: Data, stations: dict[str, Station], variables: list[str]
     ) -> Data:
         """Filtering of data
 
@@ -93,14 +95,18 @@ class DataIndexFilter(Filter):
     filter_data_idx"""
 
     @abc.abstractmethod
-    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+    def filter_data_idx(
+        self, data: Data, stations: dict[str, Station], variables: list[str]
+    ):
         """Filter data to an index which can be applied to Data.slice(idx) later
 
         :return: a index for Data.slice(idx)
         """
         pass
 
-    def filter_data(self, data: Data, stations: dict[str, Station], variables: str):
+    def filter_data(
+        self, data: Data, stations: dict[str, Station], variables: list[str]
+    ) -> Data:
         idx = self.filter_data_idx(data, stations, variables)
         return data.slice(idx)
 
@@ -268,7 +274,7 @@ class VariableNameFilter(Filter):
         """
         return self._reader_to_new.get(reader_variable, reader_variable)
 
-    def filter_data(self, data, stations, variables):
+    def filter_data(self, data, stations, variables) -> Data:
         """Translate data's variable"""
         data._set_variable(self._reader_to_new.get(data.variable, data.variable))
         return data
@@ -320,7 +326,9 @@ class StationReductionFilter(DataIndexFilter):
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         pass
 
-    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+    def filter_data_idx(
+        self, data: Data, stations: dict[str, Station], variables: list[str]
+    ):
         stat_names = self.filter_stations(stations).keys()
         dstations = data.stations
         stat_names = np.fromiter(stat_names, dtype=dstations.dtype)
@@ -402,8 +410,8 @@ class BoundingBoxFilter(StationReductionFilter):
 
     def __init__(
         self,
-        include: list[(float, float, float, float)] = [],
-        exclude: list[(float, float, float, float)] = [],
+        include: list[tuple[float, float, float, float]] = [],
+        exclude: list[tuple[float, float, float, float]] = [],
     ):
         for tup in include:
             self._test_bounding_box(tup)
@@ -507,10 +515,18 @@ class FlagFilter(DataIndexFilter):
     def usable_flags(self):
         return self._valid
 
-    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+    def filter_data_idx(
+        self, data: Data, stations: dict[str, Station], variables: list[str]
+    ):
         validflags = np.fromiter(self._valid, dtype=data.flags.dtype)
         index = np.isin(data.flags, validflags)
         return index
+
+
+# Upper and lower bound inclusive
+TimeBound = tuple[str | np.datetime64 | datetime, str | np.datetime64 | datetime]
+# Internal representation
+_TimeBound = tuple[np.datetime64, np.datetime64]
 
 
 class TimeBoundsException(Exception):
@@ -520,7 +536,7 @@ class TimeBoundsException(Exception):
 @registered_filter
 class TimeBoundsFilter(DataIndexFilter):
     """Filter data by start and/or end-times of the measurements. Each timebound consists
-    of a bound-start and bound-end (both included). Timestamps are given as YYYY-MM-DD HH:MM:SS
+    of a bound-start and bound-end (both included). Timestamps are given as YYYY-MM-DD HH:MM:SS in UTC
 
     :param start_include: list of tuples of start-times, defaults to [], meaning all
     :param start_exclude: list of tuples of start-times, defaults to []
@@ -533,29 +549,35 @@ class TimeBoundsFilter(DataIndexFilter):
 
     def __init__(
         self,
-        start_include: list[(str, str)] = [],
-        start_exclude: list[(str, str)] = [],
-        startend_include: list[(str, str)] = [],
-        startend_exclude: list[(str, str)] = [],
-        end_include: list[(str, str)] = [],
-        end_exclude: list[(str, str)] = [],
+        start_include: list[TimeBound] = [],
+        start_exclude: list[TimeBound] = [],
+        startend_include: list[TimeBound] = [],
+        startend_exclude: list[TimeBound] = [],
+        end_include: list[TimeBound] = [],
+        end_exclude: list[TimeBound] = [],
     ):
-        self._start_include = self._str_list_to_datetime_list(start_include)
-        self._start_exclude = self._str_list_to_datetime_list(start_exclude)
-        self._startend_include = self._str_list_to_datetime_list(startend_include)
-        self._startend_exclude = self._str_list_to_datetime_list(startend_exclude)
-        self._end_include = self._str_list_to_datetime_list(end_include)
-        self._end_exclude = self._str_list_to_datetime_list(end_exclude)
-        return
+        self._start_include = self._timebounds_canonicalise(start_include)
+        self._start_exclude = self._timebounds_canonicalise(start_exclude)
+        self._startend_include = self._timebounds_canonicalise(startend_include)
+        self._startend_exclude = self._timebounds_canonicalise(startend_exclude)
+        self._end_include = self._timebounds_canonicalise(end_include)
+        self._end_exclude = self._timebounds_canonicalise(end_exclude)
 
     def name(self):
         return "time_bounds"
 
-    def _str_list_to_datetime_list(self, tuple_list: list[(str, str)]):
+    def _timebounds_canonicalise(self, tuple_list: list[TimeBound]) -> list[_TimeBound]:
         retlist = []
         for start, end in tuple_list:
-            start_dt = datetime.strptime(start, self.time_format)
-            end_dt = datetime.strptime(end, self.time_format)
+            if isinstance(start, str):
+                start_dt = np.datetime64(datetime.strptime(start, self.time_format))
+            else:
+                start_dt = np.datetime64(start)
+            if isinstance(end, str):
+                end_dt = np.datetime64(datetime.strptime(end, self.time_format))
+            else:
+                end_dt = np.datetime64(end)
+
             if start_dt > end_dt:
                 raise TimeBoundsException(
                     f"(start later than end) for (f{start} > f{end})"
@@ -563,15 +585,18 @@ class TimeBoundsFilter(DataIndexFilter):
             retlist.append((start_dt, end_dt))
         return retlist
 
-    def _datetime_list_to_str_list(self, tuple_list) -> list[(str, str)]:
+    def _datetime_list_to_str_list(self, tuple_list) -> list[tuple[str, str]]:
         retlist = []
         for start_dt, end_dt in tuple_list:
             retlist.append(
-                (start_dt.strftime(self.time_format), end_dt.strftime(self.time_format))
+                (
+                    start_dt.astype(datetime).strftime(self.time_format),
+                    end_dt.astype(datetime).strftime(self.time_format),
+                )
             )
         return retlist
 
-    def init_kwargs(self):
+    def init_kwargs(self) -> dict[str, list[tuple[str, str]]]:
         return {
             "start_include": self._datetime_list_to_str_list(self._start_include),
             "start_exclude": self._datetime_list_to_str_list(self._start_exclude),
@@ -594,7 +619,7 @@ class TimeBoundsFilter(DataIndexFilter):
 
         return idx
 
-    def has_envelope(self):
+    def has_envelope(self) -> bool:
         """Check if this filter has an envelope, i.e. a earliest and latest time"""
         return (
             len(self._start_include)
@@ -602,7 +627,7 @@ class TimeBoundsFilter(DataIndexFilter):
             or len(self._end_include)
         )
 
-    def envelope(self) -> tuple[datetime, datetime]:
+    def envelope(self) -> TimeBound:
         """Get the earliest and latest time possible for this filter.
 
         :return: earliest start and end-time (approximately)
@@ -612,8 +637,8 @@ class TimeBoundsFilter(DataIndexFilter):
             raise TimeBoundsException(
                 "TimeBounds-envelope called but no envelope exists"
             )
-        start = datetime.max
-        end = datetime.min
+        start = np.datetime64(datetime.max)
+        end = np.datetime64(datetime.min)
         for s, e in self._start_include + self._startend_include + self._end_include:
             start = min(start, s)
             end = max(end, e)
@@ -623,11 +648,13 @@ class TimeBoundsFilter(DataIndexFilter):
             )
         return (start, end)
 
-    def contains(self, dt_start, dt_end):
+    def contains(
+        self, dt_start: npt.NDArray[np.timedelta64], dt_end: npt.NDArray[np.timedelta64]
+    ) -> npt.NDArray[np.bool_]:
         """Test if datetimes in dt_start, dt_end belong to this filter
 
-        :param dt_start: numpy array of datetimes
-        :param dt_end: numpy array of datetimes
+        :param dt_start: start of each observation as a numpy array of datetimes
+        :param dt_end: end of each observation as a numpy array of datetimes
         :return: numpy boolean array with True/False values
         """
         idx = self._index_from_include_exclude(
@@ -641,7 +668,9 @@ class TimeBoundsFilter(DataIndexFilter):
         )
         return idx
 
-    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+    def filter_data_idx(
+        self, data: Data, stations: dict[str, Station], variables: list[str]
+    ) -> npt.NDArray[np.bool_]:
         return self.contains(data.start_times, data.end_times)
 
 
@@ -715,7 +744,9 @@ class TimeVariableStationFilter(DataIndexFilter):
     def name(self):
         return "time_variable_station"
 
-    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+    def filter_data_idx(
+        self, data: Data, stations: dict[str, Station], variables: list[str]
+    ):
         idx = data.start_times.astype(bool)
         idx |= True
         if data.variable in self._exclude:
@@ -757,7 +788,9 @@ class DuplicateFilter(DataIndexFilter):
     def name(self):
         return "duplicates"
 
-    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+    def filter_data_idx(
+        self, data: Data, stations: dict[str, Station], variables: list[str]
+    ):
         if self._keys is None:
             xkeys = self.default_keys
         else:
@@ -821,7 +854,9 @@ class TimeResolutionFilter(DataIndexFilter):
     def name(self):
         return "time_resolution"
 
-    def filter_data_idx(self, data: Data, stations: dict[str, Station], variables: str):
+    def filter_data_idx(
+        self, data: Data, stations: dict[str, Station], variables: list[str]
+    ):
         idx = data.start_times.astype(bool)
         idx[:] = True
         if len(self._minmax) > 0:
@@ -1068,7 +1103,7 @@ class RelativeAltitudeFilter(StationFilter):
 
     def _is_close(
         self, alt_gridded: np.ndarray, alt_station: np.ndarray
-    ) -> np.ndarray[bool]:
+    ) -> npt.NDArray[np.bool_]:
         """
         Function to check if two altitudes are within a relative tolerance of each
         other.

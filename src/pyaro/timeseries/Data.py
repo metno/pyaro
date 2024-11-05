@@ -72,6 +72,9 @@ class Data(abc.ABC):
         """
         pass
 
+    def __getitem__(self, key):
+        return self.slice(key)
+
     @property
     def variable(self) -> str:
         """Variable name for all the data
