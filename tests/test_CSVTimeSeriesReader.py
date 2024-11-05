@@ -178,7 +178,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                     standard_deviation=data.standard_deviations,
                 )
             self.assertEqual(
-                (2 ** rounds) * old_size, len(data), "data append by array"
+                (2**rounds) * old_size, len(data), "data append by array"
             )
 
     def test_stationfilter(self):
@@ -236,8 +236,8 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             tfilter.init_kwargs()["startend_include"][0][1], "1997-02-01 00:00:00"
         )
         (dt1, dt2) = tfilter.envelope()
-        self.assertIsInstance(dt1, np.datetime64)
-        self.assertIsInstance(dt2, np.datetime64)
+        self.assertIsInstance(dt1, datetime.datetime)
+        self.assertIsInstance(dt2, datetime.datetime)
         with engine.open(self.file, filters=[tfilter]) as ts:
             count = 0
             for var in ts.variables():

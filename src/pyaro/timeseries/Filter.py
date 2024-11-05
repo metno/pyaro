@@ -644,7 +644,7 @@ class TimeBoundsFilter(DataIndexFilter):
             or len(self._end_include)
         )
 
-    def envelope(self) -> TimeBound:
+    def envelope(self) -> tuple[datetime, datetime]:
         """Get the earliest and latest time possible for this filter.
 
         :return: earliest start and end-time (approximately)
@@ -663,7 +663,7 @@ class TimeBoundsFilter(DataIndexFilter):
             raise TimeBoundsException(
                 f"TimeBoundsEnvelope end < start: {end} < {start}"
             )
-        return (start, end)
+        return (start.astype(datetime), end.astype(datetime))
 
     def contains(
         self, dt_start: npt.NDArray[np.timedelta64], dt_end: npt.NDArray[np.timedelta64]
