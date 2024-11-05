@@ -545,6 +545,23 @@ class TimeBoundsFilter(DataIndexFilter):
     :param end_include: list of tuples of end-times, defaults to [], meaning all
     :param end_exclude: list of tuples of end-times, defaults to []
     :raises TimeBoundsException: on any errors with the time-bounds
+
+    Examples:
+
+    end_include: [("2023-01-01 10:00:00", "2024-01-01 07:00:00")]
+    will only include observations where the end time of each observation
+    is within the interval specified
+    (i.e. "end" >= 2023-01-01 10:00:00 and "end" <= "2024-01-01 07:00:00")
+
+    Including multiple bounds will act as an OR, allowing multiple selections.
+    If we want every observation in January for 2021, 2022, 2023, and 2024 this
+    could be made as the following filter:
+    startend_include: [
+        ("2021-01-01 00:00:00", "2021-02-01 00:00:00"),
+        ("2022-01-01 00:00:00", "2022-02-01 00:00:00"),
+        ("2023-01-01 00:00:00", "2023-02-01 00:00:00"),
+        ("2024-01-01 00:00:00", "2024-02-01 00:00:00"),
+    ]
     """
 
     def __init__(
