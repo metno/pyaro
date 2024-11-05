@@ -623,22 +623,28 @@ class TimeBoundsFilter(DataIndexFilter):
             "end_exclude": self._datetime_list_to_str_list(self._startend_exclude),
         }
 
-    def _index_from_include_exclude(self, times1, times2, includes, excludes):
+    def _index_from_include_exclude(
+        self,
+        times1: npt.NDArray[np.datetime64],
+        times2: npt.NDArray[np.datetime64],
+        includes: list[_TimeBound],
+        excludes: list[_TimeBound],
+    ):
         if len(includes) == 0:
             idx = np.repeat(True, len(times1))
         else:
             idx = np.repeat(False, len(times1))
             for start, end in includes:
-                idx |= (np.datetime64(start) <= times1) & (times2 <= np.datetime64(end))
+                idx |= (start <= times1) & (times2 <= end)
 
         for start, end in excludes:
-            idx &= (times1 < np.datetime64(start)) | (np.datetime64(end) < times2)
+            idx &= (times1 < start) | (end < times2)
 
         return idx
 
     def has_envelope(self) -> bool:
         """Check if this filter has an envelope, i.e. a earliest and latest time"""
-        return (
+        return bool(
             len(self._start_include)
             or len(self._startend_include)
             or len(self._end_include)
@@ -666,7 +672,7 @@ class TimeBoundsFilter(DataIndexFilter):
         return (start.astype(datetime), end.astype(datetime))
 
     def contains(
-        self, dt_start: npt.NDArray[np.timedelta64], dt_end: npt.NDArray[np.timedelta64]
+        self, dt_start: npt.NDArray[np.datetime64], dt_end: npt.NDArray[np.datetime64]
     ) -> npt.NDArray[np.bool_]:
         """Test if datetimes in dt_start, dt_end belong to this filter
 
