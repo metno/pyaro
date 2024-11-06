@@ -16,6 +16,9 @@ import numpy.typing as npt
 from .Data import Data, Flag
 from .Station import Station
 
+from ..mathutils import haversine
+
+
 try:
     # Optional dependencies required for relative altitude filter.
     import xarray as xr
@@ -1188,8 +1191,6 @@ class RelativeAltitudeFilter(StationFilter):
 
 @registered_filter
 class ValleyFloorRelativeAltitudeFilter(StationFilter):
-    EARTH_RADIUS = 6378137  # meters
-
     # https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#latitude-coordinate
     UNITS_LAT = set(
         [
@@ -1227,11 +1228,11 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
     def topography(self):
         if "cf_units" not in sys.modules:
             raise ModuleNotFoundError(
-                "valleyfloorrelativealtitudefilter filter is missing required dependency 'cf-units'. Please install to use this filter."
+                "valleyfloor_relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
             )
         if "xarray" not in sys.modules:
             raise ModuleNotFoundError(
-                "valleyfloorrelativealtitudefilter filter is missing required dependency 'xarray'. Please install to use this filter."
+                "valleyfloor_relaltitude filter is missing required dependency 'xarray'. Please install to use this filter."
             )
 
         if self._topography is None:
@@ -1255,7 +1256,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         }
 
     def name(self):
-        return "valleyfloorrelativealtitudefilter"
+        return "valleyfloor_relaltitude"
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         filtered_stations = {}
@@ -1291,7 +1292,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
             lon=slice(lon - s, lon + s), lat=slice(lat - s, lat + s)
         )
 
-        distances = self._haversine(topo["lon"], topo["lat"], lon, lat)
+        distances = haversine(topo["lon"], topo["lat"], lon, lat)
         within_radius = distances <= radius
 
         values_within_radius = topo[self._topo_var].where(within_radius, drop=True)
@@ -1325,21 +1326,3 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
                 f"Required variable names for lat, lon dimensions could not be found in file '{self._topo_file}"
             )
         return lat, lon
-
-    def _haversine(self, lon1, lat1, lon2, lat2):
-        """
-        Calculate the great-circle distance between two points on the Earth (specified in decimal degrees).
-
-        returns:
-            Distance (in meters)
-        """
-        # Convert decimal degrees to radians
-        lon1, lat1, lon2, lat2 = map(np.radians, [lon1, lat1, lon2, lat2])
-
-        # Haversine formula
-        dlon = lon2 - lon1
-        dlat = lat2 - lat1
-        a = np.sin(dlat / 2) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2) ** 2
-        c = 2 * np.arcsin(np.sqrt(a))
-        m = ValleyFloorRelativeAltitudeFilter.EARTH_RADIUS * c
-        return m

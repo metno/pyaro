@@ -674,7 +674,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             filename=self.elevation_file,
             filters=[
                 pyaro.timeseries.filters.get(
-                    "valleyfloorrelativealtitudefilter",
+                    "valleyfloor_relaltitude",
                     topo_file="/lustre/storeB/project/aerocom/aerocom1/AEROCOM_OBSDATA/GTOPO30/merged/N.nc",
                     radius=5000,
                     upper=500,
