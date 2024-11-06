@@ -75,6 +75,10 @@ class Data(abc.ABC):
     def __getitem__(self, key):
         return self.slice(key)
 
+    @abc.abstractmethod
+    def __len__(self) -> int:
+        pass
+
     @property
     def variable(self) -> str:
         """Variable name for all the data
