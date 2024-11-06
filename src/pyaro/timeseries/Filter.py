@@ -1280,7 +1280,9 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         distances = haversine(topo["lon"], topo["lat"], lon, lat)
         within_radius = distances <= radius
 
-        values_within_radius = topo[self._topo_var].where(within_radius, drop=True)
+        values_within_radius = topo[self._topo_var].where(
+            within_radius, other=False, drop=True
+        )
 
-        min_value = float(values_within_radius.min())
+        min_value = float(values_within_radius.min(skipna=True))
         return altitude - max([min_value, 0])

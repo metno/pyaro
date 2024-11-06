@@ -677,7 +677,8 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                     "valleyfloor_relaltitude",
                     topo_file="tests/testdata/datadir_elevation/gtopo30_subset.nc",
                     radius=5000,
-                    upper=500,
+                    lower=150,
+                    upper=250,
                 )
             ],
             columns={
@@ -695,8 +696,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             },
         ) as ts:
-            ts.stations()
-            self.assertTrue(True)
+            self.assertEqual(len(ts.stations()), 1)
 
 
 if __name__ == "__main__":
