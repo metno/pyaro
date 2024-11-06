@@ -1221,6 +1221,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         self._radius = radius
         self._lower = lower
         self._upper = upper
+        self._topography = None
 
     @property
     def topography(self):
@@ -1236,10 +1237,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         if self._topography is None:
             try:
                 with xr.open_dataset(self._topo_file) as topo:
-                    lat, lon = self._find_lat_lon_variables(topo)
-                    self._lat = lat
-                    self._lon = lon
-                    topo.fillna(0)
+                    topo = topo.fillna(0)
                     self._topography = topo
             except Exception as ex:
                 raise FilterException(
@@ -1270,7 +1268,14 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
                 lat, lon, radius=self._radius, altitude=alt
             )
 
-            if self._lower <= ralt <= self._upper:
+            keep = True
+            if self._lower is not None:
+                if self._lower > ralt:
+                    keep = False
+            if self._upper is not None:
+                if self._upper < ralt:
+                    keep = False
+            if keep:
                 filtered_stations[k] = v
 
         return filtered_stations
@@ -1282,11 +1287,11 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         # Subsetting to based on this value with safety margin makes the
         # distance calculation MUCH more efficient.
         s = 0.1 + (radius / 1000) / 100
-        topo = self._topography.sel(
+        topo = self.topography.sel(
             lon=slice(lon - s, lon + s), lat=slice(lat - s, lat + s)
         )
 
-        distances = self._haversine(topo[self._lon], topo[self._lat], lon, lat)
+        distances = self._haversine(topo["lon"], topo["lat"], lon, lat)
         within_radius = distances <= radius
 
         values_within_radius = topo[self._topo_var].where(within_radius, drop=True)
@@ -1304,8 +1309,10 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         :param topo_xr xr.Dataset of topography
         :return lat, lon DataArrays
         """
-        for var_name in self._topography.coords:
-            unit_str = self._topography[var_name].attrs.get("units", None)
+        lat = None
+        lon = None
+        for var_name in topo_xr:
+            unit_str = topo_xr[var_name].attrs.get("units", None)
             if unit_str in self.UNITS_LAT:
                 lat = topo_xr[var_name]
                 continue
