@@ -1200,6 +1200,21 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         lower: float | None = None,
         upper: float | None = None,
     ):
+        """
+        :param topo_file: Topography file path
+        :param radius: Radius (in meters)
+        :param topo_var: Variable name to use in topography dataset
+        :param lower: Optional lower bound needed for relative altitude for station to be kept (in meters)
+        :param upper: Optional upper bound needed for relative altitude for station to be kept (in meters)
+        :raises ModuleNotFoundError: If necessary optional dependencies are not available.
+
+        Note
+        ----
+        This implementation is only tested with GTOPO30 dataset to far.
+
+        Available versions can be found here:
+        /lustre/storeB/project/aerocom/aerocom1/AEROCOM_OBSDATA/GTOPO30/
+        """
         if "cf_units" not in sys.modules:
             raise ModuleNotFoundError(
                 "valleyfloor_relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
@@ -1226,16 +1241,6 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
 
     def name(self):
         return "valleyfloor_relaltitude"
-
-    def _load_topography(self):
-        try:
-            with xr.open_dataset(self._topo_file) as topo:
-                topo = topo.fillna(0)
-        except Exception as ex:
-            raise FilterException(
-                f"Cannot read topography from '{self._topo_file}:{self._topo_var}' : {ex}"
-            )
-        return topo
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         filtered_stations = {}
@@ -1271,6 +1276,17 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         altitude: float,
         topo: xr.Dataset,
     ):
+        """Calculates relative altitude
+
+        :param lat: Latitude
+        :param lon: Longitude
+        :param radius: Radius for base altitude calculation (in meters)
+        :param altitude: Station altitude (in meters)
+        :param topo: Topography dataset
+
+        :return:
+            Relative altitude (in meters)
+        """
         # At most one degree of latitude (at equator) is roughly 111km.
         # Subsetting to based on this value with safety margin makes the
         # distance calculation MUCH more efficient.
