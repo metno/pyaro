@@ -1191,22 +1191,22 @@ class RelativeAltitudeFilter(StationFilter):
 
 @registered_filter
 class ValleyFloorRelativeAltitudeFilter(StationFilter):
-    # https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#latitude-coordinate
-    UNITS_LAT = set(
-        [
-            "degrees_north",
-            "degree_north",
-            "degree_N",
-            "degrees_N",
-            "degreeN",
-            "degreesN",
-        ]
-    )
-
-    # https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#longitude-coordinate
-    UNITS_LON = set(
-        ["degrees_east", "degree_east", "degree_E", "degrees_E", "degreeE", "degreesE"]
-    )
+    ## https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#latitude-coordinate
+    # UNITS_LAT = set(
+    #    [
+    #        "degrees_north",
+    #        "degree_north",
+    #        "degree_N",
+    #        "degrees_N",
+    #        "degreeN",
+    #        "degreesN",
+    #    ]
+    # )
+    #
+    ## https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#longitude-coordinate
+    # UNITS_LON = set(
+    #    ["degrees_east", "degree_east", "degree_E", "degrees_E", "degreeE", "degreesE"]
+    # )
 
     def __init__(
         self,
@@ -1222,29 +1222,28 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         self._radius = radius
         self._lower = lower
         self._upper = upper
-        self._topography = None
 
-    @property
-    def topography(self):
-        if "cf_units" not in sys.modules:
-            raise ModuleNotFoundError(
-                "valleyfloor_relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
-            )
-        if "xarray" not in sys.modules:
-            raise ModuleNotFoundError(
-                "valleyfloor_relaltitude filter is missing required dependency 'xarray'. Please install to use this filter."
-            )
-
-        if self._topography is None:
-            try:
-                with xr.open_dataset(self._topo_file) as topo:
-                    topo = topo.fillna(0)
-                    self._topography = topo
-            except Exception as ex:
-                raise FilterException(
-                    f"Cannot read topography from '{self._topo_file}:{self._topo_var}' : {ex}"
-                )
-        return self._topography
+    # @property
+    # def topography(self):
+    #    if "cf_units" not in sys.modules:
+    #        raise ModuleNotFoundError(
+    #            "valleyfloor_relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
+    #        )
+    #    if "xarray" not in sys.modules:
+    #        raise ModuleNotFoundError(
+    #            "valleyfloor_relaltitude filter is missing required dependency 'xarray'. Please install to use this filter."
+    #        )
+    #
+    #    if self._topography is None:
+    #        try:
+    #            with xr.open_dataset(self._topo_file) as topo:
+    #                topo = topo.fillna(0)
+    #                self._topography = topo
+    #        except Exception as ex:
+    #            raise FilterException(
+    #                f"Cannot read topography from '{self._topo_file}:{self._topo_var}' : {ex}"
+    #            )
+    #    return self._topography
 
     def init_kwargs(self):
         return {
@@ -1258,15 +1257,36 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
     def name(self):
         return "valleyfloor_relaltitude"
 
+    def _load_topography(self):
+        if "cf_units" not in sys.modules:
+            raise ModuleNotFoundError(
+                "valleyfloor_relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
+            )
+        if "xarray" not in sys.modules:
+            raise ModuleNotFoundError(
+                "valleyfloor_relaltitude filter is missing required dependency 'xarray'. Please install to use this filter."
+            )
+
+        try:
+            with xr.open_dataset(self._topo_file) as topo:
+                topo = topo.fillna(0)
+        except Exception as ex:
+            raise FilterException(
+                f"Cannot read topography from '{self._topo_file}:{self._topo_var}' : {ex}"
+            )
+        return topo
+
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         filtered_stations = {}
+
+        topo = self._load_topography()
         for k, v in stations.items():
             lat = v.latitude
             lon = v.longitude
             alt = v.altitude
 
             ralt = self._calculate_relative_altitude(
-                lat, lon, radius=self._radius, altitude=alt
+                lat, lon, radius=self._radius, altitude=alt, topo=topo
             )
 
             keep = True
@@ -1282,15 +1302,19 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         return filtered_stations
 
     def _calculate_relative_altitude(
-        self, lat: float, lon: float, *, radius: float, altitude: float
+        self,
+        lat: float,
+        lon: float,
+        *,
+        radius: float,
+        altitude: float,
+        topo: xr.Dataset,
     ):
         # At most one degree of latitude (at equator) is roughly 111km.
         # Subsetting to based on this value with safety margin makes the
         # distance calculation MUCH more efficient.
         s = 0.1 + (radius / 1000) / 100
-        topo = self.topography.sel(
-            lon=slice(lon - s, lon + s), lat=slice(lat - s, lat + s)
-        )
+        topo = topo.sel(lon=slice(lon - s, lon + s), lat=slice(lat - s, lat + s))
 
         distances = haversine(topo["lon"], topo["lat"], lon, lat)
         within_radius = distances <= radius
@@ -1300,29 +1324,31 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         min_value = float(values_within_radius.min())
         return altitude - max([min_value, 0])
 
-    def _find_lat_lon_variables(self, topo_xr):
-        """
-        Find and load DataArrays from topo which represent the latitude and longitude
-        dimensions in the topography data.
+    # def _find_lat_lon_variables(self, topo_xr):
+    #    """
+    #    Find and load DataArrays from topo which represent the latitude and longitude
+    #    dimensions in the topography data.
 
-        These are assigned to self._lat, self._lon, respectively for later use.
 
-        :param topo_xr xr.Dataset of topography
-        :return lat, lon DataArrays
-        """
-        lat = None
-        lon = None
-        for var_name in topo_xr:
-            unit_str = topo_xr[var_name].attrs.get("units", None)
-            if unit_str in self.UNITS_LAT:
-                lat = topo_xr[var_name]
-                continue
-            if unit_str in self.UNITS_LON:
-                lon = topo_xr[var_name]
-                continue
-
-        if any(x is None for x in [lat, lon]):
-            raise ValueError(
-                f"Required variable names for lat, lon dimensions could not be found in file '{self._topo_file}"
-            )
-        return lat, lon
+#
+#    These are assigned to self._lat, self._lon, respectively for later use.
+#
+#    :param topo_xr xr.Dataset of topography
+#    :return lat, lon DataArrays
+#    """
+#    lat = None
+#    lon = None
+#    for var_name in topo_xr:
+#        unit_str = topo_xr[var_name].attrs.get("units", None)
+#        if unit_str in self.UNITS_LAT:
+#            lat = topo_xr[var_name]
+#            continue
+#        if unit_str in self.UNITS_LON:
+#            lon = topo_xr[var_name]
+#            continue
+#
+#    if any(x is None for x in [lat, lon]):
+#        raise ValueError(
+#            f"Required variable names for lat, lon dimensions could not be found in file '{self._topo_file}"
+#        )
+#    return lat, lon
