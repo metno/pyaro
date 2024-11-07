@@ -668,6 +668,36 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             # Since rdiff=300, all stations should be included.
             self.assertEqual(len(ts.stations()), 3)
 
+    def test_valley_floor_filter(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.elevation_file,
+            filters=[
+                pyaro.timeseries.filters.get(
+                    "valleyfloor_relaltitude",
+                    topo_file="tests/testdata/datadir_elevation/gtopo30_subset.nc",
+                    radius=5000,
+                    lower=150,
+                    upper=250,
+                )
+            ],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            },
+        ) as ts:
+            self.assertEqual(len(ts.stations()), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

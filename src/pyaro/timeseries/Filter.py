@@ -16,6 +16,9 @@ import numpy.typing as npt
 from .Data import Data, Flag
 from .Station import Station
 
+from ..mathutils import haversine
+
+
 try:
     # Optional dependencies required for relative altitude filter.
     import xarray as xr
@@ -1184,3 +1187,120 @@ class RelativeAltitudeFilter(StationFilter):
         selected_names = names[mask]
 
         return {name: stations[name] for name in selected_names}
+
+
+@registered_filter
+class ValleyFloorRelativeAltitudeFilter(StationFilter):
+    def __init__(
+        self,
+        topo_file: str | None = None,
+        *,
+        radius: float = 5000,
+        topo_var: str = "Band1",
+        lower: float | None = None,
+        upper: float | None = None,
+    ):
+        """
+        :param topo_file: Topography file path. Must be a dataset openable by xarray, with latitude
+            and longitude stored as "lat" and "lon" respectively. The variable that contains elevation
+            data is assumed to be in meters.
+        :param radius: Radius (in meters)
+        :param topo_var: Variable name to use in topography dataset
+        :param lower: Optional lower bound needed for relative altitude for station to be kept (in meters)
+        :param upper: Optional upper bound needed for relative altitude for station to be kept (in meters)
+        :raises ModuleNotFoundError: If necessary optional dependencies are not available.
+
+        Note
+        ----
+        This implementation is only tested with GTOPO30 dataset to far.
+
+        Available versions can be found here:
+        /lustre/storeB/project/aerocom/aerocom1/AEROCOM_OBSDATA/GTOPO30/
+        """
+        if "cf_units" not in sys.modules:
+            raise ModuleNotFoundError(
+                "valleyfloor_relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
+            )
+        if "xarray" not in sys.modules:
+            raise ModuleNotFoundError(
+                "valleyfloor_relaltitude filter is missing required dependency 'xarray'. Please install to use this filter."
+            )
+
+        self._topo_file = topo_file
+        self._topo_var = topo_var
+        self._radius = radius
+        self._lower = lower
+        self._upper = upper
+
+    def init_kwargs(self):
+        return {
+            "topo_file": self._topo_file,
+            "topo_var": self._topo_var,
+            "radius": self._radius,
+            "lower": self._lower,
+            "upper": self._upper,
+        }
+
+    def name(self):
+        return "valleyfloor_relaltitude"
+
+    def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
+        filtered_stations = {}
+
+        with xr.open_dataset(self._topo_file) as topo:
+            for k, v in stations.items():
+                lat = v.latitude
+                lon = v.longitude
+                alt = v.altitude
+
+                ralt = self._calculate_relative_altitude(
+                    lat, lon, radius=self._radius, altitude=alt, topo=topo
+                )
+
+                keep = True
+                if self._lower is not None:
+                    if self._lower > ralt:
+                        keep = False
+                if self._upper is not None:
+                    if self._upper < ralt:
+                        keep = False
+                if keep:
+                    filtered_stations[k] = v
+
+        return filtered_stations
+
+    def _calculate_relative_altitude(
+        self,
+        lat: float,
+        lon: float,
+        *,
+        radius: float,
+        altitude: float,
+        topo: xr.Dataset,
+    ):
+        """Calculates relative altitude
+
+        :param lat: Latitude
+        :param lon: Longitude
+        :param radius: Radius for base altitude calculation (in meters)
+        :param altitude: Station altitude (in meters)
+        :param topo: Topography dataset
+
+        :return:
+            Relative altitude (in meters)
+        """
+        # At most one degree of latitude (at equator) is roughly 111km.
+        # Subsetting to based on this value with safety margin makes the
+        # distance calculation MUCH more efficient.
+        s = 0.1 + (radius / 1000) / 100
+        topo = topo.sel(lon=slice(lon - s, lon + s), lat=slice(lat - s, lat + s))
+
+        distances = haversine(topo["lon"], topo["lat"], lon, lat)
+        within_radius = distances <= radius
+
+        values_within_radius = topo[self._topo_var].where(
+            within_radius, other=False, drop=True
+        )
+
+        min_value = float(values_within_radius.min(skipna=True))
+        return altitude - max([min_value, 0])
