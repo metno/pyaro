@@ -31,6 +31,7 @@ class AutoFilterReader(Reader):
 
         :return: list of filters
         """
+        # remember to add all filters here also to the api.rst documentation
         supported = "variables,stations,countries,bounding_boxes,duplicates,time_bounds,time_resolution,flags,time_variable_station,altitude,relaltitude,valleyfloor_relaltitude".split(
             ","
         )

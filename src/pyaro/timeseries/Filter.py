@@ -900,17 +900,16 @@ class AltitudeFilter(StationReductionFilter):
     """
     Filter which filters stations based on their altitude. Can be used to filter for a
     minimum and/or maximum altitude.
+
+    :param min_altitude : float of minimum altitude in meters required to keep the station (inclusive).
+    :param max_altitude : float of maximum altitude in meters required to keep the station (inclusive).
+
+    If station elevation is nan, it is always excluded.
     """
 
     def __init__(
         self, min_altitude: float | None = None, max_altitude: float | None = None
     ):
-        """
-        :param min_altitude : float of minimum altitude in meters required to keep the station (inclusive).
-        :param max_altitude : float of maximum altitude in meters required to keep the station (inclusive).
-
-        If station elevation is nan, it is always excluded.
-        """
         if min_altitude is not None and max_altitude is not None:
             if min_altitude > max_altitude:
                 raise ValueError(
@@ -956,11 +955,23 @@ class RelativeAltitudeFilter(StationFilter):
     Filter class which filters stations based on the relative difference between
     the station altitude, and the gridded topography altitude.
 
-    https://github.com/metno/pyaro/issues/39
+    :param topo_file : A .nc file from which to read gridded topography data.
+    :param topo_var : Name of variable that stores altitude.
+    :param rdiff : Relative difference (in meters).
+
+    Note:
+    -----
+    - Stations will be kept if abs(altobs-altmod) <= rdiff.
+    - Stations will not be kept if station altitude is NaN.
+
+    Note:
+    -----
+    This filter requires additional dependencies (xarray, netcdf4, cf-units) to function. These can be installed
+    with `pip install .[optional]
     """
 
     # https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#latitude-coordinate
-    UNITS_LAT = set(
+    _UNITS_LAT = set(
         [
             "degrees_north",
             "degree_north",
@@ -972,7 +983,7 @@ class RelativeAltitudeFilter(StationFilter):
     )
 
     # https://cfconventions.org/Data/cf-conventions/cf-conventions-1.11/cf-conventions.html#longitude-coordinate
-    UNITS_LON = set(
+    _UNITS_LON = set(
         ["degrees_east", "degree_east", "degree_E", "degrees_E", "degreeE", "degreesE"]
     )
 
@@ -982,21 +993,6 @@ class RelativeAltitudeFilter(StationFilter):
         topo_var: str = "topography",
         rdiff: float = 0,
     ):
-        """
-        :param topo_file : A .nc file from which to read gridded topography data.
-        :param topo_var : Name of variable that stores altitude.
-        :param rdiff : Relative difference (in meters).
-
-        Note:
-        -----
-        - Stations will be kept if abs(altobs-altmod) <= rdiff.
-        - Stations will not be kept if station altitude is NaN.
-
-        Note:
-        -----
-        This filter requires additional dependencies (xarray, netcdf4, cf-units) to function. These can be installed
-        with `pip install .[optional]
-        """
         if "cf_units" not in sys.modules:
             logger.info(
                 "relaltitude filter is missing dependency 'cf-units'. Please install to use."
@@ -1015,12 +1011,24 @@ class RelativeAltitudeFilter(StationFilter):
 
     @property
     def UNITS_METER(self):
+        """internal representation of units, don't use
+
+        :return: m-unit in internal representation
+        """
         if self._UNITS_METER is None:
             self._UNITS_METER = Unit("m")
         return self._UNITS_METER
 
     @property
     def topography(self):
+        """Internal property, don't use.
+
+        :raises ModuleNotFoundError: _description_
+        :raises ModuleNotFoundError: _description_
+        :raises FilterException: _description_
+        :raises FilterException: _description_
+        :return: topography as internal representation
+        """
         if "cf_units" not in sys.modules:
             raise ModuleNotFoundError(
                 "relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
@@ -1083,10 +1091,10 @@ class RelativeAltitudeFilter(StationFilter):
         """
         for var_name in self._topography.coords:
             unit_str = self._topography[var_name].attrs.get("units", None)
-            if unit_str in self.UNITS_LAT:
+            if unit_str in self._UNITS_LAT:
                 lat = topo_xr[var_name]
                 continue
-            if unit_str in self.UNITS_LON:
+            if unit_str in self._UNITS_LON:
                 lon = topo_xr[var_name]
                 continue
 
@@ -1191,6 +1199,24 @@ class RelativeAltitudeFilter(StationFilter):
 
 @registered_filter
 class ValleyFloorRelativeAltitudeFilter(StationFilter):
+    """
+    :param topo_file: Topography file path. Must be a dataset openable by xarray, with latitude
+        and longitude stored as "lat" and "lon" respectively. The variable that contains elevation
+        data is assumed to be in meters.
+    :param radius: Radius (in meters)
+    :param topo_var: Variable name to use in topography dataset
+    :param lower: Optional lower bound needed for relative altitude for station to be kept (in meters)
+    :param upper: Optional upper bound needed for relative altitude for station to be kept (in meters)
+    :raises ModuleNotFoundError: If necessary optional dependencies are not available.
+
+    Note
+    ----
+    This implementation is only tested with GTOPO30 dataset to far.
+
+    Available versions can be found here:
+    /lustre/storeB/project/aerocom/aerocom1/AEROCOM_OBSDATA/GTOPO30/
+    """
+
     def __init__(
         self,
         topo_file: str | None = None,
@@ -1200,23 +1226,6 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         lower: float | None = None,
         upper: float | None = None,
     ):
-        """
-        :param topo_file: Topography file path. Must be a dataset openable by xarray, with latitude
-            and longitude stored as "lat" and "lon" respectively. The variable that contains elevation
-            data is assumed to be in meters.
-        :param radius: Radius (in meters)
-        :param topo_var: Variable name to use in topography dataset
-        :param lower: Optional lower bound needed for relative altitude for station to be kept (in meters)
-        :param upper: Optional upper bound needed for relative altitude for station to be kept (in meters)
-        :raises ModuleNotFoundError: If necessary optional dependencies are not available.
-
-        Note
-        ----
-        This implementation is only tested with GTOPO30 dataset to far.
-
-        Available versions can be found here:
-        /lustre/storeB/project/aerocom/aerocom1/AEROCOM_OBSDATA/GTOPO30/
-        """
         if "cf_units" not in sys.modules:
             raise ModuleNotFoundError(
                 "valleyfloor_relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
