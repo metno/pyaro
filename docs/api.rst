@@ -35,7 +35,7 @@ pyaro.timeseries.filters - Filters
   :alt: Filter UML diagram
 
 .. automodule:: pyaro.timeseries.Filter
-   :members: FilterFactory, FilterCollections, Filter, StationFilter, CountryFilter, BoundingBoxFilter, FlagFilter, TimeBoundsFilter, TimeResolutionFilter, DuplicateFilter
+   :members: FilterFactory, FilterCollections, Filter, StationFilter, VariableNameFilter, CountryFilter, BoundingBoxFilter, DuplicateFilter, FlagFilter, TimeBoundsFilter, TimeResolutionFilter, TimeVariableStationFilter, AltitudeFilter, RelativeAltitudeFilter, ValleyFloorRelativeAltitudeFilter
    :undoc-members:
    :imported-members:
 
