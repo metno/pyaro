@@ -1293,7 +1293,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         *,
         radius: float,
         altitude: float,
-        topo: xr.Dataset,
+        topo: "xr.Dataset",
     ):
         """Calculates relative altitude
 
