@@ -1092,8 +1092,8 @@ class RelativeAltitudeFilter(StationFilter):
 
         These are assigned to self._lat, self._lon, respectively for later use.
 
-        :param topo_xr xr.Dataset of topography
-        :return lat, lon DataArrays
+        :param topo_xr: xr.Dataset of topography
+        :return: lat, lon DataArrays
         """
         for var_name in self._topography.coords:
             unit_str = self._topography[var_name].attrs.get("units", None)
@@ -1113,8 +1113,8 @@ class RelativeAltitudeFilter(StationFilter):
     def _extract_bounding_box(self, lat, lon):
         """
         Extract the bounding box of the grid, sets self._boundary_(north|east|south|west)
-        :param lat latitude (DataArray)
-        :param lon longitude (DataArray)
+        :param lat: latitude (DataArray)
+        :param lon: longitude (DataArray)
         """
         self._boundary_west = float(lon.min())
         self._boundary_east = float(lon.max())
