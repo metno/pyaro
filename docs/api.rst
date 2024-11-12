@@ -38,6 +38,8 @@ pyaro.timeseries.filters - Filters
    :members: FilterFactory, FilterCollections, Filter, StationFilter, VariableNameFilter, CountryFilter, BoundingBoxFilter, DuplicateFilter, FlagFilter, TimeBoundsFilter, TimeResolutionFilter, TimeVariableStationFilter, AltitudeFilter, RelativeAltitudeFilter, ValleyFloorRelativeAltitudeFilter
    :undoc-members:
    :imported-members:
+   :show-inheritance:
+
 
 
 pyaro.timeseries - Dev API
