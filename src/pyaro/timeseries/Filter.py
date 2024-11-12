@@ -1010,7 +1010,7 @@ class RelativeAltitudeFilter(StationFilter):
         self._UNITS_METER = None
 
     @property
-    def UNITS_METER(self):  #: :meta hide-value:
+    def UNITS_METER(self):  #: :meta private:
         """internal representation of units, don't use
 
         :return: m-unit in internal representation
@@ -1020,7 +1020,7 @@ class RelativeAltitudeFilter(StationFilter):
         return self._UNITS_METER
 
     @property
-    def topography(self):  #: :meta hide-value:
+    def topography(self):  #: :meta private:
         """Internal property, don't use.
 
         :raises ModuleNotFoundError: _description_
