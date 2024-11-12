@@ -551,20 +551,22 @@ class TimeBoundsFilter(DataIndexFilter):
 
     Examples:
 
-    end_include: [("2023-01-01 10:00:00", "2024-01-01 07:00:00")]
+    end_include: `[("2023-01-01 10:00:00", "2024-01-01 07:00:00")]`
     will only include observations where the end time of each observation
     is within the interval specified
     (i.e. "end" >= 2023-01-01 10:00:00 and "end" <= "2024-01-01 07:00:00")
 
     Including multiple bounds will act as an OR, allowing multiple selections.
     If we want every observation in January for 2021, 2022, 2023, and 2024 this
-    could be made as the following filter:
-    startend_include: [
-        ("2021-01-01 00:00:00", "2021-02-01 00:00:00"),
-        ("2022-01-01 00:00:00", "2022-02-01 00:00:00"),
-        ("2023-01-01 00:00:00", "2023-02-01 00:00:00"),
-        ("2024-01-01 00:00:00", "2024-02-01 00:00:00"),
-    ]
+    could be made as the following filter::
+
+        startend_include: [
+            ("2021-01-01 00:00:00", "2021-02-01 00:00:00"),
+            ("2022-01-01 00:00:00", "2022-02-01 00:00:00"),
+            ("2023-01-01 00:00:00", "2023-02-01 00:00:00"),
+            ("2024-01-01 00:00:00", "2024-02-01 00:00:00"),
+        ]
+
     """
 
     def __init__(
@@ -711,9 +713,11 @@ class TimeVariableStationFilter(DataIndexFilter):
     :param exclude_from_csvfile: this is a helper option to enable a large list of excludes
         to be read from a "\t" separated file with columns
             start \t end \t variable \t station
+
         where start and end are timestamps of format YYYY-MM-DD HH:MM:SS in UTC, e.g.
         the year 2020 is:
             2020-01-01 00:00:00 \t 2020-12-31 23:59:59 \t ...
+
     """
 
     def __init__(self, exclude=[], exclude_from_csvfile=""):
@@ -1023,10 +1027,8 @@ class RelativeAltitudeFilter(StationFilter):
     def topography(self):  #: :meta private:
         """Internal property, don't use.
 
-        :raises ModuleNotFoundError: _description_
-        :raises ModuleNotFoundError: _description_
-        :raises FilterException: _description_
-        :raises FilterException: _description_
+        :raises ModuleNotFoundError: if cf-units or xarray is not installed
+        :raises FilterException: if topograpy file is not provided
         :return: topography as internal representation
         """
         if "cf_units" not in sys.modules:
