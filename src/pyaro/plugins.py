@@ -39,7 +39,7 @@ def list_timeseries_engines() -> dict[str, TimeseriesEngine]:
 
     Notes
     -----
-    This function lives in the backends namespace (``engs=pyaro.list_timeseries_enginess()``).
+    This function lives in the backends namespace (``engs=pyaro.list_timeseries_engines()``).
     More information about each reader is available via the TimeseriesEngine obj.url() and
     obj.description()
 
