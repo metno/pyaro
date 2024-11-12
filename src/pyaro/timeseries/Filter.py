@@ -1014,22 +1014,26 @@ class RelativeAltitudeFilter(StationFilter):
         self._UNITS_METER = None
 
     @property
-    def UNITS_METER(self):  #: :meta private:
+    def UNITS_METER(self):
         """internal representation of units, don't use
 
         :return: m-unit in internal representation
+
+        :meta private:
         """
         if self._UNITS_METER is None:
             self._UNITS_METER = Unit("m")
         return self._UNITS_METER
 
     @property
-    def topography(self):  #: :meta private:
+    def topography(self):
         """Internal property, don't use.
 
         :raises ModuleNotFoundError: if cf-units or xarray is not installed
         :raises FilterException: if topograpy file is not provided
         :return: topography as internal representation
+
+        :meta private:
         """
         if "cf_units" not in sys.modules:
             raise ModuleNotFoundError(
