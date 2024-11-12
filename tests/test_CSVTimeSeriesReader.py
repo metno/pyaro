@@ -324,6 +324,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             engine.open(self.file, filters=[]), {"SOx": newsox}
         ) as ts:
             self.assertEqual(ts.data(newsox).variable, newsox)
+            self.assertGreater(len(ts.metadata()), 0)
         pass
 
     def test_variables_filter(self):
