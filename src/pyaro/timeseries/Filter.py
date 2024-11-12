@@ -1227,11 +1227,11 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         upper: float | None = None,
     ):
         if "cf_units" not in sys.modules:
-            raise ModuleNotFoundError(
+            logger.info(
                 "valleyfloor_relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
             )
         if "xarray" not in sys.modules:
-            raise ModuleNotFoundError(
+            logger.info(
                 "valleyfloor_relaltitude filter is missing required dependency 'xarray'. Please install to use this filter."
             )
 
@@ -1254,8 +1254,16 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         return "valleyfloor_relaltitude"
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
-        filtered_stations = {}
+        if "cf_units" not in sys.modules:
+            raise ModuleNotFoundError(
+                "valleyfloor_relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
+            )
+        if "xarray" not in sys.modules:
+            raise ModuleNotFoundError(
+                "valleyfloor_relaltitude filter is missing required dependency 'xarray'. Please install to use this filter."
+            )
 
+        filtered_stations = {}
         with xr.open_dataset(self._topo_file) as topo:
             for k, v in stations.items():
                 lat = v.latitude
