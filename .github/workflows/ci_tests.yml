@@ -32,3 +32,15 @@ jobs:
     - name: Test with tox
       run: |
         tox
+
+  minimal-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create virtual env
+        run: python3 -m venv venv --upgrade-deps
+      - name: Install pyaro
+        run: source venv/bin/activate && pip install ./
+      - name: Try importing pyaro
+        run: source venv/bin/activate && python -c "import pyaro; print(pyaro.__version__)"
+    
