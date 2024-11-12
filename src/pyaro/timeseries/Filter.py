@@ -959,9 +959,9 @@ class RelativeAltitudeFilter(StationFilter):
     Filter class which filters stations based on the relative difference between
     the station altitude, and the gridded topography altitude.
 
-    :param topo_file : A .nc file from which to read gridded topography data.
-    :param topo_var : Name of variable that stores altitude.
-    :param rdiff : Relative difference (in meters).
+    :param topo_file: A .nc file from which to read gridded topography data.
+    :param topo_var: Name of variable that stores altitude.
+    :param rdiff: Relative difference (in meters).
 
     Note:
     -----
