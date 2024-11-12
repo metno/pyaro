@@ -32,7 +32,7 @@ pyaro.timeseries.filters - Filters
 ^^^^^^^^^^^^
 
 .. automodule:: pyaro.timeseries.Filter
-   :members: FilterFactory, FilterCollections
+   :members: FilterFactory, FilterCollection
    :undoc-members:
    :imported-members:
    :show-inheritance:
