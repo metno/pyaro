@@ -22,7 +22,7 @@ with :py:meth:`~pyaro.list_timeseries_readers()`.
 TimeseriesEngine/Reader subclassing
 +++++++++++++++++++++++++++++++++++
 
-It is strongly advised to use the use the helper classes :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine` 
+It is strongly advised to use the use the helper classes :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine`
 and :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader` to implement a Engine and a Reader since Filters will
 automatically be handled then.
 
@@ -42,7 +42,7 @@ The ``YourReader`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEn
 
 - the ``__init__`` method of :py:class:`~pyaro.timeseries.Reader` with two fixed args (`self` and `filename_or_obj_or_url`) and several kwargs,
   one of them should be `filters`
-    - it must store the `filters` calling `self._set_filters(filters)`  
+    - it must store the `filters` calling `self._set_filters(filters)`
 - the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_data` method
 - the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_stations` method
 - the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_variables` method

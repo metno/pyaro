@@ -25,7 +25,7 @@ interface timeseries.Filter {
 }
 
 class timeseries.VariableNameFilter {
-  + __init__(reader_to_new, include, exclude): VariableNameChangingFilter
+  + __init__(reader_to_new, include, exclude)
   + name(): "variables"
   + init_kwargs(): dict
   + filter_variables(variables): [str]
@@ -48,7 +48,7 @@ abstract class timeseries.StationReductionFilter {
 }
 
 class timeseries.StationFilter {
-  + __init__(include=[station], exclude=[station]): StationFilter
+  + __init__(include=[station], exclude=[station])
   + name(): "stations"
   + init_kwargs(): dict
   + filter_stations(stations): dict[str, Station]
@@ -56,7 +56,7 @@ class timeseries.StationFilter {
 }
 
 class timeseries.CountryFilter {
-  + __init__(include=[country], exclude=[country]): CountryFilter
+  + __init__(include=[country], exclude=[country])
   + name(): "countries"
   + init_kwargs(): dict
   + filter_stations(stations): dict[str, Station]
@@ -64,7 +64,7 @@ class timeseries.CountryFilter {
 }
 
 class timeseries.BoundingBoxFilter {
-  + __init__(include=[country], exclude=[country]): BoundingBoxFilter
+  + __init__(include=[country], exclude=[country])
   + name(): "bounding_boxes"
   + init_kwargs(): dict
   + filter_stations(stations): dict[str, Station]
@@ -72,7 +72,7 @@ class timeseries.BoundingBoxFilter {
 }
 
 class timeseries.TimeBoundsFilter {
-  + __init__(start_include=[flag], start_exclude=[flag],\n start_end_include, startend_exclude,\n end_include, end_exclude): TimeBoundsFilter
+  + __init__(start_include=[flag], start_exclude=[flag],\n start_end_include, startend_exclude,\n end_include, end_exclude)
   + name(): "time_bounds"
   + init_kwargs(): dict
   + filter_data_idx(data, stations, variables): Data
@@ -81,27 +81,56 @@ class timeseries.TimeBoundsFilter {
   contains(start_dt_array, end_dt_array): bool-array
 }
 
+class timeseries.TimeVariableStationFilter {
+  + __init__(exclude_from_csvfile="",\nexclude=[(start, end, variable, station)])
+  + name(): "time_variable_station"
+  + init_kwargs(): dict
+  + filter_data_idx(data, stations, variables): Data
+}
+
 class timeseries.TimeResolutionFilter {
-  + __init__(resolutions=[resolution_string]): TimeResolutionFilter
+  + __init__(resolutions=[resolution_string])
   + name(): "time_resolutions"
   + init_kwargs(): dict
   + filter_data_idx(data, stations, variables): Data
 }
 
 class timeseries.DuplicateFilter {
-  + __init__(duplicate_keys=["stations", "start_times", "end_times"]): DuplicateFilter
+  + __init__(duplicate_keys=["stations",\n"start_times", "end_times"])
   + name(): "duplicates"
   + init_kwargs(): dict
   + filter_data_idx(data, stations, variables): Data
 }
 
 class timeseries.FlagFilter {
-  + __init__(include=[flag], exclude=[flag]): FlagFilter
+  + __init__(include=[flag], exclude=[flag])
   + name(): "flags"
   + init_kwargs(): dict
   + filter_data_idx(data, stations, variables): Data
   usable_flags(): set(flags)
 }
+
+class timeseries.AltitudeFilter {
+  + __init__(min_altitude, max_altitude)
+  + name(): "altitude"
+  + init_kwargs(): dict
+  + filter_stations(stations): dict[str, Station]
+}
+
+class timeseries.RelativeAltitudeFilter {
+  + __init__(topo_file, topo_var, rdiff)
+  + name(): "relaltitude"
+  + init_kwargs(): dict
+  + filter_stations(stations): dict[str, Station]
+}
+
+class timeseries.ValleyFloorRelativeAltitudeFilter {
+  + __init__(topo_file, radius,topo_var, lower, upper)
+  + name(): "valleyfloor_relaltitude"
+  + init_kwargs(): dict
+  + filter_stations(stations): dict[str, Station]
+}
+
 
 
 timeseries.Filter <|.. timeseries.VariableNameFilter
@@ -110,8 +139,12 @@ timeseries.DataIndexFilter <|.. timeseries.StationReductionFilter
 timeseries.StationReductionFilter <|.. timeseries.StationFilter
 timeseries.StationReductionFilter <|.. timeseries.CountryFilter
 timeseries.StationReductionFilter <|.. timeseries.BoundingBoxFilter
+timeseries.StationReductionFilter <|.. timeseries.AltitudeFilter
+timeseries.StationReductionFilter <|.. timeseries.RelativeAltitudeFilter
+timeseries.StationReductionFilter <|.. timeseries.ValleyFloorRelativeAltitudeFilter
 timeseries.DataIndexFilter <|.. timeseries.TimeBoundsFilter
 timeseries.DataIndexFilter <|.. timeseries.TimeResolutionFilter
+timeseries.DataIndexFilter <|.. timeseries.TimeVariableStationFilter
 timeseries.DataIndexFilter <|.. timeseries.DuplicateFilter
 timeseries.DataIndexFilter <|.. timeseries.FlagFilter
 

@@ -31,13 +31,20 @@ pyaro.timeseries - User API
 pyaro.timeseries.filters - Filters
 ^^^^^^^^^^^^
 
+.. automodule:: pyaro.timeseries.Filter
+   :members: FilterFactory, FilterCollection
+   :undoc-members:
+   :imported-members:
+   :show-inheritance:
+
 .. image:: pics/Filter.svg
   :alt: Filter UML diagram
 
 .. automodule:: pyaro.timeseries.Filter
-   :members: FilterFactory, FilterCollections, Filter, StationFilter, VariableNameFilter, CountryFilter, BoundingBoxFilter, DuplicateFilter, FlagFilter, TimeBoundsFilter, TimeResolutionFilter, TimeVariableStationFilter, AltitudeFilter, RelativeAltitudeFilter, ValleyFloorRelativeAltitudeFilter
+   :members: StationFilter, VariableNameFilter, CountryFilter, BoundingBoxFilter, DuplicateFilter, FlagFilter, TimeBoundsFilter, TimeResolutionFilter, TimeVariableStationFilter, AltitudeFilter, RelativeAltitudeFilter, ValleyFloorRelativeAltitudeFilter
    :undoc-members:
    :imported-members:
+   :show-inheritance:
 
 
 pyaro.timeseries - Dev API
@@ -55,9 +62,10 @@ pyaro.timeseries - Dev API
    :private-members:
 
 .. automodule:: pyaro.timeseries.Filter
-   :members: DataIndexFilter
+   :members: Filter, DataIndexFilter
    :undoc-members:
    :imported-members:
+   :show-inheritance:
 
 
 csvreader for timeseries
