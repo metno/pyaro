@@ -200,9 +200,6 @@ class CSVTimeseriesEngine(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngi
     def reader_class(self):
         return CSVTimeseriesReader
 
-    def open(self, filename, *args, **kwargs) -> CSVTimeseriesReader:
-        return self.reader_class()(filename, *args, **kwargs)
-
     def description(self):
         return "Simple reader of csv-files using python csv-reader"
 
