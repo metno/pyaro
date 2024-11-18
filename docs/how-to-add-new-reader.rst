@@ -32,8 +32,8 @@ Subclassing of Engine/Reader using AutoFilterReaderEngine
 Your ``YourEngine`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine`
 and it must implement the following methods:
 
-- :py:meth:`~pyaro.timeseries.Engine.open`: opening a reader with the signature (self, filename, *args, **kwargs) -> YourReader``,
-  usually just like: ``return YourReader(filename, *args, **kwargs)``
+- :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.reader_class`: the class implementing `AutoFilterReader`,
+  corresponding to this `AutoFilterReaderEngine`, i.e. `def reader_class(self) -> AutoFilterReader: return YourReader`
 - :py:meth:`~pyaro.timeseries.Engine.description`: a one-line description of this engine
 - :py:meth:`~pyaro.timeseries.Engine.url`: the link to the implementation source
 
@@ -48,7 +48,7 @@ The ``YourReader`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEn
 - the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader._unfiltered_variables` method
 - the :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader.close` method (might be pass, but Readers are also contextmanagers and will call `close()`)
 
-A quite basic example of an implementation can be found in the :py:class:`~pyaro.csvreader.CSVTimeseriesReader`.
+An example of an implementation can be found in the :py:class:`~pyaro.csvreader.CSVTimeseriesReader`.
 
 Direct subclassing of Engine/Reader
 ###################################
@@ -85,7 +85,7 @@ This is what a ``TimeseriesReader`` subclass should look like:
             self,
             filename_or_obj_or_url,
             *,
-            filters=None,
+            filters=[],
             # other backend specific keyword arguments
             # `chunks` and `cache` DO NOT go here, they are handled by xarray
         ):
@@ -145,7 +145,7 @@ The input of ``open`` method are one argument
 
 - ``filename_or_obj_or_url``: can be any object but usually it is a string containing a path or an instance of
   :py:class:`pathlib.Path` or an url.
-- ``filters``: can be `None` or an iterable containing filters to be (optionally) applied when reading the data.
+- ``filters``: is an iterable containing filters to be (optionally) applied when reading the data.
 
 
 Your reader can also take as input a set of backend-specific keyword

@@ -123,3 +123,6 @@ class AutoFilterEngine(Engine):
         sig = inspect.signature(self.reader_class().__init__)
         pars = tuple(sig.parameters.keys())
         return pars[1:]
+
+    def open(self, filename, *args, **kwargs) -> Reader:
+        return self.reader_class()(filename, *args, **kwargs)
