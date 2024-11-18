@@ -32,8 +32,8 @@ Subclassing of Engine/Reader using AutoFilterReaderEngine
 Your ``YourEngine`` should extend :py:class:`~pyaro.timeseries.AutoFilterReaderEngine.AutoFilterEngine`
 and it must implement the following methods:
 
-- :py:meth:`~pyaro.timeseries.AutoFilterReader.reader_class`: a class implementing `AutoFilterReader`,
-  typically `def reader_class(self) -> AutoFilterReader: return YourReader`
+- :py:meth:`~pyaro.timeseries.AutoFilterReaderEngine.reader_class`: the class implementing `AutoFilterReader`,
+  corresponding to this `AutoFilterReaderEngine`, i.e. `def reader_class(self) -> AutoFilterReader: return YourReader`
 - :py:meth:`~pyaro.timeseries.Engine.description`: a one-line description of this engine
 - :py:meth:`~pyaro.timeseries.Engine.url`: the link to the implementation source
 
