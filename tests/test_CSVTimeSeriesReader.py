@@ -697,7 +697,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "flag": "0",
             },
         ) as ts:
-            self.assertEqual(len(ts.stations()), 1)
+            self.assertEqual(len(ts.stations()), 3)
 
 
 if __name__ == "__main__":

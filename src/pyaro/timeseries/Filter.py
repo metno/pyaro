@@ -1322,7 +1322,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         within_radius = distances <= radius
 
         values_within_radius = topo[self._topo_var].where(
-            within_radius, other=False, drop=True
+            within_radius, other=np.nan, drop=True
         )
 
         min_value = float(values_within_radius.min(skipna=True))
