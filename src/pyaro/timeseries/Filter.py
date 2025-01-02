@@ -1315,14 +1315,22 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         # At most one degree of latitude (at equator) is roughly 111km.
         # Subsetting to based on this value with safety margin makes the
         # distance calculation MUCH more efficient.
-        s = 0.1 + (radius / 1000) / 100
-        topo = topo.sel(lon=slice(lon - s, lon + s), lat=slice(lat - s, lat + s))
+        if radius < 100_000:
+            margin = 0.1 + (radius / 1_000) / 100
+            if lat >= 88 or lat <= -88:
+                # Include 360deg longitude near poles because poles are weird.
+                topo = topo.sel(lat=slice(lat - margin, lat + margin))
+            else:
+                topo = topo.sel(
+                    lon=slice(lon - margin, lon + margin),
+                    lat=slice(lat - margin, lat + margin),
+                )
 
         distances = haversine(topo["lon"], topo["lat"], lon, lat)
         within_radius = distances <= radius
 
         values_within_radius = topo[self._topo_var].where(
-            within_radius, other=False, drop=True
+            within_radius, other=np.nan, drop=True
         )
 
         min_value = float(values_within_radius.min(skipna=True))
