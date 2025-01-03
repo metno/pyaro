@@ -1254,7 +1254,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
             )
 
         if not self._topo.exists():
-            raise FileNotFoundError(
+            logger.warning(
                 f"Provided location for topography data ({self._topo}) does not exist. It should be either a .nc file, or a folder with several .nc files and a metadata.json file."
             )
 
