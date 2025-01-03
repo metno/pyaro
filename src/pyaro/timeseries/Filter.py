@@ -1,3 +1,4 @@
+import json
 import logging
 import math
 import abc
@@ -5,6 +6,7 @@ from collections import defaultdict
 import csv
 from datetime import datetime
 import inspect
+import pathlib
 import re
 import sys
 import types
@@ -1225,7 +1227,8 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
 
     def __init__(
         self,
-        topo_file: str | None = None,
+        topo: str
+        | pathlib.Path = "/lustre/storeB/project/aerocom/aerocom1/AEROCOM_OBSDATA/GTOPO30/merged",
         *,
         radius: float = 5000,
         topo_var: str = "Band1",
@@ -1241,7 +1244,21 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
                 "valleyfloor_relaltitude filter is missing required dependency 'xarray'. Please install to use this filter."
             )
 
-        self._topo_file = topo_file
+        if isinstance(topo, str):
+            self._topo = pathlib.Path(topo)
+        elif isinstance(topo, pathlib.Path):
+            self._topo = topo
+        else:
+            raise TypeError(
+                f"Topo needs to be an instance of str or pathlib.Path. Got {type(topo)}."
+            )
+
+        if not self._topo.exists():
+            raise FileNotFoundError(
+                f"Provided location for topography data ({self._topo}) does not exist. It should be either a .nc file, or a folder with several .nc files and a metadata.json file."
+            )
+
+        self._topo_file = None
         self._topo_var = topo_var
         self._radius = radius
         self._lower = lower
@@ -1249,7 +1266,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
 
     def init_kwargs(self):
         return {
-            "topo_file": self._topo_file,
+            "topo": self._topo_file,
             "topo_var": self._topo_var,
             "radius": self._radius,
             "lower": self._lower,
@@ -1258,6 +1275,45 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
 
     def name(self):
         return "valleyfloor_relaltitude"
+
+    def _update_topo_file_path(self, lat: float, lon: float) -> bool:
+        """Updates self._topo_file based on the lat/lon pair, and returns a boolean
+        indicating whether it changed.
+
+        :param lat: Latitude
+        :param lon: Longitude
+        :raises FileNotFoundError: If self._topo does not exist.
+        :raises FileNotFoundError: If self._topo is a directory and 'metadata.json' does not exist.
+        :return: Boolean indicating whether _topo_file changed.
+        """
+        old_path = self._topo_file
+        if self._topo.is_file():
+            self._topo_file = self._topo
+        elif self._topo.is_dir():
+            metadata_file = self._topo / "metadata.json"
+            if not metadata_file.exists():
+                raise FileNotFoundError(f"No 'metadata.json' file found in directory.")
+
+            with open(metadata_file) as f:
+                metadata = json.load(f)
+
+            file = None
+            for file in metadata:
+                if lat < metadata[file]["s"] or lat > metadata[file]["n"]:
+                    continue
+                if lon < metadata[file]["w"] or lon > metadata[file]["e"]:
+                    continue
+
+            if file is None:
+                raise Exception(
+                    f"No matching topography file found for coordinate pair (lat={lat:.6f}; lon={lon:.6f})"
+                )
+
+            self._topo_file = self._topo / file
+        else:
+            raise FileNotFoundError
+
+        return self._topo_file != old_path
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         if "cf_units" not in sys.modules:
@@ -1268,27 +1324,34 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
             raise ModuleNotFoundError(
                 "valleyfloor_relaltitude filter is missing required dependency 'xarray'. Please install to use this filter."
             )
+        if not self._topo.exists():
+            raise FileNotFoundError(
+                f"Provided location for topography data ({self._topo}) does not exist. It should be either a .nc file, or a folder with several .nc files and a metadata.json file."
+            )
 
         filtered_stations = {}
-        with xr.open_dataset(self._topo_file) as topo:
-            for k, v in stations.items():
-                lat = v.latitude
-                lon = v.longitude
-                alt = v.altitude
 
-                ralt = self._calculate_relative_altitude(
-                    lat, lon, radius=self._radius, altitude=alt, topo=topo
-                )
+        for k, v in stations.items():
+            lat = v.latitude
+            lon = v.longitude
+            alt = v.altitude
+            if self._update_topo_file_path(lat, lon):
+                with xr.open_dataset(self._topo_file) as top:
+                    topo = top
 
-                keep = True
-                if self._lower is not None:
-                    if self._lower > ralt:
-                        keep = False
-                if self._upper is not None:
-                    if self._upper < ralt:
-                        keep = False
-                if keep:
-                    filtered_stations[k] = v
+            ralt = self._calculate_relative_altitude(
+                lat, lon, radius=self._radius, altitude=alt, topo=topo
+            )
+
+            keep = True
+            if self._lower is not None:
+                if self._lower > ralt:
+                    keep = False
+            if self._upper is not None:
+                if self._upper < ralt:
+                    keep = False
+            if keep:
+                filtered_stations[k] = v
 
         return filtered_stations
 
