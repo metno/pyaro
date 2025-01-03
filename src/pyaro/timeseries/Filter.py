@@ -1304,12 +1304,14 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
                 if lon < metadata[file]["w"] or lon > metadata[file]["e"]:
                     continue
 
+                self._topo_file = self._topo / file
+                break
+
             if file is None:
                 raise Exception(
                     f"No matching topography file found for coordinate pair (lat={lat:.6f}; lon={lon:.6f})"
                 )
 
-            self._topo_file = self._topo / file
         else:
             raise FileNotFoundError
 
