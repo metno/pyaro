@@ -1227,8 +1227,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
 
     def __init__(
         self,
-        topo: str
-        | pathlib.Path = "/lustre/storeB/project/aerocom/aerocom1/AEROCOM_OBSDATA/GTOPO30/merged",
+        topo: str | None = None,
         *,
         radius: float = 5000,
         topo_var: str = "Band1",
@@ -1244,19 +1243,19 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
                 "valleyfloor_relaltitude filter is missing required dependency 'xarray'. Please install to use this filter."
             )
 
-        if isinstance(topo, str):
-            self._topo = pathlib.Path(topo)
-        elif isinstance(topo, pathlib.Path):
-            self._topo = topo
-        else:
-            raise TypeError(
-                f"Topo needs to be an instance of str or pathlib.Path. Got {type(topo)}."
-            )
+        self._topo = None
+        if topo is not None:
+            try:
+                self._topo = pathlib.Path(topo)
+            except TypeError as e:
+                raise TypeError(
+                    f"Topo needs to be an instance of str. Got {type(topo)}."
+                ) from e
 
-        if not self._topo.exists():
-            logger.warning(
-                f"Provided location for topography data ({self._topo}) does not exist. It should be either a .nc file, or a folder with several .nc files and a metadata.json file."
-            )
+            if not self._topo.exists():
+                logger.warning(
+                    f"Provided location for topography data ({self._topo}) does not exist. It should be either a .nc file, or a folder with several .nc files and a metadata.json file."
+                )
 
         self._topo_file = None
         self._topo_var = topo_var
@@ -1266,7 +1265,8 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
 
     def init_kwargs(self):
         return {
-            "topo": self._topo_file,
+            # Converting to string for serialization purposes.
+            "topo": str(self._topo_file),
             "topo_var": self._topo_var,
             "radius": self._radius,
             "lower": self._lower,
@@ -1318,6 +1318,10 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         return self._topo_file != old_path
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
+        if self._topo is None or (self._upper is None and self._lower is None):
+            # Default initialized filter should not do anything, so return unfiltered stations.
+            return stations
+
         if "cf_units" not in sys.modules:
             raise ModuleNotFoundError(
                 "valleyfloor_relaltitude filter is missing required dependency 'cf-units'. Please install to use this filter."
