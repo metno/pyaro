@@ -1208,21 +1208,54 @@ class RelativeAltitudeFilter(StationFilter):
 @registered_filter
 class ValleyFloorRelativeAltitudeFilter(StationFilter):
     """
-    :param topo_file: Topography file path. Must be a dataset openable by xarray, with latitude
-        and longitude stored as "lat" and "lon" respectively. The variable that contains elevation
-        data is assumed to be in meters.
+    Filter for filtering stations based on the difference between the station altitude and valley
+    floor altitude (defined as the lowest altitude within a radius around the station). This ensures
+    that plateau sites are treated like "surface" sites, while sites in hilly or mountaineous areas
+    (eg. Schauinsland) are considered mountain sites. This approach has been used by several papers
+    (eg. Fowler et al., Lloibl et al. 1994).
+
+    :param topo: Topography file path (either a file or a directory). Must be a dataset openable by
+        xarray, with latitude and longitude stored as "lat" and "lon" respectively. The variable
+        that contains elevation data is assumed to be in meters. If `topo` is a directory, a
+        metadata.json file containing the geographic bounds of each file must be present (see below
+        for example).
     :param radius: Radius (in meters)
     :param topo_var: Variable name to use in topography dataset
     :param lower: Optional lower bound needed for relative altitude for station to be kept (in meters)
     :param upper: Optional upper bound needed for relative altitude for station to be kept (in meters)
-    :raises ModuleNotFoundError: If necessary optional dependencies are not available.
+    :raises ModuleNotFoundError: If necessary required additional dependencies (cf_units, xarray) are
+        not available.
 
     Note
     ----
     This implementation is only tested with GTOPO30 dataset to far.
 
-    Available versions can be found here:
-    /lustre/storeB/project/aerocom/aerocom1/AEROCOM_OBSDATA/GTOPO30/
+    Available versions of gtopo30 can be found here:
+    `/lustre/storeB/project/aerocom/aerocom1/AEROCOM_OBSDATA/GTOPO30/`
+
+    Note
+    ----
+    metadata.json should contain a mapping from each nc file, to it's geographic latitude/longitude
+    bounds.
+
+    For example:
+
+    ```
+    {
+        "N.nc": {
+            "w": -180,
+            "e": 180,
+            "n": 90,
+            "s": -10
+        },
+        "S.nc": {
+            "w": -180,
+            "e": 180,
+            "n": -10,
+            "s": -90
+        }
+    }
+    ```
     """
 
     def __init__(
