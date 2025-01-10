@@ -1210,7 +1210,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
     """
     :param topo: Topography file path (either a file or a directory). Must be a dataset openable by
         xarray, with latitude and longitude stored as "lat" and "lon" respectively. The variable
-        that contains elevation data is assumed to be in meters. If top is a directory, a
+        that contains elevation data is assumed to be in meters. If `topo` is a directory, a
         metadata.json file containing the geographic bounds of each file must be present (see below
         for example).
     :param radius: Radius (in meters)
