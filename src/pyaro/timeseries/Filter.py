@@ -1208,6 +1208,12 @@ class RelativeAltitudeFilter(StationFilter):
 @registered_filter
 class ValleyFloorRelativeAltitudeFilter(StationFilter):
     """
+    Filter for filtering stations based on the difference between the station altitude and valley
+    floor altitude (defined as the lowest altitude within a radius around the station). This ensures
+    that plateau sites are treated like "surface" sites, while sites in hilly or mountaineous areas
+    (eg. Schauinsland) are considered mountain sites. This approach has been used by several papers
+    (eg. Fowler et al., Lloibl et al. 1994).
+
     :param topo: Topography file path (either a file or a directory). Must be a dataset openable by
         xarray, with latitude and longitude stored as "lat" and "lon" respectively. The variable
         that contains elevation data is assumed to be in meters. If `topo` is a directory, a
