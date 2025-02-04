@@ -1387,10 +1387,10 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
 
             keep = True
             if self._lower is not None:
-                if self._lower > ralt:
+                if self._lower <= ralt:
                     keep = False
             if self._upper is not None:
-                if self._upper < ralt:
+                if self._upper >= ralt:
                     keep = False
             if keep:
                 filtered_stations[k] = v
