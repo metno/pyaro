@@ -1387,14 +1387,21 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
 
             keep = True
             if self._lower is not None:
-                if self._lower <= ralt:
+                if ralt <= self._lower:
                     keep = False
             if self._upper is not None:
-                if self._upper >= ralt:
+                if ralt >= self._upper:
                     keep = False
+
             if keep:
                 filtered_stations[k] = v
 
+        logger.debug(
+            "%s - Filtered %d stations to %d filtered stations.",
+            self.name(),
+            len(stations),
+            len(filtered_stations),
+        )
         return filtered_stations
 
     def _calculate_relative_altitude(
