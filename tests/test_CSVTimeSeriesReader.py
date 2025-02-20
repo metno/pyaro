@@ -740,7 +740,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 "standard_deviation": "NaN",
                 "flag": "0",
             },
-            has_header=True,
+            skip_header_rows=1,
         ) as ts1:
             self.assertTrue(np.all(ts0.data("NOx").values == ts1.data("NOx").values))
 

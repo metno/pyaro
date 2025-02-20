@@ -54,7 +54,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         variable_units={"SOx": "Gg", "NOx": "Mg"},
         country_lookup=False,
         csvreader_kwargs={"delimiter": ","},
-        has_header=False,
+        skip_header_rows: int=0,
         filters=[],
     ):
         """open a new csv timeseries-reader
@@ -86,7 +86,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
         self._data = {}  # var -> {data-array}
         self._set_filters(filters)
         self._extra_metadata = tuple(set(columns.keys()) - set(self.col_keys()))
-        self._has_header = has_header
+        self._skip_header_rows = skip_header_rows
         if country_lookup:
             lookupISO2 = _lookup_function()
         else:
@@ -102,7 +102,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
     ):
         with open(filename, newline="") as csvfile:
             crd = csv.reader(csvfile, **csvreader_kwargs)
-            if self._has_header:
+            for _ in range(self._skip_header_rows):
                 _header = next(crd)
             for row in crd:
                 r = {}
