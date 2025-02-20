@@ -5,6 +5,7 @@ import unittest
 import os
 
 import numpy as np
+
 import pyaro
 import pyaro.timeseries
 from pyaro.timeseries.Filter import FilterException
@@ -14,14 +15,14 @@ try:
     import pandas
 
     has_pandas = True
-except:
+except ImportError:
     has_pandas = False
 
 try:
     import geocoder_reverse_natural_earth
 
     has_geocode = True
-except:
+except ImportError:
     has_geocode = False
 
 
@@ -31,6 +32,12 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         "testdata",
         "datadir",
         "csvReader_testdata.csv",
+    )
+    file_with_header = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        "testdata",
+        "datadir",
+        "csvReader_testdata.csv.with_header",
     )
     elevation_file = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
@@ -178,7 +185,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                     standard_deviation=data.standard_deviations,
                 )
             self.assertEqual(
-                (2**rounds) * old_size, len(data), "data append by array"
+                (2 ** rounds) * old_size, len(data), "data append by array"
             )
 
     def test_stationfilter(self):
@@ -698,6 +705,44 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             },
         ) as ts:
             self.assertEqual(len(ts.stations()), 3)
+
+    def test_reading_with_header(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.file,
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": "NaN",
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            },
+        ) as ts0, engines["csv_timeseries"].open(
+            filename=self.file_with_header,
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": "NaN",
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            },
+            skip_header_rows=1,
+        ) as ts1:
+            self.assertTrue(np.all(ts0.data("NOx").values == ts1.data("NOx").values))
 
 
 if __name__ == "__main__":
