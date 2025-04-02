@@ -1373,13 +1373,13 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         # Sorting stations by latitude minimizes reloading of data if each topo file
         # is a band that includes 360deg of longitude. This is the case for the merged
         # dataset.
+        topo = None
         for k, v in sorted(stations.items(), key=lambda x: x[1].latitude):
             lat = v.latitude
             lon = v.longitude
             alt = v.altitude
-            if self._update_topo_file_path(lat, lon):
-                with xr.open_dataset(self._topo_file) as top:
-                    topo = top
+            if self._update_topo_file_path(lat, lon) or topo is None:
+                topo = xr.open_dataset(self._topo_file)
 
             ralt = self._calculate_relative_altitude(
                 lat, lon, radius=self._radius, altitude=alt, topo=topo
