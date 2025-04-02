@@ -744,6 +744,54 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
         ) as ts1:
             self.assertTrue(np.all(ts0.data("NOx").values == ts1.data("NOx").values))
 
+    def test_valley_floor_filter_multi_use(self):
+        engines = pyaro.list_timeseries_engines()
+        filter = pyaro.timeseries.filters.get(
+                    "valleyfloor_relaltitude",
+                    topo="tests/testdata/datadir_elevation/gtopo30_subset.nc",
+                    radius=5000,
+                    lower=150,
+                    upper=250,
+                )
+        with engines["csv_timeseries"].open(
+            filename=self.elevation_file,
+            filters=[filter],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            },
+        ) as ts:
+            self.assertEqual(len(ts.stations()), 3)
+
+        with engines["csv_timeseries"].open(
+            filename=self.elevation_file,
+            filters=[filter],
+            columns={
+                "variable": 0,
+                "station": 1,
+                "longitude": 2,
+                "latitude": 3,
+                "value": 4,
+                "units": 5,
+                "start_time": 6,
+                "end_time": 7,
+                "altitude": 9,
+                "country": "NO",
+                "standard_deviation": "NaN",
+                "flag": "0",
+            },
+        ) as ts:
+            self.assertEqual(len(ts.stations()), 3)
 
 if __name__ == "__main__":
     unittest.main()
