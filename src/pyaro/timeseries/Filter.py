@@ -1,3 +1,4 @@
+from functools import cache
 import json
 import logging
 import math
@@ -1295,10 +1296,24 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         self._lower = lower
         self._upper = upper
 
+    @property
+    @cache
+    def _metadata(self) -> dict:
+        if not self._topo.is_dir():
+            # Should never happen :)
+            assert False
+
+        metadata_file = self._topo / "metadata.json"
+        if not metadata_file.exists():
+            raise FileNotFoundError(f"No 'metadata.json' file found in directory.")
+
+        with open(metadata_file) as f:
+            return json.load(f)
+
     def init_kwargs(self):
         return {
             # Converting to string for serialization purposes.
-            "topo": str(self._topo_file),
+            "topo": None if self._topo is None else str(self._topo),
             "topo_var": self._topo_var,
             "radius": self._radius,
             "lower": self._lower,
@@ -1321,12 +1336,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         if self._topo.is_file():
             file_path = self._topo
         if self._topo.is_dir():
-            metadata_file = self._topo / "metadata.json"
-            if not metadata_file.exists():
-                raise FileNotFoundError(f"No 'metadata.json' file found in directory.")
-
-            with open(metadata_file) as f:
-                metadata = json.load(f)
+            metadata = self._metadata
 
             file = None
             for file in metadata:
@@ -1370,7 +1380,6 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         # Sorting stations by latitude minimizes reloading of data if each topo file
         # is a band that includes 360deg of longitude. This is the case for the merged
         # dataset.
-        topo = None
         topo_file = None
         for k, v in sorted(stations.items(), key=lambda x: x[1].latitude):
             lat = v.latitude
