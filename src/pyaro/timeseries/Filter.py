@@ -1290,7 +1290,6 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
                     f"Provided location for topography data ({self._topo}) does not exist. It should be either a .nc file, or a folder with several .nc files and a metadata.json file."
                 )
 
-        self._topo_file = None
         self._topo_var = topo_var
         self._radius = radius
         self._lower = lower
@@ -1309,9 +1308,8 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
     def name(self):
         return "valleyfloor_relaltitude"
 
-    def _update_topo_file_path(self, lat: float, lon: float) -> bool:
-        """Updates self._topo_file based on the lat/lon pair, and returns a boolean
-        indicating whether it changed.
+    def _get_topo_file_path(self, lat: float, lon: float) -> pathlib.Path:
+        """Returns the path of the topofile that needs to be read for the lat / lon pair.
 
         :param lat: Latitude
         :param lon: Longitude
@@ -1319,10 +1317,10 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         :raises FileNotFoundError: If self._topo is a directory and 'metadata.json' does not exist.
         :return: Boolean indicating whether _topo_file changed.
         """
-        old_path = self._topo_file
+        file_path = None
         if self._topo.is_file():
-            self._topo_file = self._topo
-        elif self._topo.is_dir():
+            file_path = self._topo
+        if self._topo.is_dir():
             metadata_file = self._topo / "metadata.json"
             if not metadata_file.exists():
                 raise FileNotFoundError(f"No 'metadata.json' file found in directory.")
@@ -1337,18 +1335,17 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
                 if lon < metadata[file]["w"] or lon > metadata[file]["e"]:
                     continue
 
-                self._topo_file = self._topo / file
+                file_path = self._topo / file
                 break
-
-            if file is None:
-                raise Exception(
+            else:
+                raise FileNotFoundError(
                     f"No matching topography file found for coordinate pair (lat={lat:.6f}; lon={lon:.6f})"
                 )
 
-        else:
+        if file_path is None:
             raise FileNotFoundError
 
-        return self._topo_file != old_path
+        return file_path
 
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         if self._topo is None or (self._upper is None and self._lower is None):
@@ -1373,13 +1370,20 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         # Sorting stations by latitude minimizes reloading of data if each topo file
         # is a band that includes 360deg of longitude. This is the case for the merged
         # dataset.
-        self._topo_file = None
+        topo = None
+        topo_file = None
         for k, v in sorted(stations.items(), key=lambda x: x[1].latitude):
             lat = v.latitude
             lon = v.longitude
             alt = v.altitude
-            if self._update_topo_file_path(lat, lon):
-                topo = xr.load_dataset(self._topo_file)
+
+            old_topo_file = topo_file
+            topo_file = self._get_topo_file_path(lat, lon)
+            if topo_file != old_topo_file:
+                if topo:
+                    topo.close()
+
+                topo = xr.load_dataset(topo_file)
 
             ralt = self._calculate_relative_altitude(
                 lat, lon, radius=self._radius, altitude=alt, topo=topo
@@ -1394,6 +1398,9 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
                     keep = False
             if keep:
                 filtered_stations[k] = v
+
+        if topo:
+            topo.close()
 
         return filtered_stations
 
