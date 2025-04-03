@@ -1380,9 +1380,6 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
             old_topo_file = topo_file
             topo_file = self._get_topo_file_path(lat, lon)
             if topo_file != old_topo_file:
-                if topo:
-                    topo.close()
-
                 topo = xr.load_dataset(topo_file)
 
             ralt = self._calculate_relative_altitude(
@@ -1398,9 +1395,6 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
                     keep = False
             if keep:
                 filtered_stations[k] = v
-
-        if topo:
-            topo.close()
 
         return filtered_stations
 
