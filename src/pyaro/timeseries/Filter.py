@@ -1300,15 +1300,16 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
     @cache
     def _metadata(self) -> dict:
         if not self._topo.is_dir():
-            # Should never happen :)
-            assert False
+            raise RuntimeError("Should be impossible...")
 
         metadata_file = self._topo / "metadata.json"
-        if not metadata_file.exists():
-            raise FileNotFoundError(f"No 'metadata.json' file found in directory.")
-
-        with open(metadata_file) as f:
-            return json.load(f)
+        try:
+            with open(metadata_file) as f:
+                return json.load(f)
+        except FileNotFoundError as e:
+            raise FileNotFoundError(
+                f"No 'metadata.json' file found in directory."
+            ) from e
 
     def init_kwargs(self):
         return {
