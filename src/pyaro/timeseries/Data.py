@@ -21,14 +21,6 @@ class Data(abc.ABC):
     This is the minimum set of columns required for a reader to return.
     A reader is welcome to return a self-implemented subclass of
     Data.
-
-    All Data arrays are accessible as a dict or as property, e.g.
-    ```
-    td = Data()
-    print(td.values)
-    print(td["values"])
-    ```
-
     """
 
     @abc.abstractmethod
