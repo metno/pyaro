@@ -1442,7 +1442,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         *,
         radius: float,
         altitudes: np.ndarray,
-        topo: xr.Dataset,
+        topo: "xr.Dataset",
     ) -> np.ndarray:
         """Calculates relative altitude for multiple latitude-longitude pairs
 
