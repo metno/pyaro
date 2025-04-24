@@ -1224,6 +1224,9 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
     :param topo_var: Variable name to use in topography dataset
     :param lower: Optional lower bound needed for relative altitude for station to be kept (in meters)
     :param upper: Optional upper bound needed for relative altitude for station to be kept (in meters)
+    :param keep_nan: Whether to keep values where relative altitude is calculated as nan. Defaults to True.
+        Note: Since the topography does not contain values for oceans this may happen for small islands and
+        coastal stations.
     :raises ModuleNotFoundError: If necessary required additional dependencies (cf_units, xarray) are
         not available.
 
@@ -1267,6 +1270,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         topo_var: str = "Band1",
         lower: float | None = None,
         upper: float | None = None,
+        keep_nan: bool = True,
     ):
         if "cf_units" not in sys.modules:
             logger.info(
@@ -1295,6 +1299,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         self._radius = radius
         self._lower = lower
         self._upper = upper
+        self._keep_nan = keep_nan
 
     @property
     @cache
@@ -1319,6 +1324,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
             "radius": self._radius,
             "lower": self._lower,
             "upper": self._upper,
+            "keep_nan": self._keep_nan,
         }
 
     def name(self):
@@ -1358,6 +1364,27 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
 
         return file_path
 
+    def _batch_stations(
+        self, stations: dict[str, Station]
+    ) -> dict[pathlib.Path, dict[str, Station]]:
+        """Batches a stations dict according to the topography file that needs to be read in order
+        to calculate relative altitude.
+
+        :param stations: Dict mapping of str id to Station (as passed to .filter_stations()).
+
+        :return: A dict mapping the topography file path to a Stations dict.
+        """
+        result = {}
+        for k, v in stations.items():
+            topo_file = self._get_topo_file_path(v.latitude, v.longitude)
+
+            if topo_file not in result:
+                result[topo_file] = {}
+
+            result[topo_file][k] = v
+
+        return result
+
     def filter_stations(self, stations: dict[str, Station]) -> dict[str, Station]:
         if self._topo is None or (self._upper is None and self._lower is None):
             # Default initialized filter should not do anything, so return unfiltered stations.
@@ -1378,76 +1405,80 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
 
         filtered_stations = {}
 
-        # Sorting stations by latitude minimizes reloading of data if each topo file
-        # is a band that includes 360deg of longitude. This is the case for the merged
-        # dataset.
-        topo_file = None
-        for k, v in sorted(stations.items(), key=lambda x: x[1].latitude):
-            lat = v.latitude
-            lon = v.longitude
-            alt = v.altitude
-
-            old_topo_file = topo_file
-            topo_file = self._get_topo_file_path(lat, lon)
-            if topo_file != old_topo_file:
-                topo = xr.load_dataset(topo_file)
+        batches = self._batch_stations(stations)
+        for topo_file, stations in batches.items():
+            topo = xr.load_dataset(topo_file)
+            names = np.array([k for k in stations.keys()])
+            latitudes = np.array([s.latitude for s in stations.values()])
+            longitudes = np.array([s.longitude for s in stations.values()])
+            altitudes = np.array([s.altitude for s in stations.values()])
+            stats = np.array(list(stations.values()))
 
             ralt = self._calculate_relative_altitude(
-                lat, lon, radius=self._radius, altitude=alt, topo=topo
+                latitudes,
+                longitudes,
+                radius=self._radius,
+                altitudes=altitudes,
+                topo=topo,
             )
 
-            keep = True
+            mask = np.ones_like(ralt)
             if self._lower is not None:
-                if self._lower > ralt:
-                    keep = False
+                mask = np.logical_and(mask, (ralt >= self._lower))
             if self._upper is not None:
-                if self._upper < ralt:
-                    keep = False
-            if keep:
-                filtered_stations[k] = v
+                mask = np.logical_and(mask, (ralt <= self._upper))
+            if self._keep_nan:
+                mask = np.logical_or(mask, np.isnan(ralt))
+
+            for name, stat in zip(names[mask], stats[mask]):
+                filtered_stations[name] = stat
 
         return filtered_stations
 
     def _calculate_relative_altitude(
         self,
-        lat: float,
-        lon: float,
+        lats: np.ndarray,
+        lons: np.ndarray,
         *,
         radius: float,
-        altitude: float,
-        topo: "xr.Dataset",
-    ):
-        """Calculates relative altitude
+        altitudes: np.ndarray,
+        topo: xr.Dataset,
+    ) -> np.ndarray:
+        """Calculates relative altitude for multiple latitude-longitude pairs
 
-        :param lat: Latitude
-        :param lon: Longitude
+        :param lats: Array of latitudes
+        :param lons: Array of longitudes
         :param radius: Radius for base altitude calculation (in meters)
-        :param altitude: Station altitude (in meters)
+        :param altitudes: Array of station altitudes (in meters)
         :param topo: Topography dataset
 
         :return:
-            Relative altitude (in meters)
+            Array of relative altitudes (in meters)
         """
-        # At most one degree of latitude (at equator) is roughly 111km.
-        # Subsetting to based on this value with safety margin makes the
-        # distance calculation MUCH more efficient.
-        if radius < 100_000:
-            margin = 0.1 + (radius / 1_000) / 100
-            if lat >= 88 or lat <= -88:
-                # Include 360deg longitude near poles because poles are weird.
-                topo = topo.sel(lat=slice(lat - margin, lat + margin))
+        relative_altitudes = np.empty_like(lats, dtype=np.float64)
+
+        margin = 0.1 + (radius / 1_000) / 100
+        for i, (lat, lon, altitude) in enumerate(zip(lats, lons, altitudes)):
+            if radius < 100_000:
+                lat_slice = slice(lat - margin, lat + margin)
+                if lat >= 88 or lat <= -88:
+                    # Include 360deg longitude near poles
+                    subset_topo = topo.sel(lat=lat_slice)
+                else:
+                    lon_slice = slice(lon - margin, lon + margin)
+                    subset_topo = topo.sel(lon=lon_slice, lat=lat_slice)
             else:
-                topo = topo.sel(
-                    lon=slice(lon - margin, lon + margin),
-                    lat=slice(lat - margin, lat + margin),
-                )
+                subset_topo = topo
 
-        distances = haversine(topo["lon"], topo["lat"], lon, lat)
-        within_radius = distances <= radius
+            distances = haversine(subset_topo["lon"], subset_topo["lat"], lon, lat)
 
-        values_within_radius = topo[self._topo_var].where(
-            within_radius, other=np.nan, drop=True
-        )
+            within_radius = distances <= radius
+            values_within_radius = subset_topo[self._topo_var].where(
+                within_radius, other=np.nan
+            )
 
-        min_value = float(values_within_radius.min(skipna=True))
-        return altitude - max([min_value, 0])
+            min_value = values_within_radius.min(skipna=True).item()
+
+            relative_altitudes[i] = altitude - max(min_value, 0)
+
+        return relative_altitudes
