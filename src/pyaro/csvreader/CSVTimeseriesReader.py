@@ -51,10 +51,10 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
             "standard_deviation": "NaN",
             "flag": "0",
         },
-        variable_units={"SOx": "Gg", "NOx": "Mg"},
+        variable_units=dict(),
         country_lookup=False,
         csvreader_kwargs={"delimiter": ","},
-        skip_header_rows: int=0,
+        skip_header_rows: int = 0,
         filters=[],
     ):
         """open a new csv timeseries-reader
@@ -71,6 +71,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
             read from the csv-table. This is also true for numerical values,
             i.e. altitude or standard_deviation.
         :variable_units: dict translating variable-names to units, e.g. overwrite units given in columns
+            IMPORTANT: Overriding these units does *not* perform unit conversion.
         :country_lookup: use pyaro_readers.geocoder_reverse_natural_earth to lookup country-codes from lat/lon
         :csvreader_kwargs: kwargs send directly to csv.reader module
         :filters: default auto-filter filters
