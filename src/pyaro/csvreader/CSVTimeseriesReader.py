@@ -51,7 +51,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
             "standard_deviation": "NaN",
             "flag": "0",
         },
-        variable_units=dict(),
+        variable_units: dict[str, str] = dict(),
         country_lookup=False,
         csvreader_kwargs={"delimiter": ","},
         skip_header_rows: int = 0,
