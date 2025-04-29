@@ -1459,16 +1459,19 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         topolat = topo[self._topo_var]["lat"].values
         topolon = topo[self._topo_var]["lon"].values
 
+        # Indexes of the latitude and longitude of the stations in the topo dataset.
         latidx = np.searchsorted(topolat, lats)
         lonidx = np.searchsorted(topolon, lons)
 
         relative_altitudes = np.empty_like(lats, dtype=np.float64)
 
+        # Margin for rough slicing of topo data, to avoid expensive distance calculation.
         dist = abs(topolat[1] - topolat[0])
         margin = int(0.1 + (1 / dist) * (radius / 1_000) / 100)
 
-        # subarrays = array[row_indices[:, :, np.newaxis], col_indices[:, np.newaxis, :]]
         for i, (lat, lon, altitude) in enumerate(zip(lats, lons, altitudes)):
+            # For small radiuses, do a rough slicing of topo dataset to avoid expensive distance
+            # calculation for distant points.
             if radius < 100_000:
                 lat_slice = slice(latidx[i] - margin, latidx[i] + margin)
                 lat_subset = topolat[lat_slice]
@@ -1483,6 +1486,7 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
                 subset_topo = nptopo
                 lon_subset = topolon
 
+            # Distance calculation for each point.
             coord = np.meshgrid(lon_subset, lat_subset)
             distances = haversine(coord[0], coord[1], lon, lat)
 
