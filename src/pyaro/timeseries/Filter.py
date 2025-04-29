@@ -1455,29 +1455,40 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
         :return:
             Array of relative altitudes (in meters)
         """
+        nptopo = topo[self._topo_var].values
+        topolat = topo[self._topo_var]["lat"].values
+        topolon = topo[self._topo_var]["lon"].values
+
+        latidx = np.searchsorted(topolat, lats)
+        lonidx = np.searchsorted(topolon, lons)
+
         relative_altitudes = np.empty_like(lats, dtype=np.float64)
 
-        margin = 0.1 + (radius / 1_000) / 100
+        dist = abs(topolat[1] - topolat[0])
+        margin = int(0.1 + (1 / dist) * (radius / 1_000) / 100)
+
+        # subarrays = array[row_indices[:, :, np.newaxis], col_indices[:, np.newaxis, :]]
         for i, (lat, lon, altitude) in enumerate(zip(lats, lons, altitudes)):
             if radius < 100_000:
-                lat_slice = slice(lat - margin, lat + margin)
+                lat_slice = slice(latidx[i] - margin, latidx[i] + margin)
+                lat_subset = topolat[lat_slice]
                 if lat >= 88 or lat <= -88:
                     # Include 360deg longitude near poles
-                    subset_topo = topo.sel(lat=lat_slice)
+                    subset_topo = nptopo[lat_slice, :]
                 else:
-                    lon_slice = slice(lon - margin, lon + margin)
-                    subset_topo = topo.sel(lon=lon_slice, lat=lat_slice)
+                    lon_slice = slice(lonidx[i] - margin, lonidx[i] + margin)
+                    subset_topo = nptopo[lat_slice, lon_slice]
+                    lon_subset = topolon[lon_slice]
             else:
-                subset_topo = topo
+                subset_topo = nptopo
+                lon_subset = topolon
 
-            distances = haversine(subset_topo["lon"], subset_topo["lat"], lon, lat)
+            coord = np.meshgrid(lon_subset, lat_subset)
+            distances = haversine(coord[0], coord[1], lon, lat)
 
-            within_radius = distances <= radius
-            values_within_radius = subset_topo[self._topo_var].where(
-                within_radius, other=np.nan
-            )
+            values_within_radius = subset_topo[distances <= radius]
 
-            min_value = values_within_radius.min(skipna=True).item()
+            min_value = np.nanmin(values_within_radius)
 
             relative_altitudes[i] = altitude - max(min_value, 0)
 
