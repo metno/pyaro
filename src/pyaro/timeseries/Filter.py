@@ -282,8 +282,11 @@ class VariableNameFilter(Filter):
 
     def filter_data(self, data, stations, variables) -> Data:
         """Translate data's variable"""
-        data._set_variable(self._reader_to_new.get(data.variable, data.variable))
-        return data
+        from .Wrappers import VariableNameChangingReaderData
+
+        return VariableNameChangingReaderData(
+            data, self._reader_to_new.get(data.variable, data.variable)
+        )
 
     def filter_variables(self, variables: list[str]) -> list[str]:
         """change variable name and reduce variables applying include and exclude parameters
