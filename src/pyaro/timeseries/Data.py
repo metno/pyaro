@@ -21,47 +21,13 @@ class Data(abc.ABC):
     This is the minimum set of columns required for a reader to return.
     A reader is welcome to return a self-implemented subclass of
     Data.
-
-    All Data arrays are accessible as a dict or as property, e.g.
-    ```
-    td = Data()
-    print(td.values)
-    print(td["values"])
-    ```
-
     """
-
-    _dtype = [
-        ("values", "f"),
-        ("stations", "U64"),
-        ("latitudes", "f"),
-        ("longitudes", "f"),
-        ("altitudes", "f"),
-        ("start_times", "datetime64[s]"),
-        ("end_times", "datetime64[s]"),
-        ("flags", "i2"),
-        ("standard_deviations", "f"),
-    ]
-
-    def __init__(self, variable, units) -> None:
-        self._variable = variable
-        self._units = units
-
-    def _set_variable(self, variable: str) -> None:
-        """Friend method to set the variable name
-
-        This is the setter function for variable. It should only be called by
-        friend-classes like VariableNameChanger.
-
-        :param variable: variable-name
-        """
-        self._variable = variable
 
     @abc.abstractmethod
     def keys(self):
         """all available data-fields, excluding variable and units which are
         considered metadata"""
-        return {}.keys()
+        raise NotImplementedError
 
     @abc.abstractmethod
     def slice(self, index):  # -> Self: for 3.11
@@ -70,30 +36,32 @@ class Data(abc.ABC):
         :param index: A boolean index of the size of data or integer. array
         :return: a new Data object
         """
-        pass
+        raise NotImplementedError
 
     def __getitem__(self, key):
         return self.slice(key)
 
     @abc.abstractmethod
     def __len__(self) -> int:
-        pass
+        raise NotImplementedError
 
     @property
+    @abc.abstractmethod
     def variable(self) -> str:
         """Variable name for all the data
 
         :return: variable name
         """
-        return self._variable
+        raise NotImplementedError
 
     @property
+    @abc.abstractmethod
     def units(self) -> str:
         """Units in CF-notation, the same unit applies to all values
 
         :return: Units in CF-notation
         """
-        return self._units
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod
@@ -102,7 +70,7 @@ class Data(abc.ABC):
 
         :return: 1dim array of floats
         """
-        return
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod
@@ -111,7 +79,7 @@ class Data(abc.ABC):
 
         :return: 1dim array of strings, max-length 64-chars
         """
-        return
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod
@@ -120,7 +88,7 @@ class Data(abc.ABC):
 
         :return: 1dim array of floats
         """
-        return
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod
@@ -129,7 +97,7 @@ class Data(abc.ABC):
 
         :return: 1dim array of floats
         """
-        return
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod
@@ -138,7 +106,7 @@ class Data(abc.ABC):
 
         :return: 1dim array of floats
         """
-        return
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod
@@ -148,7 +116,7 @@ class Data(abc.ABC):
 
         :return: 1dim array of datetime64
         """
-        return
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod
@@ -158,7 +126,7 @@ class Data(abc.ABC):
 
         :return: 1dim array of datetime64
         """
-        return
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod
@@ -167,7 +135,7 @@ class Data(abc.ABC):
 
         :return: 1dim array of ints
         """
-        return
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod
@@ -177,7 +145,7 @@ class Data(abc.ABC):
 
         :return: 1dim array of floats
         """
-        return
+        raise NotImplementedError
 
 
 class DynamicRecArrayException(Exception):
@@ -259,7 +227,7 @@ class NpStructuredData(Data):
         ("standard_deviations", "f"),
     ]
 
-    def __init__(self, variable="", units="") -> None:
+    def __init__(self, variable: str = "", units: str = "") -> None:
         self._variable = variable
         self._units = units
         self._data = DynamicRecArray(self._dtype)
