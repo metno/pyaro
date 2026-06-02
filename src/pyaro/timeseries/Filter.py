@@ -1476,13 +1476,18 @@ class ValleyFloorRelativeAltitudeFilter(StationFilter):
             # For small radiuses, do a rough slicing of topo dataset to avoid expensive distance
             # calculation for distant points.
             if radius < 100_000:
-                lat_slice = slice(latidx[i] - margin, latidx[i] + margin)
+                lat_lo = max(latidx[i] - margin, 0)
+                lat_hi = min(latidx[i] + margin, topolat.size)
+                lat_slice = slice(lat_lo, lat_hi)
                 lat_subset = topolat[lat_slice]
                 if lat >= 88 or lat <= -88:
                     # Include 360deg longitude near poles
                     subset_topo = nptopo[lat_slice, :]
+                    lon_subset = topolon
                 else:
-                    lon_slice = slice(lonidx[i] - margin, lonidx[i] + margin)
+                    lon_lo = max(lonidx[i] - margin, 0)
+                    lon_hi = min(lonidx[i] + margin, topolon.size)
+                    lon_slice = slice(lon_lo, lon_hi)
                     subset_topo = nptopo[lat_slice, lon_slice]
                     lon_subset = topolon[lon_slice]
             else:
