@@ -1,4 +1,5 @@
 import abc
+import sys
 from .Data import Data
 from .Station import Station
 from .Filter import Filter, filters
@@ -45,15 +46,16 @@ class Reader(abc.ABC):
         :param convention: Full convention string.
         :return: Name part of the convention.
         """
-        return "".join(convention.lower().split("-")[0:-2])
+        return "".join(convention.lower().split("-")[0:-1])
 
+    @staticmethod
     def _convention_version(convention: str) -> (int, int):
         """Extract the version part of a convention string.
 
         :param convention: Full convention string.
         :return: Tuple of (major, minor) version numbers.
         """
-        version = "-".join(convention.lower().split("-")[-1])
+        version = convention.lower().split("-")[-1]
         version_mayor, version_minor = [int(x) for x in version.split(".")]
         return version_mayor, version_minor
 
