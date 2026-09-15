@@ -16,11 +16,22 @@ The goal of pyro was threefold.
 
 A few existing implementations of pyaro can be found at [pyaro-readers](https://github.com/metno/pyaro-readers).
 
+## Metadata
+
+pyaro uses an extensible metadata-system similar to the netcdf-conventions.
+See [Metadata.md](Metadata.md).
 
 ## Installation
+
+Pyaro is available on pypi, typical installation is:
+
+`python -m pip install pyaro`
+
+To install specifically from github, use:
+
 `python -m pip install 'pyaro@git+https://github.com/metno/pyaro.git'`
 
-This will install pyaro and all its dependencies (numpy).
+Both commands will install pyaro and all its dependencies (numpy).
 
 
 ## Usage
