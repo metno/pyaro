@@ -185,8 +185,21 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                     standard_deviation=data.standard_deviations,
                 )
             self.assertEqual(
-                (2 ** rounds) * old_size, len(data), "data append by array"
+                (2**rounds) * old_size, len(data), "data append by array"
             )
+
+    def test_station_ids(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.file,
+            filters={"countries": {"include": ["NO"]}},
+        ) as ts:
+            var = next(iter(ts.variables()))
+            data = ts.data(var)
+            station_ids = data.station_ids
+            self.assertEqual(len(station_ids), len(data.stations))
+            stations = data.stations_by_ids(station_ids)
+            self.assertTrue(np.array_equal(stations, data.stations))
 
     def test_stationfilter(self):
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
@@ -747,12 +760,12 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_valley_floor_filter_multi_use(self):
         engines = pyaro.list_timeseries_engines()
         filter = pyaro.timeseries.filters.get(
-                    "valleyfloor_relaltitude",
-                    topo="tests/testdata/datadir_elevation/gtopo30_subset.nc",
-                    radius=5000,
-                    lower=150,
-                    upper=250,
-                )
+            "valleyfloor_relaltitude",
+            topo="tests/testdata/datadir_elevation/gtopo30_subset.nc",
+            radius=5000,
+            lower=150,
+            upper=250,
+        )
         with engines["csv_timeseries"].open(
             filename=self.elevation_file,
             filters=[filter],
@@ -792,6 +805,7 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             },
         ) as ts:
             self.assertEqual(len(ts.stations()), 3)
+
 
 if __name__ == "__main__":
     unittest.main()

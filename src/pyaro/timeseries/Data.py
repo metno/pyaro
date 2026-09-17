@@ -82,6 +82,34 @@ class Data(abc.ABC):
         raise NotImplementedError
 
     @property
+    def station_ids(self) -> np.ndarray:
+        """A 1-dimensional array of station IDs (integers). These ids are internally generated and
+        correspond to the unique stations in the this Data. They are not unique across different
+        Data objects, e.g. different variables. The ids might even change if the dataset is modified.
+
+        station IDs are unique identifiers for each station. station_ids and stations can be
+        translated to each others using `stations_by_id` method.
+
+        :return: 1dim array of integers
+
+        :note: Available since 0.3.0.dev0
+        """
+        # generate a lookup table for station IDs
+        self._sorted_stations = np.unique(self.stations, sorted=True)
+        return np.searchsorted(self._sorted_stations, self.stations)
+
+    def stations_by_ids(self, station_ids: np.ndarray) -> np.ndarray:
+        """Get the station names corresponding to the given station IDs.
+        `self.stations_by_ids(self.station_ids)` returns the original station names: `self.stations`
+
+        :param station_ids: A 1-dimensional array of station IDs (integers)
+        :return: 1dim array of station names (strings)
+
+        :note: Available since 0.3.0.dev0
+        """
+        return self._sorted_stations[station_ids]
+
+    @property
     @abc.abstractmethod
     def latitudes(self) -> np.ndarray:
         """A 1-dimensional array of latitudes (float)
