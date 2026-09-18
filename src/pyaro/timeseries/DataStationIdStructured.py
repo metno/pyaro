@@ -10,12 +10,13 @@ class DataStationIdStructured(Data):
     A reader is welcome to return a self-implemented subclass of
     Data.
 
-    stations is U64, so it is at least 64bytes long, which is much larger than the rest (38 bytes).
+    stations is U64, so it is at least 256 bytes long, which is much larger than the rest (38 bytes).
     For long timeseries, e.g. years of hourly data, this might be too much. Keeping station
     information separate from time-step data can save memory.
 
     The current approach stores a timestep in 30 bytes, and each station in 76 bytes, reducing
-    memory consumption for long time-series to about 30%.
+    memory consumption for long time-series to about 10% compared to NpStructuredData with 310 bytes
+    per measurement.
 
     Data can be added by rows with the append method, or a completed numpy.StructuredArray
     can be submitted using set_data.
