@@ -831,7 +831,7 @@ class DuplicateFilter(DataIndexFilter):
             xkeys = self.default_keys
         else:
             xkeys = self._keys
-        return np.unique(data[xkeys], return_index=True)[1]
+        return data.unique_by_keys(xkeys)
 
 
 @registered_filter

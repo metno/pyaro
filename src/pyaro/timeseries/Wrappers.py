@@ -38,7 +38,7 @@ class VariableNameChangingReaderData(Data):
 
     @property
     def longitudes(self):
-        return self._data.altitudes
+        return self._data.longitudes
 
     @property
     def altitudes(self):
@@ -59,6 +59,9 @@ class VariableNameChangingReaderData(Data):
     @property
     def standard_deviations(self):
         return self._data.standard_deviations
+
+    def unique_by_keys(self, keys: tuple | list):
+        return self._data.unique_by_keys(keys)
 
 
 class VariableNameChangingReader(Reader):
