@@ -1,4 +1,5 @@
 import abc
+import sys
 from .Data import Data
 from .Station import Station
 from .Filter import Filter, filters
@@ -23,11 +24,58 @@ class Reader(abc.ABC):
         """Metadata set by the datasource.
 
         The reader-implementation might add metadata depending on the data-source
-        to this method.
+        to this method. See github.com/pyaro/Metadata.md for more information.
 
         :return dictionary with different metadata
         """
         return dict()
+
+    def conventions(self) -> list[str]:
+        """List all conventions followed by this reader.
+
+        :return: List of convention names.
+        """
+        if "conventions" in self.metadata():
+            return self.metadata()["conventions"].lower().split(",")
+        return ["pyaerocom-0.0"]
+
+    @staticmethod
+    def _convention_name(convention: str) -> str:
+        """Extract the name part of a convention string.
+
+        :param convention: Full convention string.
+        :return: Name part of the convention.
+        """
+        return "".join(convention.lower().split("-")[0:-1])
+
+    @staticmethod
+    def _convention_version(convention: str) -> (int, int):
+        """Extract the version part of a convention string.
+
+        :param convention: Full convention string.
+        :return: Tuple of (major, minor) version numbers.
+        """
+        version = convention.lower().split("-")[-1]
+        version_mayor, version_minor = [int(x) for x in version.split(".")]
+        return version_mayor, version_minor
+
+    def convention_supported(self, convention) -> bool:
+        """Check if a specific convention is supported by this reader.
+
+        :param convention: Name of the convention to check.
+        :return: True if the convention is supported, False otherwise.
+        """
+        name = self._convention_name(convention)
+        version_mayor, version_minor = self._convention_version(convention)
+        supported = False
+        for conv in self.conventions():
+            if self._convention_name(conv) == name:
+                major, minor = self._convention_version(conv)
+                if version_mayor == major and version_minor >= minor:
+                    supported = True
+                    break
+
+        return supported
 
     @abc.abstractmethod
     def data(self, varname: str) -> Data:

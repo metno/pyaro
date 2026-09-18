@@ -5,7 +5,7 @@ name: CI_tests
 
 on:
   pull_request:
-  
+
 
 permissions:
   contents: read
@@ -14,13 +14,22 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - python-version: "3.10"
+            tox-environment: py310
+          - python-version: "3.12"
+            tox-environment: py312
+          - python-version: "3.13"
+            tox-environment: py313
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v5
+    - uses: actions/checkout@v5
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v6
       with:
-        python-version: "3.10"
+        python-version: ${{ matrix.python-version }}
     - name: Install system packages
       run: |
           sudo apt update
@@ -31,16 +40,15 @@ jobs:
         pip install tox
     - name: Test with tox
       run: |
-        tox
+        tox -e ${{ matrix.tox-environment }}
 
   minimal-dependencies:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Create virtual env
         run: python3 -m venv venv --upgrade-deps
       - name: Install pyaro
         run: source venv/bin/activate && pip install ./
       - name: Try importing pyaro
         run: source venv/bin/activate && python -c "import pyaro; print(pyaro.__version__)"
-    
