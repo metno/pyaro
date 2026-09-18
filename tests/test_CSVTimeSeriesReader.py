@@ -1,13 +1,15 @@
 import datetime
 import logging
+import os
 import sys
 import unittest
-import os
 
 import numpy as np
 
 import pyaro
 import pyaro.timeseries
+from pyaro.csvreader import CSVTimeseriesReader
+from pyaro.timeseries import DataStationIdStructured
 from pyaro.timeseries.Filter import FilterException
 from pyaro.timeseries.Wrappers import VariableNameChangingReader
 
@@ -805,6 +807,18 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             },
         ) as ts:
             self.assertEqual(len(ts.stations()), 3)
+
+
+class TestCSVTimeSeriesReaderDataStationIdStructured(TestCSVTimeSeriesReader):
+    """Run all CSVTimeSeriesReader tests with DataStationIdStructured instead of NpStructuredData"""
+
+    def setUp(self):
+        super().setUp()
+        self._data_class = CSVTimeseriesReader._DataClass
+        CSVTimeseriesReader._DataClass = DataStationIdStructured
+
+    def tearDown(self):
+        CSVTimeseriesReader._DataClass = self._data_class
 
 
 if __name__ == "__main__":

@@ -19,6 +19,9 @@ def _lookup_function():
 
 
 class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterReader):
+    # The class used to store the timeseries data internally. Can be overridden for custom data storage.
+    _DataClass = NpStructuredData
+
     _col_keys = (
         "variable",
         "units",
@@ -141,7 +144,7 @@ class CSVTimeseriesReader(pyaro.timeseries.AutoFilterReaderEngine.AutoFilterRead
                             f"unit change from '{da.units}' to '{r['units']}'"
                         )
                 else:
-                    da = NpStructuredData(r["variable"], r["units"])
+                    da = self._DataClass(r["variable"], r["units"])
                     self._data[r["variable"]] = da
                 da.append(
                     *[

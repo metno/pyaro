@@ -180,6 +180,15 @@ class Data(abc.ABC):
         """
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def unique_by_keys(self, keys: tuple | list) -> np.array:
+        """Return the indices of unique rows based on the specified keys
+
+        :param keys: tuple or list of keys to consider for uniqueness
+        :return: numpy array of indices of unique rows
+        """
+        raise NotImplementedError
+
 
 class DynamicRecArrayException(Exception):
     pass
@@ -454,6 +463,15 @@ class NpStructuredData(Data):
         :return: 1dim array of floats
         """
         return self["standard_deviations"]
+
+    def unique_by_keys(self, keys: tuple | list) -> np.array:
+        """Return the indices of unique rows based on the specified keys
+        :param keys: tuple or list of keys to consider for uniqueness
+        :return: numpy array of indices of unique rows
+        """
+        # union of keys and self.data._data.keys
+        xkeys = [key for key in keys if key in self._data.keys()]
+        return np.unique(self._data.data[xkeys], return_index=True)[1]
 
     def __str__(self):
         return f"{self.variable}, {self.units}, {self._data.data}"

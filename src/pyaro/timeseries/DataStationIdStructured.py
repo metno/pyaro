@@ -53,12 +53,33 @@ class DataStationIdStructured(Data):
 
     def __getitem__(self, key):
         """access the data as a dict"""
+        # check if key is a tuple or list
+        if isinstance(key, (tuple, list)):
+            raise KeyError(
+                f"Tuple or list keys are not supported by {self.__class__.__name__}"
+            )
         if key in self._data.keys():
             return self._data.data[key]
         elif key in self._station_data.keys():
             return self._station_data.data[self._data.data["station_ids"]][key]
         else:
             raise KeyError(f"Key {key} not found in data or station data")
+
+    def unique_by_keys(self, keys: tuple | list) -> np.array:
+        """Return the indices of unique rows based on the specified keys
+        :param keys: tuple or list of keys to consider for uniqueness
+        :return: numpy array of indices of unique rows
+        """
+        # use dict for ordered keys
+        data_keys = dict()
+        for key in keys:
+            if key in self._data.keys():
+                data_keys[key] = 1
+            elif key in self._station_data.keys():
+                data_keys["station_ids"] = 1
+            else:
+                raise KeyError(f"Key {key} not found in data or station data")
+        return np.unique(self._data.data[list(data_keys.keys())], return_index=True)[1]
 
     def keys(self):
         """all available data-fields, excluding variable and units which are

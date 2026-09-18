@@ -39,6 +39,13 @@ class TestDataStationIdStructured(unittest.TestCase):
         np.testing.assert_array_equal(data.latitudes, [60.0, 60.0])
         np.testing.assert_array_equal(data.longitudes, [10.0, 10.0])
         np.testing.assert_array_equal(data.altitudes, [100.0, 100.0])
+        np.testing.assert_allclose(data["values"], [273.15, 274.15])
+        np.testing.assert_array_equal(data["stations"], ["station-a", "station-a"])
+        np.testing.assert_array_equal(data["station_ids"], [0, 0])
+        np.testing.assert_array_equal(data["latitudes"], [60.0, 60.0])
+        np.testing.assert_array_equal(data["longitudes"], [10.0, 10.0])
+        np.testing.assert_array_equal(data["altitudes"], [100.0, 100.0])
+
         np.testing.assert_array_equal(
             data.start_times,
             np.array(
