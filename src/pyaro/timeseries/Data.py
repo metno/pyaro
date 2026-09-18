@@ -180,14 +180,15 @@ class Data(abc.ABC):
         """
         raise NotImplementedError
 
-    @abc.abstractmethod
     def unique_by_keys(self, keys: tuple | list) -> np.array:
         """Return the indices of unique rows based on the specified keys
 
+        The default implementation requires that self.data can be indexed by multiple keys.
+        This might not be for all implementations, so subclasses should override this method.
         :param keys: tuple or list of keys to consider for uniqueness
         :return: numpy array of indices of unique rows
         """
-        raise NotImplementedError
+        return np.unique(self.data[list(keys)], return_index=True)[1]
 
 
 class DynamicRecArrayException(Exception):
