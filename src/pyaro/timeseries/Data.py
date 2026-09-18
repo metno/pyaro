@@ -1,6 +1,7 @@
 import abc
 from enum import IntEnum, unique
 import numpy as np
+from packaging import version
 
 
 @unique
@@ -95,7 +96,11 @@ class Data(abc.ABC):
         :note: Available since 0.3.0.dev0
         """
         # generate a lookup table for station IDs
-        self._sorted_stations = np.unique(self.stations, sorted=True)
+        if version.parse(np.__version__) < version.parse("2.3.0"):
+            # For numpy versions older than 2.3.0, sorting is guaranteed
+            self._sorted_stations = np.unique(self.stations)
+        else:
+            self._sorted_stations = np.unique(self.stations, sorted=True)
         return np.searchsorted(self._sorted_stations, self.stations)
 
     def stations_by_ids(self, station_ids: np.ndarray) -> np.ndarray:
