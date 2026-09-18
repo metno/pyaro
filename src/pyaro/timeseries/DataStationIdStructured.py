@@ -21,6 +21,8 @@ class DataStationIdStructured(Data):
     Data can be added by rows with the append method, or a completed numpy.StructuredArray
     can be submitted using set_data.
 
+    :note: Available since 0.3.0
+
     """
 
     _dtype = [

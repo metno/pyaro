@@ -93,7 +93,7 @@ class Data(abc.ABC):
 
         :return: 1dim array of integers
 
-        :note: Available since 0.3.0.dev0
+        :note: Available since 0.3.0
         """
         # generate a lookup table for station IDs
         if version.parse(np.__version__) < version.parse("2.3.0"):
@@ -110,7 +110,7 @@ class Data(abc.ABC):
         :param station_ids: A 1-dimensional array of station IDs (integers)
         :return: 1dim array of station names (strings)
 
-        :note: Available since 0.3.0.dev0
+        :note: Available since 0.3.0
         """
         return self._sorted_stations[station_ids]
 
@@ -187,6 +187,8 @@ class Data(abc.ABC):
         This might not be for all implementations, so subclasses should override this method.
         :param keys: tuple or list of keys to consider for uniqueness
         :return: numpy array of indices of unique rows
+
+        :note: Available since 0.3.0
         """
         return np.unique(self.data[list(keys)], return_index=True)[1]
 
