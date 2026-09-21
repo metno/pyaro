@@ -7,9 +7,6 @@ class VariableNameChangingReaderData(Data):
         self._data = data
         self._variable = varname
 
-    def keys(self):
-        return self._data.keys()
-
     def slice(self, index):
         return VariableNameChangingReaderData(self._data.slice(index), self._variable)
 
@@ -31,6 +28,10 @@ class VariableNameChangingReaderData(Data):
     @property
     def stations(self):
         return self._data.stations
+
+    @property
+    def station_ids(self):
+        return self._data.station_ids
 
     @property
     def latitudes(self):
