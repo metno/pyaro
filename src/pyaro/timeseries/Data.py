@@ -25,12 +25,6 @@ class Data(abc.ABC):
     """
 
     @abc.abstractmethod
-    def keys(self):
-        """all available data-fields, excluding variable and units which are
-        considered metadata"""
-        raise NotImplementedError
-
-    @abc.abstractmethod
     def slice(self, index):  # -> Self: for 3.11
         """Get a copy of this dataset as a slice.
 
