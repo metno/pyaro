@@ -27,7 +27,7 @@ class DataStationIdStructured(Data):
 
     _dtype = [
         ("values", "f"),
-        ("station_ids", "i4"),
+        ("station_ids", "u4"),
         ("start_times", "datetime64[s]"),
         ("end_times", "datetime64[s]"),
         ("flags", "i2"),
