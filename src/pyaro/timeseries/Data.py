@@ -1,6 +1,7 @@
 import abc
 from enum import IntEnum, unique
 import numpy as np
+from packaging import version
 
 
 @unique
@@ -22,12 +23,6 @@ class Data(abc.ABC):
     A reader is welcome to return a self-implemented subclass of
     Data.
     """
-
-    @abc.abstractmethod
-    def keys(self):
-        """all available data-fields, excluding variable and units which are
-        considered metadata"""
-        raise NotImplementedError
 
     @abc.abstractmethod
     def slice(self, index):  # -> Self: for 3.11
@@ -80,6 +75,38 @@ class Data(abc.ABC):
         :return: 1dim array of strings, max-length 64-chars
         """
         raise NotImplementedError
+
+    @property
+    def station_ids(self) -> np.ndarray:
+        """A 1-dimensional array of station IDs (integers). These ids are internally generated and
+        correspond to the unique stations in the this Data. They are not unique across different
+        Data objects, e.g. different variables. The ids might even change if the dataset is modified.
+
+        station IDs are unique identifiers for each station. station_ids and stations can be
+        translated to each others using `stations_by_id` method.
+
+        :return: 1dim array of integers
+
+        :note: Available since 0.3.0
+        """
+        # generate a lookup table for station IDs
+        if version.parse(np.__version__) < version.parse("2.3.0"):
+            # For numpy versions older than 2.3.0, sorting is guaranteed
+            self._sorted_stations = np.unique(self.stations)
+        else:
+            self._sorted_stations = np.unique(self.stations, sorted=True)
+        return np.searchsorted(self._sorted_stations, self.stations)
+
+    def stations_by_ids(self, station_ids: np.ndarray) -> np.ndarray:
+        """Get the station names corresponding to the given station IDs.
+        `self.stations_by_ids(self.station_ids)` returns the original station names: `self.stations`
+
+        :param station_ids: A 1-dimensional array of station IDs (integers)
+        :return: 1dim array of station names (strings)
+
+        :note: Available since 0.3.0
+        """
+        return self._sorted_stations[station_ids]
 
     @property
     @abc.abstractmethod
@@ -146,6 +173,18 @@ class Data(abc.ABC):
         :return: 1dim array of floats
         """
         raise NotImplementedError
+
+    def unique_by_keys(self, keys: tuple | list) -> np.array:
+        """Return the indices of unique rows based on the specified keys
+
+        The default implementation requires that self.data can be indexed by multiple keys.
+        This might not be for all implementations, so subclasses should override this method.
+        :param keys: tuple or list of keys to consider for uniqueness
+        :return: numpy array of indices of unique rows
+
+        :note: Available since 0.3.0
+        """
+        return np.unique(self.data[list(keys)], return_index=True)[1]
 
 
 class DynamicRecArrayException(Exception):
@@ -421,6 +460,15 @@ class NpStructuredData(Data):
         :return: 1dim array of floats
         """
         return self["standard_deviations"]
+
+    def unique_by_keys(self, keys: tuple | list) -> np.array:
+        """Return the indices of unique rows based on the specified keys
+        :param keys: tuple or list of keys to consider for uniqueness
+        :return: numpy array of indices of unique rows
+        """
+        # union of keys and self.data._data.keys
+        xkeys = [key for key in keys if key in self._data.keys()]
+        return np.unique(self._data.data[xkeys], return_index=True)[1]
 
     def __str__(self):
         return f"{self.variable}, {self.units}, {self._data.data}"

@@ -216,3 +216,52 @@ In this case you would need to add the following to your ``pyproject.toml`` file
     "my_timesereiesreader" = "my_package.my_module:MyTimeseriesEngine"
 
 See https://python-poetry.org/docs/pyproject/#plugins for more information on Poetry plugins.
+
+
+.. _RST data implementation:
+
+How to use fill the Data:
+
+pyaro comes with several built-in implementations of the Data class, such as NpStructuredData and
+DataStationIdStructured. You can use these directly or implement your own custom Data class by inheriting
+from the base Data class and overriding the necessary methods.
+
+For large datasets, it is recommended to fill the data lazy, i.e. when it is called by the reader.data
+rather than loading everything into memory at once. Filters should be applied early where necessary,
+so that unnecessary data is not loaded into memory.
+
+Adding data to the data-class can work this way:
+
+.. code-block:: python
+
+    from pyaro.data import NpStructuredData, DataStationIdStructured
+
+    _DataClass = NpStructuredData # or DataStationIdStructured, just switch
+
+    data = _DataClass()
+    # np-arrays in this example could have been read from your data-source
+    data.append(
+        value=np.array([1.0, 2.0, 3.0]),
+        station=np.array(["station-a", "station-b", "station-a"]),
+        latitude=np.array([60.0, 61.0]),
+        longitude=np.array([10.0, 11.0]),
+        altitude=np.array([100.0, 110.0]),
+        start_time=np.array(
+            [
+                "2024-02-01T00:00:00",
+                "2024-02-01T01:00:00",
+                "2024-02-01T02:00:00",
+            ],
+            dtype="datetime64[s]",
+        ),
+        end_time=np.array(
+            [
+                "2024-02-01T01:00:00",
+                "2024-02-01T02:00:00",
+                "2024-02-01T03:00:00",
+            ],
+            dtype="datetime64[s]",
+        ),
+        flag=np.array([Flag.VALID, Flag.INVALID, Flag.VALID]),
+        standard_deviation=np.array([0.1, 0.2, 0.3]),
+    )

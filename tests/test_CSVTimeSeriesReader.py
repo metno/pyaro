@@ -1,13 +1,15 @@
 import datetime
 import logging
+import os
 import sys
 import unittest
-import os
 
 import numpy as np
 
 import pyaro
 import pyaro.timeseries
+from pyaro.csvreader import CSVTimeseriesReader
+from pyaro.timeseries import DataStationIdStructured
 from pyaro.timeseries.Filter import FilterException
 from pyaro.timeseries.Wrappers import VariableNameChangingReader
 
@@ -185,8 +187,21 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                     standard_deviation=data.standard_deviations,
                 )
             self.assertEqual(
-                (2 ** rounds) * old_size, len(data), "data append by array"
+                (2**rounds) * old_size, len(data), "data append by array"
             )
+
+    def test_station_ids(self):
+        engines = pyaro.list_timeseries_engines()
+        with engines["csv_timeseries"].open(
+            filename=self.file,
+            filters={"countries": {"include": ["NO"]}},
+        ) as ts:
+            var = next(iter(ts.variables()))
+            data = ts.data(var)
+            station_ids = data.station_ids
+            self.assertEqual(len(station_ids), len(data.stations))
+            stations = data.stations_by_ids(station_ids)
+            self.assertTrue(np.array_equal(stations, data.stations))
 
     def test_stationfilter(self):
         engine = pyaro.list_timeseries_engines()["csv_timeseries"]
@@ -747,12 +762,12 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
     def test_valley_floor_filter_multi_use(self):
         engines = pyaro.list_timeseries_engines()
         filter = pyaro.timeseries.filters.get(
-                    "valleyfloor_relaltitude",
-                    topo="tests/testdata/datadir_elevation/gtopo30_subset.nc",
-                    radius=5000,
-                    lower=150,
-                    upper=250,
-                )
+            "valleyfloor_relaltitude",
+            topo="tests/testdata/datadir_elevation/gtopo30_subset.nc",
+            radius=5000,
+            lower=150,
+            upper=250,
+        )
         with engines["csv_timeseries"].open(
             filename=self.elevation_file,
             filters=[filter],
@@ -792,6 +807,19 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             },
         ) as ts:
             self.assertEqual(len(ts.stations()), 3)
+
+
+class TestCSVTimeSeriesReaderDataStationIdStructured(TestCSVTimeSeriesReader):
+    """Run all CSVTimeSeriesReader tests with DataStationIdStructured instead of NpStructuredData"""
+
+    def setUp(self):
+        super().setUp()
+        self._data_class = CSVTimeseriesReader._DataClass
+        CSVTimeseriesReader._DataClass = DataStationIdStructured
+
+    def tearDown(self):
+        CSVTimeseriesReader._DataClass = self._data_class
+
 
 if __name__ == "__main__":
     unittest.main()

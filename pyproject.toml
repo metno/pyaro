@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyaro"
+version = "0.3.1.dev0"
+description = "pyaro py-aerocom reader objects"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Heiko Klein" },
+    { name = "Daniel Heinesen" },
+    { name = "Magnus Ulimoen" },
+    { name = "Thorbjørn Lundin" },
+]
+maintainers = [
+    { name = "Heiko Klein", email = "Heiko.Klein@met.no" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+dependencies = [
+    "numpy>=1.13",
+    "packaging>=21.0",
+    'importlib-metadata>=3.6; python_version < "3.10"',
+]
+
+[project.optional-dependencies]
+optional = [
+    "pandas",
+    "cf-units",
+    "xarray",
+    "netcdf4",
+]
+
+[project.entry-points."pyaro.timeseries"]
+csv_timeseries = "pyaro.csvreader:CSVTimeseriesEngine"
+
+[project.urls]
+Homepage = "https://pyaro.readthedocs.io"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+min_version = 4.0
+env_list =
+    py313
+    py312
+    py310
+
+[testenv]
+commands = python3 -m unittest discover -s tests
+extras = optional
+"""
