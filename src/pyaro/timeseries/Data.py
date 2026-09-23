@@ -87,7 +87,9 @@ class Data(abc.ABC):
 
         :return: 1dim array of integers
 
-        :note: Available since 0.3.0
+        :note: Available since 0.3.0.
+            If implementers implement this method, they should also implement
+            `stations_by_ids` method.
         """
         # generate a lookup table for station IDs
         if version.parse(np.__version__) < version.parse("2.3.0"):

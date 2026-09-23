@@ -33,6 +33,9 @@ class VariableNameChangingReaderData(Data):
     def station_ids(self):
         return self._data.station_ids
 
+    def stations_by_ids(self, station_ids):
+        return self._data.stations_by_ids(station_ids)
+
     @property
     def latitudes(self):
         return self._data.latitudes
