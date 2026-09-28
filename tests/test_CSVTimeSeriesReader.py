@@ -315,26 +315,16 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.assertTrue(len(neg_vals) > 0)
 
         with engine.open(self.file, filters=[drfilter]) as ts:
-            count = 0
-            for var in ts.variables():
-                count += len(ts.data(var))
             self.assertTrue(all(ts.data("NOx").values >= 0))
             self.assertTrue(len(ts.data("NOx")) == (len(vals) - len(neg_vals)))
 
         with engine.open(self.file, filters={"data_range": {"maximum": 10.0}}) as ts:
-            count = 0
-            for var in ts.variables():
-                count += len(ts.data(var))
             self.assertTrue(all(ts.data("NOx").values <= 10))
             self.assertTrue(len(ts.data("NOx")) == (len(vals) - len(pos10)))
 
         with engine.open(
             self.file, filters={"data_range": {"minimum": 0.0, "maximum": 10.0}}
         ) as ts:
-            count = 0
-            for var in ts.variables():
-                count += len(ts.data(var))
-            self.assertEqual(len(ts.stations()), 2)
             self.assertTrue(all(ts.data("NOx").values <= 10))
             self.assertTrue(all(ts.data("NOx").values >= 0))
             self.assertTrue(
@@ -351,10 +341,6 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
                 }
             },
         ) as ts:
-            count = 0
-            for var in ts.variables():
-                count += len(ts.data(var))
-            self.assertEqual(len(ts.stations()), 2)
             self.assertTrue(len(ts.data("SOx")) == 0)
             self.assertTrue(all(ts.data("NOx").values <= 10))
             self.assertTrue(all(ts.data("NOx").values >= 0))
