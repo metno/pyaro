@@ -28,6 +28,7 @@ A few existing implementations of pyaro can be found at `pyaerocom-readers <http
    timeseries_data
    api
    how-to-add-new-reader
+   how-to-add-new-filter
    genindex
 
 Indices and tables
