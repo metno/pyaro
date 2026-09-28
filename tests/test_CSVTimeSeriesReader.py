@@ -296,6 +296,58 @@ class TestCSVTimeSeriesReader(unittest.TestCase):
             self.assertEqual(len(ts.stations()), 2)
             self.assertEqual(count, 0)
 
+    def test_data_range_filter(self):
+        engine = pyaro.list_timeseries_engines()["csv_timeseries"]
+        drfilter = pyaro.timeseries.filters.get(
+            "data_range",
+            minimum=0.0,
+        )
+        self.assertEqual(drfilter.init_kwargs()["minimum"], 0.0)
+        self.assertEqual(drfilter.init_kwargs()["maximum"], np.inf)
+        # self.assertEqual(
+        #     drfilter.init_kwargs()["maximum"], 100.0
+        # )
+        with engine.open(self.file) as ts:
+            vals = ts.data("NOx").values
+            neg_vals = vals[vals < 0]
+            pos10 = vals[vals > 10]
+            self.assertTrue(len(pos10) > 0)
+            self.assertTrue(len(neg_vals) > 0)
+
+        with engine.open(self.file, filters=[drfilter]) as ts:
+            self.assertTrue(all(ts.data("NOx").values >= 0))
+            self.assertTrue(len(ts.data("NOx")) == (len(vals) - len(neg_vals)))
+
+        with engine.open(self.file, filters={"data_range": {"maximum": 10.0}}) as ts:
+            self.assertTrue(all(ts.data("NOx").values <= 10))
+            self.assertTrue(len(ts.data("NOx")) == (len(vals) - len(pos10)))
+
+        with engine.open(
+            self.file, filters={"data_range": {"minimum": 0.0, "maximum": 10.0}}
+        ) as ts:
+            self.assertTrue(all(ts.data("NOx").values <= 10))
+            self.assertTrue(all(ts.data("NOx").values >= 0))
+            self.assertTrue(
+                len(ts.data("NOx")) == (len(vals) - len(pos10) - len(neg_vals))
+            )
+
+        with engine.open(
+            self.file,
+            filters={
+                "data_range": {
+                    "minimum": -1000,
+                    "maximum": -100,
+                    "var_min_max": {"NOx": (0.0, 10.0)},
+                }
+            },
+        ) as ts:
+            self.assertTrue(len(ts.data("SOx")) == 0)
+            self.assertTrue(all(ts.data("NOx").values <= 10))
+            self.assertTrue(all(ts.data("NOx").values >= 0))
+            self.assertTrue(
+                len(ts.data("NOx")) == (len(vals) - len(pos10) - len(neg_vals))
+            )
+
     def test_variable_time_station_filter(self):
         vtsfilter = pyaro.timeseries.filters.get(
             "time_variable_station",

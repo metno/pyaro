@@ -835,6 +835,51 @@ class DuplicateFilter(DataIndexFilter):
 
 
 @registered_filter
+class DataRangeFilter(DataIndexFilter):
+    """Filter data based on a specified range for a given variable.
+
+    Use np.inf for unbounded maximum values and -np.inf for unbounded minimum values.
+
+    The dictionary var_min_max allows variables added to that list to have different
+    minimum/maximum values from the default. Only one minimum/maximum will be applied by this
+    filter.
+
+    :param minimum: The minimum acceptable value for all variables unless overridden in var_min_max.
+    :param maximum: The maximum acceptable value for all variables unless overridden in var_min_max.
+    :param var_min_max: A dictionary specifying variable-specific min and max values, e.g. {"temperature": (0, 100)}.
+    """
+
+    def __init__(
+        self,
+        minimum: float = -np.inf,
+        maximum: float = np.inf,
+        var_min_max: dict[str, tuple[float, float]] = dict(),
+    ):
+        self._minimum = minimum
+        self._maximum = maximum
+        self._var_min_max = var_min_max
+
+    def init_kwargs(self):
+        return {
+            "minimum": self._minimum,
+            "maximum": self._maximum,
+            "var_min_max": self._var_min_max,
+        }
+
+    def name(self):
+        return "data_range"
+
+    def filter_data_idx(
+        self, data: Data, stations: dict[str, Station], variables: list[str]
+    ):
+        minimum = self._minimum
+        maximum = self._maximum
+        if data.variable in self._var_min_max:
+            minimum, maximum = self._var_min_max[data.variable]
+        return (data.values >= minimum) & (data.values <= maximum)
+
+
+@registered_filter
 class TimeResolutionFilter(DataIndexFilter):
     """The timeresolution filter allows to restrict the observation data to
     certain time-resolutions. Time-resolutions are not exact, and might be interpreted
@@ -960,7 +1005,7 @@ class AltitudeFilter(StationReductionFilter):
 
 
 @registered_filter
-class RelativeAltitudeFilter(StationFilter):
+class RelativeAltitudeFilter(StationReductionFilter):
     """
     Filter class which filters stations based on the relative difference between
     the station altitude, and the gridded topography altitude.
@@ -1210,7 +1255,7 @@ class RelativeAltitudeFilter(StationFilter):
 
 
 @registered_filter
-class ValleyFloorRelativeAltitudeFilter(StationFilter):
+class ValleyFloorRelativeAltitudeFilter(StationReductionFilter):
     """
     Filter for filtering stations based on the difference between the station altitude and valley
     floor altitude (defined as the lowest altitude within a radius around the station). This ensures
