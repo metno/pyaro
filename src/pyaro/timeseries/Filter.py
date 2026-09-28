@@ -1005,7 +1005,7 @@ class AltitudeFilter(StationReductionFilter):
 
 
 @registered_filter
-class RelativeAltitudeFilter(StationFilter):
+class RelativeAltitudeFilter(StationReductionFilter):
     """
     Filter class which filters stations based on the relative difference between
     the station altitude, and the gridded topography altitude.
@@ -1255,7 +1255,7 @@ class RelativeAltitudeFilter(StationFilter):
 
 
 @registered_filter
-class ValleyFloorRelativeAltitudeFilter(StationFilter):
+class ValleyFloorRelativeAltitudeFilter(StationReductionFilter):
     """
     Filter for filtering stations based on the difference between the station altitude and valley
     floor altitude (defined as the lowest altitude within a radius around the station). This ensures

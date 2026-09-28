@@ -31,9 +31,8 @@ Start by choosing the base class that matches what the filter changes:
     observations. Implement ``filter_stations``; the base class derives the
     observation index from the remaining station names.
 
-``StationFilter``
-    Use this when the filter is a simple include/exclude filter over station
-    names. Subclass it when only the station-selection rule needs to change.
+Always implement the methods ``__init__``, ``init_kwargs()``, and ``name()`` in addition
+to the chosen base classes methods.
 
 The base ``Filter`` methods return their input unchanged. This means a filter
 only needs to implement the operations it actually supports. For example, a
