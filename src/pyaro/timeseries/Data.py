@@ -1,7 +1,11 @@
 import abc
 from enum import IntEnum, unique
+import logging
 import numpy as np
 from packaging import version
+
+
+logger = logging.getLogger(__name__)
 
 
 @unique
@@ -76,6 +80,15 @@ class Data(abc.ABC):
         """
         raise NotImplementedError
 
+    def _station_ids_fallback(self) -> np.ndarray:
+        # generate a lookup table for station IDs
+        if version.parse(np.__version__) < version.parse("2.3.0"):
+            # For numpy versions older than 2.3.0, sorting is guaranteed
+            self._sorted_stations = np.unique(self.stations)
+        else:
+            self._sorted_stations = np.unique(self.stations, sorted=True)
+        return np.searchsorted(self._sorted_stations, self.stations)
+
     @property
     def station_ids(self) -> np.ndarray:
         """A 1-dimensional array of station IDs (integers). These ids are internally generated and
@@ -90,14 +103,18 @@ class Data(abc.ABC):
         :note: Available since 0.3.0.
             If implementers implement this method, they should also implement
             `stations_by_ids` method.
+        :deprecated: Direct use of `station_ids` is deprecated and may be slow.
+        This will be made an abstract property from 0.4.
+        All subclass implementation should provide its own `station_ids` property if available.
         """
-        # generate a lookup table for station IDs
-        if version.parse(np.__version__) < version.parse("2.3.0"):
-            # For numpy versions older than 2.3.0, sorting is guaranteed
-            self._sorted_stations = np.unique(self.stations)
-        else:
-            self._sorted_stations = np.unique(self.stations, sorted=True)
-        return np.searchsorted(self._sorted_stations, self.stations)
+        logger.warning(
+            "Data.station_ids called on %s, deprecated and possibly slow. The subclass should implement its own station_ids property.",
+            self.__class__.__name__,
+        )
+        return self._station_ids_fallback()
+
+    def _stations_by_ids_fallback(self, station_ids: np.ndarray) -> np.ndarray:
+        return self._sorted_stations[station_ids]
 
     def stations_by_ids(self, station_ids: np.ndarray) -> np.ndarray:
         """Get the station names corresponding to the given station IDs.
@@ -107,8 +124,15 @@ class Data(abc.ABC):
         :return: 1dim array of station names (strings)
 
         :note: Available since 0.3.0
+        :deprecated: Direct use of `stations_by_ids` is deprecated and may be slow.
+        This will be made an abstract property from 0.4.
+        All subclass implementation should provide its own `stations_by_ids` method if available.
         """
-        return self._sorted_stations[station_ids]
+        logger.warning(
+            "Data.stations_by_ids called on %s, deprecated and possibly slow. The subclass should implement its own stations_by_ids method.",
+            self.__class__.__name__,
+        )
+        return self._stations_by_ids_fallback(station_ids)
 
     @property
     @abc.abstractmethod
@@ -403,6 +427,15 @@ class NpStructuredData(Data):
         :return: 1dim array of strings, max-length 64-chars
         """
         return self["stations"]
+
+    @property
+    def station_ids(self) -> np.ndarray:
+        # warning free version
+        return self._station_ids_fallback()
+
+    def stations_by_ids(self, station_ids: np.ndarray) -> np.ndarray:
+        # warning free version
+        return self._stations_by_ids_fallback(station_ids)
 
     @property
     def latitudes(self) -> np.ndarray:
