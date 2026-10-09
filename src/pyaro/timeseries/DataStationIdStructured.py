@@ -254,6 +254,7 @@ class DataStationIdStructured(Data):
     def stations(self) -> np.ndarray:
         """A 1-dimensional array of station identifiers (strings, usually name)
 
+        :param station_ids: Array of station ids to retrieve the station names for
         :return: 1dim array of strings, max-length 64-chars
         """
         return self.stations_by_ids(self.station_ids)
@@ -277,7 +278,7 @@ class DataStationIdStructured(Data):
 
         :return: 1dim array of floats
         """
-        return self._station_data.data[self.station_ids]["latitudes"]
+        return self._station_data.data["latitudes"][self.station_ids]
 
     @property
     def longitudes(self) -> np.ndarray:
@@ -285,7 +286,7 @@ class DataStationIdStructured(Data):
 
         :return: 1dim array of floats
         """
-        return self._station_data.data[self.station_ids]["longitudes"]
+        return self._station_data.data["longitudes"][self.station_ids]
 
     @property
     def altitudes(self) -> np.ndarray:
@@ -293,7 +294,7 @@ class DataStationIdStructured(Data):
 
         :return: 1dim array of floats
         """
-        return self._station_data.data[self.station_ids]["altitudes"]
+        return self._station_data.data["altitudes"][self.station_ids]
 
     @property
     def start_times(self) -> np.ndarray:
