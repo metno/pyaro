@@ -282,7 +282,7 @@ class NpStructuredData(Data):
 
     _dtype = [
         ("values", "f"),
-        ("stations", "<U64"),
+        ("stations", "U64"),
         ("latitudes", "f"),
         ("longitudes", "f"),
         ("altitudes", "f"),

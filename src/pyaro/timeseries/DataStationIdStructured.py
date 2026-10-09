@@ -35,7 +35,7 @@ class DataStationIdStructured(Data):
     ]
 
     _dtype_station = [
-        ("stations", "<U64"),
+        ("stations", "U64"),
         ("latitudes", "f"),
         ("longitudes", "f"),
         ("altitudes", "f"),
