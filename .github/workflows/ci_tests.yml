@@ -22,8 +22,8 @@ jobs:
             tox-environment: py310
           - python-version: "3.12"
             tox-environment: py312
-          - python-version: "3.13"
-            tox-environment: py313
+          - python-version: "3.14"
+            tox-environment: py314
 
     steps:
     - uses: actions/checkout@v5
@@ -44,7 +44,7 @@ jobs:
         tox -e ${{ matrix.tox-environment }}
 
   minimal-dependencies:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
       - name: Create virtual env
