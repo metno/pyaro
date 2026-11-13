@@ -71,6 +71,14 @@ class timeseries.BoundingBoxFilter {
   has_location(lat, lon): bool
 }
 
+class timeseries.ProjectedBoundingBoxFilter {
+  + __init__(include=[country], exclude=[country])
+  + name(): "projected_bounding_boxes"
+  + init_kwargs(): dict
+  + filter_stations(stations): dict[str, Station]
+  has_location(lat, lon): bool
+}
+
 class timeseries.TimeBoundsFilter {
   + __init__(start_include=[flag], start_exclude=[flag],\n start_end_include, startend_exclude,\n end_include, end_exclude)
   + name(): "time_bounds"
@@ -139,6 +147,7 @@ timeseries.DataIndexFilter <|.. timeseries.StationReductionFilter
 timeseries.StationReductionFilter <|.. timeseries.StationFilter
 timeseries.StationReductionFilter <|.. timeseries.CountryFilter
 timeseries.StationReductionFilter <|.. timeseries.BoundingBoxFilter
+timeseries.StationReductionFilter <|.. timeseries.ProjectedBoundingBoxFilter
 timeseries.StationReductionFilter <|.. timeseries.AltitudeFilter
 timeseries.StationReductionFilter <|.. timeseries.RelativeAltitudeFilter
 timeseries.StationReductionFilter <|.. timeseries.ValleyFloorRelativeAltitudeFilter
